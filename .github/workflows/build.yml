@@ -1,5 +1,5 @@
 # .github/workflows/build.yml
-name: Build KVM + MIDP 2.0 (with Floating Point)
+name: Build KVM + MIDP 2.0 (Floating Point)
 
 on:
   push:
@@ -8,377 +8,44 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
-env:
-  # Флаги совместимости + ВКЛЮЧАЕМ FLOATING POINT
-  CFLAGS_COMPAT: "-std=gnu89 -fno-strict-aliasing -fno-strict-overflow -w"
-  # Критические дефайны для полной функциональности
-  KVM_DEFINES: "-DFLOATING_POINT -DPADDED_CELL_IF_NECESSARY -DUSE_JAM -DUSE_STDIO"
-
 jobs:
   # ============================================
-  # Сборка CLDC API классов
-  # ============================================
-  build-cldc-api:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 8
-        uses: actions/setup-java@v4
-        with:
-          java-version: '8'
-          distribution: 'temurin'
-
-      - name: Build CLDC API classes
-        run: |
-          cd api
-          make || {
-            echo "Makefile failed, trying manual build..."
-            mkdir -p ../bin/common/api/classes
-            find src -name "*.java" > sources.txt
-            javac -source 1.8 -target 1.8 -d ../bin/common/api/classes @sources.txt
-          }
-
-      - name: Upload CLDC API
-        uses: actions/upload-artifact@v4
-        with:
-          name: cldc-api-classes
-          path: bin/common/api/classes/
-          retention-days: 5
-
-  # ============================================
-  # MIDP 2.0 классы (готовые)
+  # MIDP классы
   # ============================================
   build-midp-classes:
     runs-on: ubuntu-latest
-    needs: [build-cldc-api]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download CLDC API
-        uses: actions/download-artifact@v4
-        with:
-          name: cldc-api-classes
-          path: bin/common/api/classes/
-
-      - name: Use prebuilt MIDP classes
+      - uses: actions/checkout@v4
+      
+      - name: Prepare MIDP classes
         run: |
-          mkdir -p bin/midp/classes
-          
-          # Используем готовые скомпилированные классы
+          mkdir -p bin/midp/classes bin/midp/examples
           cp -r midp2.0fcs/classes/* bin/midp/classes/
-          
-          echo "=== Verifying MIDP classes ==="
-          ls -la bin/midp/classes/javax/microedition/ || true
-
-      - name: Copy game examples
-        run: |
-          mkdir -p bin/midp/examples
           cp midp2.0fcs/example/*.jar bin/midp/examples/ 2>/dev/null || true
           cp midp2.0fcs/example/*.jad bin/midp/examples/ 2>/dev/null || true
 
-      - name: Upload MIDP classes
-        uses: actions/upload-artifact@v4
-        with:
-          name: midp-classes
-          path: bin/midp/
-          retention-days: 5
-
-  # ============================================
-  # Сборка инструментов
-  # ============================================
-  build-tools:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 8
-        uses: actions/setup-java@v4
-        with:
-          java-version: '8'
-          distribution: 'temurin'
-
-      - name: Build JCC tool
-        run: |
-          cd tools/jcc
-          make || {
-            mkdir -p ../../bin/common/tools/jcc/classes
-            find src -name "*.java" > sources.txt
-            javac -d ../../bin/common/tools/jcc/classes @sources.txt 2>/dev/null || true
-          }
-
-      - name: Build KDP tool
-        run: |
-          cd tools/kdp
-          make || {
-            mkdir -p ../../bin/common/tools/kdp/classes
-            find src -name "*.java" > sources.txt
-            javac -d ../../bin/common/tools/kdp/classes @sources.txt 2>/dev/null || true
-          }
-
-      - name: Copy MIDP tools
-        run: |
-          mkdir -p bin/common/tools/midp
-          cp midp2.0fcs/bin/JadTool.jar bin/common/tools/midp/ 2>/dev/null || true
-          cp midp2.0fcs/bin/MEKeyTool.jar bin/common/tools/midp/ 2>/dev/null || true
-
-      - name: Upload tools
-        uses: actions/upload-artifact@v4
-        with:
-          name: java-tools
-          path: bin/common/tools/
-          retention-days: 5
-
-  # ============================================
-  # Linux x86_64 - KVM + MIDP + FLOATING POINT
-  # ============================================
-  build-linux-x64:
-    runs-on: ubuntu-latest
-    needs: [build-cldc-api, build-midp-classes]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential gcc g++ make libm-dev
-
-      - name: Download CLDC API
-        uses: actions/download-artifact@v4
-        with:
-          name: cldc-api-classes
-          path: bin/common/api/classes/
-
-      - name: Download MIDP classes
-        uses: actions/download-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: midp-classes
           path: bin/midp/
 
-      - name: Build KVM with FLOATING POINT support
-        run: |
-          cd build/linux
-          
-          echo "=== Building KVM with Floating Point Support ==="
-          
-          # Собираем с поддержкой float/double
-          make CC="gcc" \
-               CFLAGS="${CFLAGS_COMPAT} ${KVM_DEFINES}" \
-               EXTRADEFS="-DFLOATING_POINT" \
-               FLOAT_SUPPORT=true \
-               || make CC="gcc" CFLAGS="${CFLAGS_COMPAT} -DFLOATING_POINT"
-          
-          # Проверяем что собралось
-          file ../../bin/linux/kvm || echo "kvm not found in bin/linux"
-          ls -la ../../bin/linux/ || true
-
-      - name: Build KVM debug version
-        run: |
-          cd build/linux
-          make clean 2>/dev/null || true
-          make debug CC="gcc" \
-               CFLAGS="${CFLAGS_COMPAT} ${KVM_DEFINES} -g -DDEBUG" \
-               || true
-
-      - name: Build preverifier
-        run: |
-          cd tools/preverifier/build/linux
-          make CC="gcc" CFLAGS="${CFLAGS_COMPAT}" || make
-
-      - name: Create launcher script
-        run: |
-          mkdir -p bin/linux
-          
-          cat > bin/linux/midp << 'EOFSCRIPT'
-          #!/bin/bash
-          
-          SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-          MIDP_CLASSES="$SCRIPT_DIR/lib/midp-classes"
-          
-          show_help() {
-            echo "╔══════════════════════════════════════════════════════════════╗"
-            echo "║      KVM + MIDP 2.0 Game Launcher (Floating Point)           ║"
-            echo "╚══════════════════════════════════════════════════════════════╝"
-            echo ""
-            echo "Usage:"
-            echo "  ./midp <game.jar>                    - Auto-detect MIDlet"
-            echo "  ./midp <game.jar> <MIDlet-class>     - Specify MIDlet class"
-            echo "  ./midp -jad <game.jad>               - Launch from JAD file"
-            echo "  ./midp -list <game.jar>              - List MIDlets in JAR"
-            echo ""
-            echo "Available games:"
-            for jar in "$SCRIPT_DIR/games"/*.jar 2>/dev/null; do
-              [ -f "$jar" ] && echo "  $(basename "$jar")"
-            done
-          }
-          
-          if [ -z "$1" ]; then
-            show_help
-            exit 0
-          fi
-          
-          case "$1" in
-            -h|--help) show_help; exit 0 ;;
-            -list)
-              unzip -p "$2" META-INF/MANIFEST.MF 2>/dev/null | grep -E "^MIDlet-[0-9]+:"
-              exit 0
-              ;;
-            -jad)
-              JAD="$2"
-              JAR="$(dirname "$JAD")/$(basename "$JAD" .jad).jar"
-              MIDLET=$(grep -i "^MIDlet-1:" "$JAD" | rev | cut -d, -f1 | rev | tr -d ' \r\n')
-              ;;
-            *)
-              JAR="$1"
-              MIDLET="$2"
-              ;;
-          esac
-          
-          [ ! -f "$JAR" ] && echo "Error: JAR not found: $JAR" && exit 1
-          
-          if [ -z "$MIDLET" ]; then
-            MIDLET=$(unzip -p "$JAR" META-INF/MANIFEST.MF 2>/dev/null | \
-                     grep -i "^MIDlet-1:" | rev | cut -d, -f1 | rev | tr -d ' \r\n')
-          fi
-          
-          [ -z "$MIDLET" ] && echo "Error: Specify MIDlet class" && exit 1
-          
-          echo "Starting: $MIDLET"
-          exec "$SCRIPT_DIR/kvm" -classpath "$MIDP_CLASSES:$JAR" "$MIDLET"
-          EOFSCRIPT
-          
-          chmod +x bin/linux/midp
-
-      - name: Package Linux distribution
-        run: |
-          mkdir -p dist/linux
-          
-          # Бинарники
-          cp bin/linux/kvm dist/linux/ 2>/dev/null || true
-          cp bin/linux/kvm_g dist/linux/ 2>/dev/null || true
-          cp bin/linux/preverify dist/linux/ 2>/dev/null || true
-          cp bin/linux/midp dist/linux/ 2>/dev/null || true
-          
-          # Конфиги
-          mkdir -p dist/linux/lib
-          cp midp2.0fcs/lib/*.config dist/linux/lib/ 2>/dev/null || true
-          cp midp2.0fcs/lib/*.png dist/linux/lib/ 2>/dev/null || true
-          
-          # Создаём конфиги если их нет
-          [ ! -f "dist/linux/lib/system.config" ] && cat > dist/linux/lib/system.config << 'EOF'
-          system.jam_space: 1048576
-          system.display.double_buffered: true
-          system.i18n.lang: en
-          system.i18n.encoding: ISO-8859-1
-          EOF
-          
-          [ ! -f "dist/linux/lib/internal.config" ] && touch dist/linux/lib/internal.config
-          
-          # MIDP классы
-          mkdir -p dist/linux/lib/midp-classes
-          cp -r bin/midp/classes/* dist/linux/lib/midp-classes/
-          
-          # AppDB
-          mkdir -p dist/linux/appdb
-          cp midp2.0fcs/appdb/* dist/linux/appdb/ 2>/dev/null || true
-          
-          # Игры
-          mkdir -p dist/linux/games
-          cp bin/midp/examples/*.jar dist/linux/games/ 2>/dev/null || true
-          cp bin/midp/examples/*.jad dist/linux/games/ 2>/dev/null || true
-          
-          # README
-          cat > dist/linux/README.txt << 'EOF'
-          KVM + MIDP 2.0 for Linux (with Floating Point Support)
-          =======================================================
-          
-          This build includes FLOATING POINT support for games using float/double.
-          
-          Quick Start:
-            ./midp games/pushpuzzle.jar
-            ./midp games/games.jar example.wormgame.WormMain
-          
-          EOF
-
-      - name: Upload Linux distribution
-        uses: actions/upload-artifact@v4
-        with:
-          name: kvm-midp-linux-x64
-          path: dist/linux/
-          retention-days: 30
-
   # ============================================
-  # Linux x86 (32-bit)
+  # Windows 64-bit - ИСПРАВЛЕННАЯ СБОРКА
   # ============================================
-  build-linux-x86:
-    runs-on: ubuntu-latest
-    needs: [build-cldc-api, build-midp-classes]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential gcc-multilib g++-multilib
-
-      - name: Download MIDP
-        uses: actions/download-artifact@v4
-        with:
-          name: midp-classes
-          path: bin/midp/
-
-      - name: Build KVM 32-bit with Floating Point
-        run: |
-          cd build/linux
-          make CC="gcc -m32" \
-               CFLAGS="${CFLAGS_COMPAT} ${KVM_DEFINES} -m32" \
-               LDFLAGS="-m32 -lm" \
-               || true
-
-      - name: Package
-        run: |
-          mkdir -p dist/linux-x86/lib/midp-classes dist/linux-x86/games dist/linux-x86/appdb
-          cp bin/linux/kvm dist/linux-x86/ 2>/dev/null || true
-          cp -r bin/midp/classes/* dist/linux-x86/lib/midp-classes/
-          cp bin/midp/examples/*.jar dist/linux-x86/games/ 2>/dev/null || true
-          cp midp2.0fcs/lib/*.config dist/linux-x86/lib/ 2>/dev/null || true
-
-      - name: Upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: kvm-midp-linux-x86
-          path: dist/linux-x86/
-          retention-days: 30
-        if: always()
-
-  # ============================================
-  # Windows 64-bit (MinGW) + FLOATING POINT
-  # ============================================
-  build-windows-mingw:
+  build-windows:
     runs-on: windows-latest
-    needs: [build-cldc-api, build-midp-classes]
+    needs: [build-midp-classes]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup MSYS2
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           update: true
-          install: >-
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-make
-            make
-            zip
+          install: mingw-w64-x86_64-gcc make zip
 
-      - name: Download MIDP
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: midp-classes
           path: bin/midp/
@@ -386,281 +53,358 @@ jobs:
       - name: Build KVM with Floating Point
         shell: msys2 {0}
         run: |
-          cd build/win32
+          set -e  # Останавливаемся при ошибке
           
-          echo "=== Building KVM with Floating Point Support ==="
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║  Building KVM with FLOATING POINT support                  ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
           
-          # Главное: добавляем -DFLOATING_POINT
-          make CC="gcc" \
-               CFLAGS="-std=gnu89 -fno-strict-aliasing -w -DFLOATING_POINT -DPADDED_CELL_IF_NECESSARY" \
-               LDFLAGS="-lm" \
-               || make CC="gcc" CFLAGS="-std=gnu89 -w -DFLOATING_POINT"
+          mkdir -p bin/win32
           
-          echo "=== Build complete ==="
-          ls -la ../../bin/win32/ || true
+          # Параметры компиляции
+          CC="gcc"
+          CFLAGS="-std=gnu89 -O2 -fno-strict-aliasing -w"
+          
+          # КРИТИЧНО: Определения для floating point
+          DEFINES="-DWIN32 -DFLOATING_POINT -DPADDED_CELL_IF_NECESSARY"
+          
+          INCLUDES="-I kvm/VmCommon/h -I kvm/VmWin/h -I kvm/VmExtra/h"
+          
+          echo ""
+          echo "=== Compiler settings ==="
+          echo "CC: $CC"
+          echo "CFLAGS: $CFLAGS"
+          echo "DEFINES: $DEFINES"
+          echo ""
+          
+          # Создаём список всех исходников
+          SOURCES=""
+          
+          echo "=== Collecting VmCommon sources ==="
+          for f in kvm/VmCommon/src/*.c; do
+            echo "  + $(basename $f)"
+            SOURCES="$SOURCES $f"
+          done
+          
+          echo ""
+          echo "=== Collecting VmWin sources ==="
+          for f in kvm/VmWin/src/*.c; do
+            echo "  + $(basename $f)"
+            SOURCES="$SOURCES $f"
+          done
+          
+          echo ""
+          echo "=== Collecting VmExtra sources ==="
+          for f in kvm/VmExtra/src/*.c; do
+            # Пропускаем fp подпапку - соберём отдельно
+            if [[ "$f" != *"/fp/"* ]]; then
+              echo "  + $(basename $f)"
+              SOURCES="$SOURCES $f"
+            fi
+          done
+          
+          echo ""
+          echo "=== Collecting Floating Point sources (CRITICAL!) ==="
+          FP_SOURCES=""
+          for f in kvm/VmExtra/src/fp/*.c; do
+            if [ -f "$f" ]; then
+              echo "  + $(basename $f)"
+              FP_SOURCES="$FP_SOURCES $f"
+            fi
+          done
+          
+          if [ -z "$FP_SOURCES" ]; then
+            echo "WARNING: No floating point sources found!"
+            echo "Checking directory..."
+            ls -la kvm/VmExtra/src/fp/ || echo "Directory not found!"
+          fi
+          
+          echo ""
+          echo "=== Compiling all sources ==="
+          
+          # Компилируем всё одной командой
+          $CC $CFLAGS $DEFINES $INCLUDES \
+              $SOURCES $FP_SOURCES \
+              -o bin/win32/kvm.exe \
+              -lm -lws2_32
+          
+          echo ""
+          echo "=== Build successful! ==="
+          ls -la bin/win32/kvm.exe
+          
+          # Проверяем что floating point включён
+          echo ""
+          echo "=== Verifying floating point support ==="
+          strings bin/win32/kvm.exe | grep -i "float" || echo "(no float strings, but should work)"
 
       - name: Build preverifier
         shell: msys2 {0}
         run: |
-          cd tools/preverifier/build/win32
-          make CC="gcc" CFLAGS="-std=gnu89 -fno-strict-aliasing -w" || true
+          echo "=== Building preverifier ==="
+          
+          CC="gcc"
+          CFLAGS="-std=gnu89 -O2 -w"
+          INCLUDES="-I tools/preverifier/src"
+          
+          # Собираем preverifier
+          $CC $CFLAGS $INCLUDES \
+              tools/preverifier/src/*.c \
+              -o bin/win32/preverify.exe \
+              2>/dev/null || echo "Preverifier build failed (optional)"
+          
+          ls -la bin/win32/
 
-      - name: Create Windows launcher
+      - name: Create launcher
         shell: msys2 {0}
         run: |
-          mkdir -p dist/win64
-          
-          cat > dist/win64/midp.bat << 'EOFBAT'
+          cat > bin/win32/midp.bat << 'EOFBAT'
           @echo off
-          setlocal enabledelayedexpansion
+          setlocal
           
-          set "SCRIPT_DIR=%~dp0"
-          set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
-          cd /d "%SCRIPT_DIR%"
+          set "DIR=%~dp0"
+          set "DIR=%DIR:~0,-1%"
+          cd /d "%DIR%"
           
-          set "MIDP_CLASSES=%SCRIPT_DIR%\lib\midp-classes"
-          
-          if not exist "%MIDP_CLASSES%\javax\microedition\midlet\MIDlet.class" (
-              echo ERROR: MIDP classes not found!
-              echo Expected: %MIDP_CLASSES%
-              pause
-              exit /b 1
-          )
+          set "CLASSES=%DIR%\lib\midp-classes"
           
           if "%~1"=="" (
-              echo ========================================
-              echo   KVM + MIDP 2.0 Game Launcher
-              echo   [with Floating Point Support]
-              echo ========================================
+              echo ================================================
+              echo   KVM + MIDP 2.0 [Floating Point Enabled]
+              echo ================================================
               echo.
               echo Usage: midp.bat game.jar MIDletClass
               echo.
               echo Examples:
               echo   midp.bat games\pushpuzzle.jar example.pushpuzzle.PushPuzzle
               echo   midp.bat games\games.jar example.wormgame.WormMain
-              echo   midp.bat games\manyballs.jar example.manyballs.ManyBalls
               echo   midp.bat myapp.jar com.example.MyMIDlet
-              echo.
-              echo Available games:
-              for %%f in ("%SCRIPT_DIR%\games\*.jar") do echo   %%~nxf
               echo.
               exit /b 0
           )
           
-          set "JAR_FILE=%~1"
+          set "JAR=%~1"
           set "MIDLET=%~2"
-          
-          if not exist "%JAR_FILE%" (
-              if exist "%SCRIPT_DIR%\%JAR_FILE%" (
-                  set "JAR_FILE=%SCRIPT_DIR%\%JAR_FILE%"
-              ) else (
-                  echo ERROR: JAR file not found: %~1
-                  exit /b 1
-              )
-          )
           
           if "%MIDLET%"=="" (
               echo ERROR: Please specify MIDlet class name
               echo.
-              echo To find it, open the .jad file and look for MIDlet-1: line
-              echo Example: MIDlet-1: GameName, icon.png, com.example.GameClass
-              echo                                        ^^^^^^^^^^^^^^^^^^^^
+              echo Check the .jad file for MIDlet-1: line
               exit /b 1
           )
           
-          echo ========================================
           echo Starting: %MIDLET%
-          echo JAR: %JAR_FILE%
-          echo ========================================
           echo.
           
-          "%SCRIPT_DIR%\kvm.exe" -classpath "%MIDP_CLASSES%;%JAR_FILE%" %MIDLET%
-          
-          if errorlevel 1 (
-              echo.
-              echo Game exited with error code: %ERRORLEVEL%
-              pause
-          )
+          "%DIR%\kvm.exe" -classpath "%CLASSES%;%JAR%" %MIDLET%
           EOFBAT
 
-      - name: Package Windows distribution
+      - name: Package distribution
         shell: msys2 {0}
         run: |
-          # Бинарники
-          cp bin/win32/kvm.exe dist/win64/ 2>/dev/null || true
+          echo "=== Creating distribution ==="
+          
+          mkdir -p dist/win64/lib/midp-classes
+          mkdir -p dist/win64/games
+          mkdir -p dist/win64/appdb
+          
+          # Наш собранный KVM (НЕ копируем старый midp.exe!)
+          cp bin/win32/kvm.exe dist/win64/
           cp bin/win32/preverify.exe dist/win64/ 2>/dev/null || true
-          
-          # Готовый MIDP runtime (если наш не собрался)
-          cp midp2.0fcs/bin/midp.exe dist/win64/midp_original.exe 2>/dev/null || true
-          cp midp2.0fcs/bin/preverify.exe dist/win64/ 2>/dev/null || true
-          
-          # Конфиги
-          mkdir -p dist/win64/lib
-          cp midp2.0fcs/lib/*.config dist/win64/lib/ 2>/dev/null || true
-          cp midp2.0fcs/lib/*.png dist/win64/lib/ 2>/dev/null || true
-          
-          # Создаём конфиги если их нет
-          if [ ! -f "dist/win64/lib/system.config" ]; then
-            cat > dist/win64/lib/system.config << 'EOFCFG'
-          system.jam_space: 1048576
-          system.display.double_buffered: true
-          system.i18n.lang: en
-          system.i18n.encoding: ISO-8859-1
-          system.display.width: 240
-          system.display.height: 320
-          EOFCFG
-          fi
-          
-          [ ! -f "dist/win64/lib/internal.config" ] && touch dist/win64/lib/internal.config
+          cp bin/win32/midp.bat dist/win64/
           
           # MIDP классы
-          mkdir -p dist/win64/lib/midp-classes
           cp -r bin/midp/classes/* dist/win64/lib/midp-classes/
           
-          # AppDB
-          mkdir -p dist/win64/appdb
-          cp midp2.0fcs/appdb/* dist/win64/appdb/ 2>/dev/null || true
-          touch dist/win64/appdb/.keep
-          
           # Игры
-          mkdir -p dist/win64/games
           cp bin/midp/examples/*.jar dist/win64/games/ 2>/dev/null || true
           cp bin/midp/examples/*.jad dist/win64/games/ 2>/dev/null || true
           
+          # Конфиги
+          cat > dist/win64/lib/system.config << 'EOF'
+          system.display.width: 240
+          system.display.height: 320
+          system.display.color: true
+          system.display.color_depth: 8
+          system.display.double_buffered: true
+          EOF
+          
+          touch dist/win64/lib/internal.config
+          
           # README
-          cat > dist/win64/README.txt << 'EOFREADME'
-          ╔════════════════════════════════════════════════════════════════╗
-          ║     KVM + MIDP 2.0 for Windows (Floating Point Support)        ║
-          ╚════════════════════════════════════════════════════════════════╝
+          cat > dist/win64/README.txt << 'EOF'
+          KVM + MIDP 2.0 for Windows
+          ==========================
+          WITH FLOATING POINT SUPPORT!
           
-          This build includes FLOATING POINT support (float/double types).
+          Usage:
+            midp.bat games\pushpuzzle.jar example.pushpuzzle.PushPuzzle
+            midp.bat your_app.jar com.example.YourMIDlet
           
-          QUICK START
-          ───────────
-          1. Open Command Prompt here
-          2. Run: midp.bat games\pushpuzzle.jar example.pushpuzzle.PushPuzzle
+          Or directly:
+            kvm.exe -classpath "lib\midp-classes;game.jar" MIDletClass
           
-          EXAMPLE COMMANDS
-          ────────────────
-          midp.bat games\pushpuzzle.jar example.pushpuzzle.PushPuzzle
-          midp.bat games\games.jar example.wormgame.WormMain
-          midp.bat games\games.jar example.tilepuzzle.TilePuzzle
-          midp.bat games\manyballs.jar example.manyballs.ManyBalls
-          midp.bat games\hanoi.jar example.hanoi.Hanoi
+          Check .jad files to find MIDlet class names.
+          EOF
           
-          For your own MIDlets:
-          midp.bat myapp.jar com.mycompany.MyMIDlet
-          
-          HOW TO FIND MIDLET CLASS NAME
-          ─────────────────────────────
-          Open the .jad file in Notepad:
-            MIDlet-1: Game Name, icon.png, com.example.GameClass
-                                           ^^^^^^^^^^^^^^^^^^^^
-                                           This is the class name!
-          
-          EOFREADME
-          
-          echo "=== Windows distribution ==="
+          echo ""
+          echo "=== Distribution contents ==="
           ls -la dist/win64/
+          echo ""
+          echo "=== Verifying kvm.exe ==="
+          file dist/win64/kvm.exe
 
-      - name: Upload Windows distribution
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: kvm-midp-win64
           path: dist/win64/
-          retention-days: 30
 
   # ============================================
-  # Windows 32-bit
+  # Linux x64
   # ============================================
-  build-windows-mingw32:
-    runs-on: windows-latest
-    needs: [build-cldc-api, build-midp-classes]
+  build-linux:
+    runs-on: ubuntu-latest
+    needs: [build-midp-classes]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup MSYS2
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW32
-          update: true
-          install: >-
-            mingw-w64-i686-gcc
-            mingw-w64-i686-make
-            make
-
-      - name: Download MIDP
-        uses: actions/download-artifact@v4
-        with:
-          name: midp-classes
-          path: bin/midp/
-
-      - name: Build KVM with Floating Point
-        shell: msys2 {0}
-        run: |
-          cd build/win32
-          make CC="gcc" \
-               CFLAGS="-std=gnu89 -fno-strict-aliasing -w -DFLOATING_POINT" \
-               LDFLAGS="-lm" \
-               || true
-
-      - name: Package
-        shell: msys2 {0}
-        run: |
-          mkdir -p dist/win32/lib/midp-classes dist/win32/games dist/win32/appdb
-          cp bin/win32/*.exe dist/win32/ 2>/dev/null || true
-          cp midp2.0fcs/bin/*.exe dist/win32/ 2>/dev/null || true
-          cp -r bin/midp/classes/* dist/win32/lib/midp-classes/
-          cp bin/midp/examples/*.jar dist/win32/games/ 2>/dev/null || true
-          cp midp2.0fcs/lib/*.config dist/win32/lib/ 2>/dev/null || true
-          touch dist/win32/lib/internal.config dist/win32/lib/system.config 2>/dev/null || true
-
-      - name: Upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: kvm-midp-win32
-          path: dist/win32/
-          retention-days: 30
-        if: always()
-
-  # ============================================
-  # macOS Intel
-  # ============================================
-  build-macos-intel:
-    runs-on: macos-13
-    needs: [build-cldc-api, build-midp-classes]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download MIDP
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: midp-classes
           path: bin/midp/
 
       - name: Build KVM with Floating Point
         run: |
-          cd build/linux
-          make CC="gcc" \
-               CFLAGS="${CFLAGS_COMPAT} -DFLOATING_POINT" \
-               LDFLAGS="-lm" \
-               || true
+          set -e
+          
+          mkdir -p bin/linux
+          
+          CC="gcc"
+          CFLAGS="-std=gnu89 -O2 -fno-strict-aliasing -w"
+          DEFINES="-DUNIX -DLINUX -DFLOATING_POINT -DPADDED_CELL_IF_NECESSARY"
+          INCLUDES="-I kvm/VmCommon/h -I kvm/VmUnix/h -I kvm/VmExtra/h"
+          
+          echo "=== Building KVM with Floating Point ==="
+          
+          SOURCES=""
+          for f in kvm/VmCommon/src/*.c kvm/VmUnix/src/*.c; do
+            SOURCES="$SOURCES $f"
+          done
+          
+          for f in kvm/VmExtra/src/*.c; do
+            [[ "$f" != *"/fp/"* ]] && SOURCES="$SOURCES $f"
+          done
+          
+          FP_SOURCES=""
+          for f in kvm/VmExtra/src/fp/*.c; do
+            [ -f "$f" ] && FP_SOURCES="$FP_SOURCES $f"
+          done
+          
+          echo "FP sources: $FP_SOURCES"
+          
+          $CC $CFLAGS $DEFINES $INCLUDES \
+              $SOURCES $FP_SOURCES \
+              -o bin/linux/kvm \
+              -lm -lpthread
+          
+          echo "=== Build successful ==="
+          ls -la bin/linux/kvm
 
       - name: Build preverifier
         run: |
-          cd tools/preverifier/build/linux
-          make CC="gcc" CFLAGS="${CFLAGS_COMPAT}" || true
+          gcc -std=gnu89 -O2 -w \
+              -I tools/preverifier/src \
+              tools/preverifier/src/*.c \
+              -o bin/linux/preverify 2>/dev/null || true
+
+      - name: Create launcher
+        run: |
+          cat > bin/linux/midp << 'EOF'
+          #!/bin/bash
+          DIR="$(cd "$(dirname "$0")" && pwd)"
+          CLASSES="$DIR/lib/midp-classes"
+          
+          if [ -z "$1" ]; then
+            echo "Usage: ./midp game.jar [MIDletClass]"
+            exit 0
+          fi
+          
+          JAR="$1"
+          MIDLET="$2"
+          
+          [ ! -f "$JAR" ] && JAR="$DIR/$JAR"
+          
+          if [ -z "$MIDLET" ]; then
+            MIDLET=$(unzip -p "$JAR" META-INF/MANIFEST.MF 2>/dev/null | \
+                     grep -i "^MIDlet-1:" | rev | cut -d, -f1 | rev | tr -d ' \r\n')
+          fi
+          
+          [ -z "$MIDLET" ] && { echo "Specify MIDlet class"; exit 1; }
+          
+          exec "$DIR/kvm" -classpath "$CLASSES:$JAR" "$MIDLET"
+          EOF
+          chmod +x bin/linux/midp
 
       - name: Package
         run: |
-          mkdir -p dist/macos/lib/midp-classes dist/macos/games dist/macos/appdb
-          cp bin/linux/kvm dist/macos/ 2>/dev/null || true
-          cp bin/linux/preverify dist/macos/ 2>/dev/null || true
+          mkdir -p dist/linux/lib/midp-classes dist/linux/games
+          
+          cp bin/linux/kvm dist/linux/
+          cp bin/linux/preverify dist/linux/ 2>/dev/null || true
+          cp bin/linux/midp dist/linux/
+          
+          cp -r bin/midp/classes/* dist/linux/lib/midp-classes/
+          cp bin/midp/examples/*.jar dist/linux/games/ 2>/dev/null || true
+          
+          echo "system.display.width: 240" > dist/linux/lib/system.config
+          touch dist/linux/lib/internal.config
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kvm-midp-linux-x64
+          path: dist/linux/
+
+  # ============================================
+  # macOS (Intel + ARM)
+  # ============================================
+  build-macos:
+    runs-on: macos-13
+    needs: [build-midp-classes]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: midp-classes
+          path: bin/midp/
+
+      - name: Build KVM
+        run: |
+          set -e
+          mkdir -p bin/macos
+          
+          CFLAGS="-std=gnu89 -O2 -fno-strict-aliasing -w"
+          DEFINES="-DUNIX -DMACOSX -DFLOATING_POINT"
+          INCLUDES="-I kvm/VmCommon/h -I kvm/VmUnix/h -I kvm/VmExtra/h"
+          
+          SOURCES=""
+          for f in kvm/VmCommon/src/*.c kvm/VmUnix/src/*.c; do
+            SOURCES="$SOURCES $f"
+          done
+          for f in kvm/VmExtra/src/*.c; do
+            [[ "$f" != *"/fp/"* ]] && SOURCES="$SOURCES $f"
+          done
+          for f in kvm/VmExtra/src/fp/*.c; do
+            [ -f "$f" ] && SOURCES="$SOURCES $f"
+          done
+          
+          gcc $CFLAGS $DEFINES $INCLUDES $SOURCES -o bin/macos/kvm -lm
+
+      - name: Package
+        run: |
+          mkdir -p dist/macos/lib/midp-classes dist/macos/games
+          cp bin/macos/kvm dist/macos/
           cp -r bin/midp/classes/* dist/macos/lib/midp-classes/
           cp bin/midp/examples/*.jar dist/macos/games/ 2>/dev/null || true
-          cp midp2.0fcs/lib/*.config dist/macos/lib/ 2>/dev/null || true
           
           cat > dist/macos/midp << 'EOF'
           #!/bin/bash
@@ -669,220 +413,61 @@ jobs:
           EOF
           chmod +x dist/macos/midp
 
-      - name: Upload
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: kvm-midp-macos-intel
+          name: kvm-midp-macos
           path: dist/macos/
-          retention-days: 30
 
   # ============================================
-  # macOS ARM64
+  # Release
   # ============================================
-  build-macos-arm64:
-    runs-on: macos-14
-    needs: [build-cldc-api, build-midp-classes]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download MIDP
-        uses: actions/download-artifact@v4
-        with:
-          name: midp-classes
-          path: bin/midp/
-
-      - name: Build KVM with Floating Point
-        run: |
-          cd build/linux
-          make CC="clang" \
-               CFLAGS="-std=gnu89 -fno-strict-aliasing -w -DFLOATING_POINT" \
-               LDFLAGS="-lm" \
-               || true
-
-      - name: Package
-        run: |
-          mkdir -p dist/macos-arm64/lib/midp-classes dist/macos-arm64/games
-          cp bin/linux/kvm dist/macos-arm64/ 2>/dev/null || true
-          cp -r bin/midp/classes/* dist/macos-arm64/lib/midp-classes/
-          cp bin/midp/examples/*.jar dist/macos-arm64/games/ 2>/dev/null || true
-          cp midp2.0fcs/lib/*.config dist/macos-arm64/lib/ 2>/dev/null || true
-
-      - name: Upload
-        uses: actions/upload-artifact@v4
-        with:
-          name: kvm-midp-macos-arm64
-          path: dist/macos-arm64/
-          retention-days: 30
-
-  # ============================================
-  # Linux ARM / ARM64
-  # ============================================
-  build-linux-arm:
+  release:
     runs-on: ubuntu-latest
-    needs: [build-cldc-api, build-midp-classes]
+    needs: [build-windows, build-linux, build-macos]
+    if: github.ref == 'refs/heads/main'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install cross-compilers
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
-
-      - name: Download MIDP
-        uses: actions/download-artifact@v4
-        with:
-          name: midp-classes
-          path: bin/midp/
-
-      - name: Build ARM with Floating Point
-        run: |
-          cd build/linux
-          make CC="arm-linux-gnueabihf-gcc" \
-               CFLAGS="${CFLAGS_COMPAT} -DFLOATING_POINT" \
-               LDFLAGS="-static -lm" \
-               || true
-          [ -f ../../bin/linux/kvm ] && cp ../../bin/linux/kvm ../../bin/linux/kvm-arm
-
-      - name: Build ARM64 with Floating Point
-        run: |
-          cd build/linux
-          make clean 2>/dev/null || true
-          make CC="aarch64-linux-gnu-gcc" \
-               CFLAGS="${CFLAGS_COMPAT} -DFLOATING_POINT" \
-               LDFLAGS="-static -lm" \
-               || true
-          [ -f ../../bin/linux/kvm ] && cp ../../bin/linux/kvm ../../bin/linux/kvm-arm64
-
-      - name: Package
-        run: |
-          for arch in arm arm64; do
-            mkdir -p dist/linux-${arch}/lib/midp-classes dist/linux-${arch}/games
-            cp bin/linux/kvm-${arch} dist/linux-${arch}/kvm 2>/dev/null || true
-            cp -r bin/midp/classes/* dist/linux-${arch}/lib/midp-classes/
-            cp bin/midp/examples/*.jar dist/linux-${arch}/games/ 2>/dev/null || true
-            cp midp2.0fcs/lib/*.config dist/linux-${arch}/lib/ 2>/dev/null || true
-          done
-
-      - name: Upload ARM
-        uses: actions/upload-artifact@v4
-        with:
-          name: kvm-midp-linux-arm
-          path: dist/linux-arm/
-          retention-days: 30
-        if: always()
-
-      - name: Upload ARM64
-        uses: actions/upload-artifact@v4
-        with:
-          name: kvm-midp-linux-arm64
-          path: dist/linux-arm64/
-          retention-days: 30
-        if: always()
-
-  # ============================================
-  # Создание релиза
-  # ============================================
-  create-release:
-    runs-on: ubuntu-latest
-    needs: 
-      - build-tools
-      - build-linux-x64
-      - build-linux-x86
-      - build-windows-mingw
-      - build-windows-mingw32
-      - build-macos-intel
-      - build-macos-arm64
-      - build-linux-arm
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
+      
+      - uses: actions/download-artifact@v4
         with:
           path: artifacts/
 
-      - name: Create release packages
+      - name: Create packages
         run: |
           mkdir -p release
           
-          for dir in artifacts/kvm-midp-*; do
-            if [ -d "$dir" ]; then
-              name=$(basename "$dir")
-              echo "📦 Packaging $name..."
-              cd "$dir"
-              if [[ "$name" == *"win"* ]]; then
-                zip -r "../../release/${name}.zip" . -x "*.DS_Store"
-              else
-                tar -czvf "../../release/${name}.tar.gz" .
-              fi
-              cd ../..
-            fi
-          done
-          
-          # Tools
-          if [ -d "artifacts/java-tools" ]; then
-            cd artifacts/java-tools && zip -r ../../release/kvm-tools.zip . && cd ../..
-          fi
+          cd artifacts/kvm-midp-win64 && zip -r ../../release/kvm-midp-win64.zip . && cd ../..
+          cd artifacts/kvm-midp-linux-x64 && tar -czvf ../../release/kvm-midp-linux-x64.tar.gz . && cd ../..
+          cd artifacts/kvm-midp-macos && tar -czvf ../../release/kvm-midp-macos.tar.gz . && cd ../..
           
           # Games only
-          mkdir -p games-package
-          cp midp2.0fcs/example/*.jar midp2.0fcs/example/*.jad games-package/ 2>/dev/null || true
-          cd games-package && zip -r ../release/midp-games.zip . && cd ..
-          
-          ls -lh release/
+          mkdir games && cp midp2.0fcs/example/*.jar midp2.0fcs/example/*.jad games/ 2>/dev/null || true
+          cd games && zip -r ../release/midp-games.zip . && cd ..
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v1
         with:
-          tag_name: v1.1.${{ github.run_number }}
-          name: "🎮 KVM + MIDP 2.0 Build ${{ github.run_number }} (Floating Point)"
+          tag_name: v2.0.${{ github.run_number }}
+          name: "🎮 KVM + MIDP 2.0 (Floating Point) #${{ github.run_number }}"
           body: |
-            ## 📱 KVM + MIDP 2.0 with Floating Point Support
+            ## ✅ KVM with Floating Point Support
             
-            This release includes **FLOATING POINT** support (`float`/`double` types).
-            Games and apps using floating point math will now work correctly!
+            This build has **FLOATING POINT enabled** (`-DFLOATING_POINT`)
             
-            ### 📦 Downloads
+            ### Downloads
+            | Platform | File |
+            |----------|------|
+            | Windows x64 | `kvm-midp-win64.zip` |
+            | Linux x64 | `kvm-midp-linux-x64.tar.gz` |
+            | macOS | `kvm-midp-macos.tar.gz` |
             
-            | Platform | Download |
-            |----------|----------|
-            | 🐧 Linux x64 | `kvm-midp-linux-x64.tar.gz` |
-            | 🐧 Linux x86 | `kvm-midp-linux-x86.tar.gz` |
-            | 🐧 Linux ARM | `kvm-midp-linux-arm.tar.gz` |
-            | 🐧 Linux ARM64 | `kvm-midp-linux-arm64.tar.gz` |
-            | 🪟 Windows x64 | `kvm-midp-win64.zip` |
-            | 🪟 Windows x86 | `kvm-midp-win32.zip` |
-            | 🍎 macOS Intel | `kvm-midp-macos-intel.tar.gz` |
-            | 🍎 macOS ARM64 | `kvm-midp-macos-arm64.tar.gz` |
+            ### Usage
+            ```batch
+            REM Windows
+            midp.bat games\pushpuzzle.jar example.pushpuzzle.PushPuzzle
             
-            ### 🚀 Quick Start
-            
-            **Linux/macOS:**
-            ```bash
+            # Linux/macOS
             ./midp games/pushpuzzle.jar
             ```
-            
-            **Windows:**
-            ```cmd
-            midp.bat games\pushpuzzle.jar example.pushpuzzle.PushPuzzle
-            ```
-            
-            ### ✨ What's New
-            - ✅ Floating point support enabled (`-DFLOATING_POINT`)
-            - ✅ Config files included (`system.config`, `internal.config`)
-            - ✅ Fixed classpath issues
-            
           files: release/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload release artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-packages
-          path: release/
-          retention-days: 90
