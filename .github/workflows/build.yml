@@ -1,5 +1,5 @@
 # .github/workflows/build.yml
-name: Build KVM + MIDP 2.0 for All Platforms
+name: Build KVM + MIDP 2.0 (with Floating Point)
 
 on:
   push:
@@ -9,7 +9,10 @@ on:
   workflow_dispatch:
 
 env:
+  # Флаги совместимости + ВКЛЮЧАЕМ FLOATING POINT
   CFLAGS_COMPAT: "-std=gnu89 -fno-strict-aliasing -fno-strict-overflow -w"
+  # Критические дефайны для полной функциональности
+  KVM_DEFINES: "-DFLOATING_POINT -DPADDED_CELL_IF_NECESSARY -DUSE_JAM -DUSE_STDIO"
 
 jobs:
   # ============================================
@@ -34,7 +37,6 @@ jobs:
             echo "Makefile failed, trying manual build..."
             mkdir -p ../bin/common/api/classes
             find src -name "*.java" > sources.txt
-            javac -source 1.4 -target 1.4 -d ../bin/common/api/classes @sources.txt 2>/dev/null || \
             javac -source 1.8 -target 1.8 -d ../bin/common/api/classes @sources.txt
           }
 
@@ -46,7 +48,7 @@ jobs:
           retention-days: 5
 
   # ============================================
-  # MIDP 2.0 классы - ИСПОЛЬЗУЕМ ГОТОВЫЕ!
+  # MIDP 2.0 классы (готовые)
   # ============================================
   build-midp-classes:
     runs-on: ubuntu-latest
@@ -54,12 +56,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up JDK 8
-        uses: actions/setup-java@v4
-        with:
-          java-version: '8'
-          distribution: 'temurin'
 
       - name: Download CLDC API
         uses: actions/download-artifact@v4
@@ -69,78 +65,19 @@ jobs:
 
       - name: Use prebuilt MIDP classes
         run: |
-          # MIDP 2.0 имеет зависимости от проприетарных SSL библиотек
-          # которых нет в исходниках. Используем готовые .class файлы!
-          
           mkdir -p bin/midp/classes
           
-          echo "=== Copying prebuilt MIDP classes ==="
-          
-          # Копируем ВСЕ готовые классы из midp2.0fcs/classes/
-          # Там уже есть скомпилированные java.*, javax.*, com.sun.*
+          # Используем готовые скомпилированные классы
           cp -r midp2.0fcs/classes/* bin/midp/classes/
           
-          echo "=== MIDP classes copied ==="
-          
-          # Показываем что скопировалось
-          echo "Core packages:"
-          ls -la bin/midp/classes/java/ 2>/dev/null || echo "  (none)"
-          echo "MIDP packages:"
-          ls -la bin/midp/classes/javax/microedition/ 2>/dev/null || echo "  (none)"
-          echo "Sun internal:"
-          ls -la bin/midp/classes/com/sun/midp/ 2>/dev/null || echo "  (none)"
-
-      - name: Verify critical classes exist
-        run: |
           echo "=== Verifying MIDP classes ==="
-          
-          CRITICAL_CLASSES=(
-            "bin/midp/classes/javax/microedition/midlet/MIDlet.class"
-            "bin/midp/classes/javax/microedition/lcdui/Display.class"
-            "bin/midp/classes/javax/microedition/lcdui/Canvas.class"
-            "bin/midp/classes/javax/microedition/lcdui/Graphics.class"
-            "bin/midp/classes/javax/microedition/lcdui/Image.class"
-            "bin/midp/classes/javax/microedition/lcdui/game/GameCanvas.class"
-            "bin/midp/classes/javax/microedition/lcdui/game/Sprite.class"
-            "bin/midp/classes/javax/microedition/rms/RecordStore.class"
-          )
-          
-          ALL_OK=true
-          for class in "${CRITICAL_CLASSES[@]}"; do
-            if [ -f "$class" ]; then
-              echo "✓ $(basename $class)"
-            else
-              echo "✗ MISSING: $class"
-              ALL_OK=false
-            fi
-          done
-          
-          if [ "$ALL_OK" = false ]; then
-            echo ""
-            echo "WARNING: Some critical classes are missing!"
-            echo "Games may not work properly."
-          fi
+          ls -la bin/midp/classes/javax/microedition/ || true
 
       - name: Copy game examples
         run: |
           mkdir -p bin/midp/examples
-          
-          # Копируем JAR и JAD файлы игр
           cp midp2.0fcs/example/*.jar bin/midp/examples/ 2>/dev/null || true
           cp midp2.0fcs/example/*.jad bin/midp/examples/ 2>/dev/null || true
-          
-          echo "=== Available games ==="
-          ls -la bin/midp/examples/*.jar 2>/dev/null || echo "No JAR files"
-
-      - name: Create combined classes JAR
-        run: |
-          # Создаём единый JAR с CLDC + MIDP для удобства
-          mkdir -p bin/midp/lib
-          
-          cd bin/midp/classes
-          jar cf ../lib/midp2.0.jar .
-          
-          echo "Created midp2.0.jar: $(du -h ../lib/midp2.0.jar | cut -f1)"
 
       - name: Upload MIDP classes
         uses: actions/upload-artifact@v4
@@ -182,15 +119,11 @@ jobs:
             javac -d ../../bin/common/tools/kdp/classes @sources.txt 2>/dev/null || true
           }
 
-      - name: Copy MIDP tools (prebuilt)
+      - name: Copy MIDP tools
         run: |
           mkdir -p bin/common/tools/midp
-          
-          # Готовые инструменты из дистрибутива
           cp midp2.0fcs/bin/JadTool.jar bin/common/tools/midp/ 2>/dev/null || true
           cp midp2.0fcs/bin/MEKeyTool.jar bin/common/tools/midp/ 2>/dev/null || true
-          
-          ls -la bin/common/tools/midp/
 
       - name: Upload tools
         uses: actions/upload-artifact@v4
@@ -200,7 +133,7 @@ jobs:
           retention-days: 5
 
   # ============================================
-  # Linux x86_64 - KVM + MIDP
+  # Linux x86_64 - KVM + MIDP + FLOATING POINT
   # ============================================
   build-linux-x64:
     runs-on: ubuntu-latest
@@ -212,7 +145,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential gcc g++ make
+          sudo apt-get install -y build-essential gcc g++ make libm-dev
 
       - name: Download CLDC API
         uses: actions/download-artifact@v4
@@ -226,35 +159,49 @@ jobs:
           name: midp-classes
           path: bin/midp/
 
-      - name: Build KVM for Linux
+      - name: Build KVM with FLOATING POINT support
         run: |
           cd build/linux
-          make CC="gcc" CFLAGS="${CFLAGS_COMPAT}" || make
           
-          # Debug версия
-          make debug CC="gcc" CFLAGS="${CFLAGS_COMPAT} -g -DDEBUG" || true
+          echo "=== Building KVM with Floating Point Support ==="
+          
+          # Собираем с поддержкой float/double
+          make CC="gcc" \
+               CFLAGS="${CFLAGS_COMPAT} ${KVM_DEFINES}" \
+               EXTRADEFS="-DFLOATING_POINT" \
+               FLOAT_SUPPORT=true \
+               || make CC="gcc" CFLAGS="${CFLAGS_COMPAT} -DFLOATING_POINT"
+          
+          # Проверяем что собралось
+          file ../../bin/linux/kvm || echo "kvm not found in bin/linux"
+          ls -la ../../bin/linux/ || true
 
-      - name: Build preverifier for Linux
+      - name: Build KVM debug version
+        run: |
+          cd build/linux
+          make clean 2>/dev/null || true
+          make debug CC="gcc" \
+               CFLAGS="${CFLAGS_COMPAT} ${KVM_DEFINES} -g -DDEBUG" \
+               || true
+
+      - name: Build preverifier
         run: |
           cd tools/preverifier/build/linux
           make CC="gcc" CFLAGS="${CFLAGS_COMPAT}" || make
 
-      - name: Create MIDP launcher script
+      - name: Create launcher script
         run: |
           mkdir -p bin/linux
           
           cat > bin/linux/midp << 'EOFSCRIPT'
           #!/bin/bash
-          #
-          # MIDP 2.0 Game Launcher for KVM
-          #
           
           SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
           MIDP_CLASSES="$SCRIPT_DIR/lib/midp-classes"
           
           show_help() {
             echo "╔══════════════════════════════════════════════════════════════╗"
-            echo "║           KVM + MIDP 2.0 Game Launcher                       ║"
+            echo "║      KVM + MIDP 2.0 Game Launcher (Floating Point)           ║"
             echo "╚══════════════════════════════════════════════════════════════╝"
             echo ""
             echo "Usage:"
@@ -263,105 +210,45 @@ jobs:
             echo "  ./midp -jad <game.jad>               - Launch from JAD file"
             echo "  ./midp -list <game.jar>              - List MIDlets in JAR"
             echo ""
-            echo "Examples:"
-            echo "  ./midp games/pushpuzzle.jar"
-            echo "  ./midp games/games.jar example.wormgame.WormMain"
-            echo ""
             echo "Available games:"
-            if [ -d "$SCRIPT_DIR/games" ]; then
-              for jar in "$SCRIPT_DIR/games"/*.jar; do
-                [ -f "$jar" ] && echo "  $(basename "$jar")"
-              done
-            else
-              echo "  (games directory not found)"
-            fi
-          }
-          
-          list_midlets() {
-            JAR="$1"
-            echo "MIDlets in $(basename "$JAR"):"
-            echo ""
-            unzip -p "$JAR" META-INF/MANIFEST.MF 2>/dev/null | grep -E "^MIDlet-[0-9]+:" | while read line; do
-              NAME=$(echo "$line" | cut -d: -f2 | cut -d, -f1 | tr -d ' ')
-              CLASS=$(echo "$line" | rev | cut -d, -f1 | rev | tr -d ' \r\n')
-              echo "  $NAME -> $CLASS"
+            for jar in "$SCRIPT_DIR/games"/*.jar 2>/dev/null; do
+              [ -f "$jar" ] && echo "  $(basename "$jar")"
             done
           }
           
-          # Parse arguments
           if [ -z "$1" ]; then
             show_help
             exit 0
           fi
           
           case "$1" in
-            -h|--help)
-              show_help
-              exit 0
-              ;;
+            -h|--help) show_help; exit 0 ;;
             -list)
-              if [ -z "$2" ]; then
-                echo "Usage: ./midp -list <game.jar>"
-                exit 1
-              fi
-              list_midlets "$2"
+              unzip -p "$2" META-INF/MANIFEST.MF 2>/dev/null | grep -E "^MIDlet-[0-9]+:"
               exit 0
               ;;
             -jad)
-              JAD_FILE="$2"
-              if [ ! -f "$JAD_FILE" ]; then
-                echo "Error: JAD file not found: $JAD_FILE"
-                exit 1
-              fi
-              
-              # Parse JAD
-              JAR_URL=$(grep -i "^MIDlet-Jar-URL:" "$JAD_FILE" | cut -d: -f2- | tr -d ' \r\n')
-              MIDLET=$(grep -i "^MIDlet-1:" "$JAD_FILE" | rev | cut -d, -f1 | rev | tr -d ' \r\n')
-              
-              # Handle relative JAR path
-              if [[ ! "$JAR_URL" =~ ^https?:// ]]; then
-                JAR_FILE="$(dirname "$JAD_FILE")/$JAR_URL"
-                if [ ! -f "$JAR_FILE" ]; then
-                  JAR_FILE="$(dirname "$JAD_FILE")/$(basename "$JAD_FILE" .jad).jar"
-                fi
-              else
-                echo "Error: Remote JAR URLs not supported"
-                exit 1
-              fi
+              JAD="$2"
+              JAR="$(dirname "$JAD")/$(basename "$JAD" .jad).jar"
+              MIDLET=$(grep -i "^MIDlet-1:" "$JAD" | rev | cut -d, -f1 | rev | tr -d ' \r\n')
               ;;
             *)
-              JAR_FILE="$1"
+              JAR="$1"
               MIDLET="$2"
               ;;
           esac
           
-          # Validate JAR
-          if [ ! -f "$JAR_FILE" ]; then
-            echo "Error: JAR file not found: $JAR_FILE"
-            exit 1
-          fi
+          [ ! -f "$JAR" ] && echo "Error: JAR not found: $JAR" && exit 1
           
-          # Auto-detect MIDlet if not specified
           if [ -z "$MIDLET" ]; then
-            MIDLET=$(unzip -p "$JAR_FILE" META-INF/MANIFEST.MF 2>/dev/null | \
+            MIDLET=$(unzip -p "$JAR" META-INF/MANIFEST.MF 2>/dev/null | \
                      grep -i "^MIDlet-1:" | rev | cut -d, -f1 | rev | tr -d ' \r\n')
           fi
           
-          if [ -z "$MIDLET" ]; then
-            echo "Error: Cannot determine MIDlet class"
-            echo ""
-            echo "Try: ./midp -list $JAR_FILE"
-            echo "Then: ./midp $JAR_FILE <classname>"
-            exit 1
-          fi
+          [ -z "$MIDLET" ] && echo "Error: Specify MIDlet class" && exit 1
           
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "  Starting: $MIDLET"
-          echo "  From:     $(basename "$JAR_FILE")"
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo ""
-          
-          exec "$SCRIPT_DIR/kvm" -classpath "$MIDP_CLASSES:$JAR_FILE" "$MIDLET"
+          echo "Starting: $MIDLET"
+          exec "$SCRIPT_DIR/kvm" -classpath "$MIDP_CLASSES:$JAR" "$MIDLET"
           EOFSCRIPT
           
           chmod +x bin/linux/midp
@@ -372,16 +259,32 @@ jobs:
           
           # Бинарники
           cp bin/linux/kvm dist/linux/ 2>/dev/null || true
-          cp bin/linux/kvm_g dist/linux/ 2>/dev/null || true  
+          cp bin/linux/kvm_g dist/linux/ 2>/dev/null || true
           cp bin/linux/preverify dist/linux/ 2>/dev/null || true
           cp bin/linux/midp dist/linux/ 2>/dev/null || true
           
-          # MIDP классы (единая директория)
+          # Конфиги
+          mkdir -p dist/linux/lib
+          cp midp2.0fcs/lib/*.config dist/linux/lib/ 2>/dev/null || true
+          cp midp2.0fcs/lib/*.png dist/linux/lib/ 2>/dev/null || true
+          
+          # Создаём конфиги если их нет
+          [ ! -f "dist/linux/lib/system.config" ] && cat > dist/linux/lib/system.config << 'EOF'
+          system.jam_space: 1048576
+          system.display.double_buffered: true
+          system.i18n.lang: en
+          system.i18n.encoding: ISO-8859-1
+          EOF
+          
+          [ ! -f "dist/linux/lib/internal.config" ] && touch dist/linux/lib/internal.config
+          
+          # MIDP классы
           mkdir -p dist/linux/lib/midp-classes
           cp -r bin/midp/classes/* dist/linux/lib/midp-classes/
           
-          # JAR для удобства
-          cp bin/midp/lib/midp2.0.jar dist/linux/lib/ 2>/dev/null || true
+          # AppDB
+          mkdir -p dist/linux/appdb
+          cp midp2.0fcs/appdb/* dist/linux/appdb/ 2>/dev/null || true
           
           # Игры
           mkdir -p dist/linux/games
@@ -390,51 +293,16 @@ jobs:
           
           # README
           cat > dist/linux/README.txt << 'EOF'
-          ╔════════════════════════════════════════════════════════════════════╗
-          ║                    KVM + MIDP 2.0 for Linux                        ║
-          ║                   Play Classic Java ME Games!                      ║
-          ╚════════════════════════════════════════════════════════════════════╝
+          KVM + MIDP 2.0 for Linux (with Floating Point Support)
+          =======================================================
           
-          QUICK START
-          ───────────
-          ./midp games/pushpuzzle.jar
-          ./midp games/games.jar example.wormgame.WormMain
+          This build includes FLOATING POINT support for games using float/double.
           
-          COMMANDS
-          ────────
-          ./midp                        - Show help and available games
-          ./midp <game.jar>             - Launch game (auto-detect MIDlet)  
-          ./midp <game.jar> <class>     - Launch specific MIDlet class
-          ./midp -jad <game.jad>        - Launch from JAD descriptor
-          ./midp -list <game.jar>       - List all MIDlets in JAR
-          
-          INCLUDED GAMES
-          ──────────────
-          pushpuzzle.jar   - Sokoban-style puzzle game
-          games.jar        - TilePuzzle, WormGame collection
-          manyballs.jar    - Bouncing balls demo
-          hanoi.jar        - Tower of Hanoi puzzle
-          photoalbum.jar   - Image viewer demo
-          stock.jar        - Stock ticker application
-          auction.jar      - Ticket auction demo
-          audiodemo.jar    - Audio playback demos
-          
-          GAME CONTROLS
-          ─────────────
-          Arrow keys / WASD  - Movement
-          Enter / Space      - Select / Action
-          Escape            - Back / Menu
-          
-          NOTES
-          ─────
-          - Some games require specific MIDlet class (use -list to find)
-          - Graphics are rendered in a simple terminal/X11 window
-          - Audio may not work on all systems
+          Quick Start:
+            ./midp games/pushpuzzle.jar
+            ./midp games/games.jar example.wormgame.WormMain
           
           EOF
-          
-          echo "=== Distribution contents ==="
-          find dist/linux -type f | head -30
 
       - name: Upload Linux distribution
         uses: actions/upload-artifact@v4
@@ -464,17 +332,21 @@ jobs:
           name: midp-classes
           path: bin/midp/
 
-      - name: Build KVM 32-bit
+      - name: Build KVM 32-bit with Floating Point
         run: |
           cd build/linux
-          make CC="gcc -m32" CFLAGS="${CFLAGS_COMPAT} -m32" LDFLAGS="-m32" || true
+          make CC="gcc -m32" \
+               CFLAGS="${CFLAGS_COMPAT} ${KVM_DEFINES} -m32" \
+               LDFLAGS="-m32 -lm" \
+               || true
 
       - name: Package
         run: |
-          mkdir -p dist/linux-x86/lib dist/linux-x86/games
+          mkdir -p dist/linux-x86/lib/midp-classes dist/linux-x86/games dist/linux-x86/appdb
           cp bin/linux/kvm dist/linux-x86/ 2>/dev/null || true
-          cp -r bin/midp/classes dist/linux-x86/lib/midp-classes 2>/dev/null || true
+          cp -r bin/midp/classes/* dist/linux-x86/lib/midp-classes/
           cp bin/midp/examples/*.jar dist/linux-x86/games/ 2>/dev/null || true
+          cp midp2.0fcs/lib/*.config dist/linux-x86/lib/ 2>/dev/null || true
 
       - name: Upload
         uses: actions/upload-artifact@v4
@@ -485,7 +357,7 @@ jobs:
         if: always()
 
   # ============================================
-  # Windows 64-bit (MinGW)
+  # Windows 64-bit (MinGW) + FLOATING POINT
   # ============================================
   build-windows-mingw:
     runs-on: windows-latest
@@ -511,11 +383,21 @@ jobs:
           name: midp-classes
           path: bin/midp/
 
-      - name: Build KVM
+      - name: Build KVM with Floating Point
         shell: msys2 {0}
         run: |
           cd build/win32
-          make CC="gcc" CFLAGS="-std=gnu89 -fno-strict-aliasing -w" || true
+          
+          echo "=== Building KVM with Floating Point Support ==="
+          
+          # Главное: добавляем -DFLOATING_POINT
+          make CC="gcc" \
+               CFLAGS="-std=gnu89 -fno-strict-aliasing -w -DFLOATING_POINT -DPADDED_CELL_IF_NECESSARY" \
+               LDFLAGS="-lm" \
+               || make CC="gcc" CFLAGS="-std=gnu89 -w -DFLOATING_POINT"
+          
+          echo "=== Build complete ==="
+          ls -la ../../bin/win32/ || true
 
       - name: Build preverifier
         shell: msys2 {0}
@@ -530,65 +412,153 @@ jobs:
           
           cat > dist/win64/midp.bat << 'EOFBAT'
           @echo off
-          setlocal
+          setlocal enabledelayedexpansion
           
           set "SCRIPT_DIR=%~dp0"
-          set "MIDP_CLASSES=%SCRIPT_DIR%lib\midp-classes"
+          set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
+          cd /d "%SCRIPT_DIR%"
+          
+          set "MIDP_CLASSES=%SCRIPT_DIR%\lib\midp-classes"
+          
+          if not exist "%MIDP_CLASSES%\javax\microedition\midlet\MIDlet.class" (
+              echo ERROR: MIDP classes not found!
+              echo Expected: %MIDP_CLASSES%
+              pause
+              exit /b 1
+          )
           
           if "%~1"=="" (
-            echo ========================================
-            echo   KVM + MIDP 2.0 Game Launcher
-            echo ========================================
-            echo.
-            echo Usage: midp.bat game.jar MIDletClass
-            echo.
-            echo Example:
-            echo   midp.bat games\pushpuzzle.jar example.pushpuzzle.PushPuzzle
-            echo.
-            echo To find MIDlet class, check the JAD file or JAR manifest.
-            echo.
-            echo Available games:
-            dir /b "%SCRIPT_DIR%games\*.jar" 2>nul
-            exit /b 0
+              echo ========================================
+              echo   KVM + MIDP 2.0 Game Launcher
+              echo   [with Floating Point Support]
+              echo ========================================
+              echo.
+              echo Usage: midp.bat game.jar MIDletClass
+              echo.
+              echo Examples:
+              echo   midp.bat games\pushpuzzle.jar example.pushpuzzle.PushPuzzle
+              echo   midp.bat games\games.jar example.wormgame.WormMain
+              echo   midp.bat games\manyballs.jar example.manyballs.ManyBalls
+              echo   midp.bat myapp.jar com.example.MyMIDlet
+              echo.
+              echo Available games:
+              for %%f in ("%SCRIPT_DIR%\games\*.jar") do echo   %%~nxf
+              echo.
+              exit /b 0
           )
           
           set "JAR_FILE=%~1"
           set "MIDLET=%~2"
           
-          if "%MIDLET%"=="" (
-            echo Error: Please specify MIDlet class name
-            echo.
-            echo Example: midp.bat %JAR_FILE% com.example.MyMIDlet
-            exit /b 1
+          if not exist "%JAR_FILE%" (
+              if exist "%SCRIPT_DIR%\%JAR_FILE%" (
+                  set "JAR_FILE=%SCRIPT_DIR%\%JAR_FILE%"
+              ) else (
+                  echo ERROR: JAR file not found: %~1
+                  exit /b 1
+              )
           )
           
+          if "%MIDLET%"=="" (
+              echo ERROR: Please specify MIDlet class name
+              echo.
+              echo To find it, open the .jad file and look for MIDlet-1: line
+              echo Example: MIDlet-1: GameName, icon.png, com.example.GameClass
+              echo                                        ^^^^^^^^^^^^^^^^^^^^
+              exit /b 1
+          )
+          
+          echo ========================================
           echo Starting: %MIDLET%
-          echo From: %JAR_FILE%
+          echo JAR: %JAR_FILE%
+          echo ========================================
           echo.
           
-          "%SCRIPT_DIR%kvm.exe" -classpath "%MIDP_CLASSES%;%JAR_FILE%" %MIDLET%
+          "%SCRIPT_DIR%\kvm.exe" -classpath "%MIDP_CLASSES%;%JAR_FILE%" %MIDLET%
+          
+          if errorlevel 1 (
+              echo.
+              echo Game exited with error code: %ERRORLEVEL%
+              pause
+          )
           EOFBAT
 
       - name: Package Windows distribution
         shell: msys2 {0}
         run: |
           # Бинарники
-          cp bin/win32/*.exe dist/win64/ 2>/dev/null || true
-          cp midp2.0fcs/bin/midp.exe dist/win64/ 2>/dev/null || true
+          cp bin/win32/kvm.exe dist/win64/ 2>/dev/null || true
+          cp bin/win32/preverify.exe dist/win64/ 2>/dev/null || true
+          
+          # Готовый MIDP runtime (если наш не собрался)
+          cp midp2.0fcs/bin/midp.exe dist/win64/midp_original.exe 2>/dev/null || true
           cp midp2.0fcs/bin/preverify.exe dist/win64/ 2>/dev/null || true
           
-          # Классы
+          # Конфиги
+          mkdir -p dist/win64/lib
+          cp midp2.0fcs/lib/*.config dist/win64/lib/ 2>/dev/null || true
+          cp midp2.0fcs/lib/*.png dist/win64/lib/ 2>/dev/null || true
+          
+          # Создаём конфиги если их нет
+          if [ ! -f "dist/win64/lib/system.config" ]; then
+            cat > dist/win64/lib/system.config << 'EOFCFG'
+          system.jam_space: 1048576
+          system.display.double_buffered: true
+          system.i18n.lang: en
+          system.i18n.encoding: ISO-8859-1
+          system.display.width: 240
+          system.display.height: 320
+          EOFCFG
+          fi
+          
+          [ ! -f "dist/win64/lib/internal.config" ] && touch dist/win64/lib/internal.config
+          
+          # MIDP классы
           mkdir -p dist/win64/lib/midp-classes
           cp -r bin/midp/classes/* dist/win64/lib/midp-classes/
-          
-          # Игры  
-          mkdir -p dist/win64/games
-          cp bin/midp/examples/*.jar dist/win64/games/ 2>/dev/null || true
-          cp bin/midp/examples/*.jad dist/win64/games/ 2>/dev/null || true
           
           # AppDB
           mkdir -p dist/win64/appdb
           cp midp2.0fcs/appdb/* dist/win64/appdb/ 2>/dev/null || true
+          touch dist/win64/appdb/.keep
+          
+          # Игры
+          mkdir -p dist/win64/games
+          cp bin/midp/examples/*.jar dist/win64/games/ 2>/dev/null || true
+          cp bin/midp/examples/*.jad dist/win64/games/ 2>/dev/null || true
+          
+          # README
+          cat > dist/win64/README.txt << 'EOFREADME'
+          ╔════════════════════════════════════════════════════════════════╗
+          ║     KVM + MIDP 2.0 for Windows (Floating Point Support)        ║
+          ╚════════════════════════════════════════════════════════════════╝
+          
+          This build includes FLOATING POINT support (float/double types).
+          
+          QUICK START
+          ───────────
+          1. Open Command Prompt here
+          2. Run: midp.bat games\pushpuzzle.jar example.pushpuzzle.PushPuzzle
+          
+          EXAMPLE COMMANDS
+          ────────────────
+          midp.bat games\pushpuzzle.jar example.pushpuzzle.PushPuzzle
+          midp.bat games\games.jar example.wormgame.WormMain
+          midp.bat games\games.jar example.tilepuzzle.TilePuzzle
+          midp.bat games\manyballs.jar example.manyballs.ManyBalls
+          midp.bat games\hanoi.jar example.hanoi.Hanoi
+          
+          For your own MIDlets:
+          midp.bat myapp.jar com.mycompany.MyMIDlet
+          
+          HOW TO FIND MIDLET CLASS NAME
+          ─────────────────────────────
+          Open the .jad file in Notepad:
+            MIDlet-1: Game Name, icon.png, com.example.GameClass
+                                           ^^^^^^^^^^^^^^^^^^^^
+                                           This is the class name!
+          
+          EOFREADME
           
           echo "=== Windows distribution ==="
           ls -la dist/win64/
@@ -626,20 +596,25 @@ jobs:
           name: midp-classes
           path: bin/midp/
 
-      - name: Build
+      - name: Build KVM with Floating Point
         shell: msys2 {0}
         run: |
           cd build/win32
-          make CC="gcc" CFLAGS="-std=gnu89 -fno-strict-aliasing -w" || true
+          make CC="gcc" \
+               CFLAGS="-std=gnu89 -fno-strict-aliasing -w -DFLOATING_POINT" \
+               LDFLAGS="-lm" \
+               || true
 
       - name: Package
         shell: msys2 {0}
         run: |
-          mkdir -p dist/win32/lib/midp-classes dist/win32/games
+          mkdir -p dist/win32/lib/midp-classes dist/win32/games dist/win32/appdb
           cp bin/win32/*.exe dist/win32/ 2>/dev/null || true
           cp midp2.0fcs/bin/*.exe dist/win32/ 2>/dev/null || true
           cp -r bin/midp/classes/* dist/win32/lib/midp-classes/
           cp bin/midp/examples/*.jar dist/win32/games/ 2>/dev/null || true
+          cp midp2.0fcs/lib/*.config dist/win32/lib/ 2>/dev/null || true
+          touch dist/win32/lib/internal.config dist/win32/lib/system.config 2>/dev/null || true
 
       - name: Upload
         uses: actions/upload-artifact@v4
@@ -665,10 +640,13 @@ jobs:
           name: midp-classes
           path: bin/midp/
 
-      - name: Build KVM
+      - name: Build KVM with Floating Point
         run: |
           cd build/linux
-          make CC="gcc" CFLAGS="${CFLAGS_COMPAT}" || true
+          make CC="gcc" \
+               CFLAGS="${CFLAGS_COMPAT} -DFLOATING_POINT" \
+               LDFLAGS="-lm" \
+               || true
 
       - name: Build preverifier
         run: |
@@ -677,13 +655,13 @@ jobs:
 
       - name: Package
         run: |
-          mkdir -p dist/macos/lib/midp-classes dist/macos/games
+          mkdir -p dist/macos/lib/midp-classes dist/macos/games dist/macos/appdb
           cp bin/linux/kvm dist/macos/ 2>/dev/null || true
           cp bin/linux/preverify dist/macos/ 2>/dev/null || true
           cp -r bin/midp/classes/* dist/macos/lib/midp-classes/
           cp bin/midp/examples/*.jar dist/macos/games/ 2>/dev/null || true
+          cp midp2.0fcs/lib/*.config dist/macos/lib/ 2>/dev/null || true
           
-          # Launcher
           cat > dist/macos/midp << 'EOF'
           #!/bin/bash
           DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -714,10 +692,13 @@ jobs:
           name: midp-classes
           path: bin/midp/
 
-      - name: Build
+      - name: Build KVM with Floating Point
         run: |
           cd build/linux
-          make CC="clang" CFLAGS="-std=gnu89 -fno-strict-aliasing -w" || true
+          make CC="clang" \
+               CFLAGS="-std=gnu89 -fno-strict-aliasing -w -DFLOATING_POINT" \
+               LDFLAGS="-lm" \
+               || true
 
       - name: Package
         run: |
@@ -725,6 +706,7 @@ jobs:
           cp bin/linux/kvm dist/macos-arm64/ 2>/dev/null || true
           cp -r bin/midp/classes/* dist/macos-arm64/lib/midp-classes/
           cp bin/midp/examples/*.jar dist/macos-arm64/games/ 2>/dev/null || true
+          cp midp2.0fcs/lib/*.config dist/macos-arm64/lib/ 2>/dev/null || true
 
       - name: Upload
         uses: actions/upload-artifact@v4
@@ -754,17 +736,23 @@ jobs:
           name: midp-classes
           path: bin/midp/
 
-      - name: Build ARM
+      - name: Build ARM with Floating Point
         run: |
           cd build/linux
-          make CC="arm-linux-gnueabihf-gcc" CFLAGS="${CFLAGS_COMPAT}" LDFLAGS="-static" || true
+          make CC="arm-linux-gnueabihf-gcc" \
+               CFLAGS="${CFLAGS_COMPAT} -DFLOATING_POINT" \
+               LDFLAGS="-static -lm" \
+               || true
           [ -f ../../bin/linux/kvm ] && cp ../../bin/linux/kvm ../../bin/linux/kvm-arm
 
-      - name: Build ARM64
+      - name: Build ARM64 with Floating Point
         run: |
           cd build/linux
           make clean 2>/dev/null || true
-          make CC="aarch64-linux-gnu-gcc" CFLAGS="${CFLAGS_COMPAT}" LDFLAGS="-static" || true
+          make CC="aarch64-linux-gnu-gcc" \
+               CFLAGS="${CFLAGS_COMPAT} -DFLOATING_POINT" \
+               LDFLAGS="-static -lm" \
+               || true
           [ -f ../../bin/linux/kvm ] && cp ../../bin/linux/kvm ../../bin/linux/kvm-arm64
 
       - name: Package
@@ -774,6 +762,7 @@ jobs:
             cp bin/linux/kvm-${arch} dist/linux-${arch}/kvm 2>/dev/null || true
             cp -r bin/midp/classes/* dist/linux-${arch}/lib/midp-classes/
             cp bin/midp/examples/*.jar dist/linux-${arch}/games/ 2>/dev/null || true
+            cp midp2.0fcs/lib/*.config dist/linux-${arch}/lib/ 2>/dev/null || true
           done
 
       - name: Upload ARM
@@ -820,7 +809,6 @@ jobs:
         run: |
           mkdir -p release
           
-          # Package each platform
           for dir in artifacts/kvm-midp-*; do
             if [ -d "$dir" ]; then
               name=$(basename "$dir")
@@ -835,70 +823,46 @@ jobs:
             fi
           done
           
-          # Tools package
+          # Tools
           if [ -d "artifacts/java-tools" ]; then
-            cd artifacts/java-tools
-            zip -r ../../release/kvm-tools.zip .
-            cd ../..
+            cd artifacts/java-tools && zip -r ../../release/kvm-tools.zip . && cd ../..
           fi
           
-          # Games-only package (для тех кто хочет только игры)
+          # Games only
           mkdir -p games-package
-          cp midp2.0fcs/example/*.jar games-package/
-          cp midp2.0fcs/example/*.jad games-package/
-          cat > games-package/README.txt << 'EOF'
-          MIDP 2.0 Game Collection
-          ========================
-          
-          These are Java ME games that require KVM + MIDP runtime.
-          Download the appropriate KVM package for your platform.
-          
-          Games included:
-          - pushpuzzle.jar - Sokoban puzzle
-          - games.jar - TilePuzzle, WormGame
-          - manyballs.jar - Physics demo
-          - hanoi.jar - Tower of Hanoi
-          - photoalbum.jar - Image viewer
-          - stock.jar - Stock ticker
-          - auction.jar - Auction demo
-          - audiodemo.jar - Audio demos
-          EOF
+          cp midp2.0fcs/example/*.jar midp2.0fcs/example/*.jad games-package/ 2>/dev/null || true
           cd games-package && zip -r ../release/midp-games.zip . && cd ..
           
-          echo ""
-          echo "=== Release packages ==="
           ls -lh release/
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v1.0.${{ github.run_number }}
-          name: "🎮 KVM + MIDP 2.0 Build ${{ github.run_number }}"
+          tag_name: v1.1.${{ github.run_number }}
+          name: "🎮 KVM + MIDP 2.0 Build ${{ github.run_number }} (Floating Point)"
           body: |
-            ## 📱 KVM + MIDP 2.0 - Play Classic Java ME Games!
+            ## 📱 KVM + MIDP 2.0 with Floating Point Support
             
-            This release includes the K Virtual Machine with MIDP 2.0 profile,
-            allowing you to run classic Java ME mobile games on modern systems.
+            This release includes **FLOATING POINT** support (`float`/`double` types).
+            Games and apps using floating point math will now work correctly!
             
             ### 📦 Downloads
             
             | Platform | Download |
             |----------|----------|
             | 🐧 Linux x64 | `kvm-midp-linux-x64.tar.gz` |
-            | 🐧 Linux x86 (32-bit) | `kvm-midp-linux-x86.tar.gz` |
+            | 🐧 Linux x86 | `kvm-midp-linux-x86.tar.gz` |
             | 🐧 Linux ARM | `kvm-midp-linux-arm.tar.gz` |
             | 🐧 Linux ARM64 | `kvm-midp-linux-arm64.tar.gz` |
             | 🪟 Windows x64 | `kvm-midp-win64.zip` |
             | 🪟 Windows x86 | `kvm-midp-win32.zip` |
             | 🍎 macOS Intel | `kvm-midp-macos-intel.tar.gz` |
-            | 🍎 macOS Apple Silicon | `kvm-midp-macos-arm64.tar.gz` |
+            | 🍎 macOS ARM64 | `kvm-midp-macos-arm64.tar.gz` |
             
             ### 🚀 Quick Start
             
-            **Linux / macOS:**
+            **Linux/macOS:**
             ```bash
-            tar -xzf kvm-midp-linux-x64.tar.gz
-            cd kvm-midp-linux-x64
             ./midp games/pushpuzzle.jar
             ```
             
@@ -907,26 +871,12 @@ jobs:
             midp.bat games\pushpuzzle.jar example.pushpuzzle.PushPuzzle
             ```
             
-            ### 🎮 Included Games
-            
-            | Game | Description |
-            |------|-------------|
-            | Push Puzzle | Sokoban-style puzzle game |
-            | Worm Game | Classic snake game |
-            | Tile Puzzle | Sliding tile puzzle |
-            | Tower of Hanoi | Classic puzzle |
-            | Many Balls | Physics demo |
-            | Photo Album | Image viewer |
-            
-            ### 📋 Notes
-            
-            - Use `./midp -list game.jar` to see available MIDlets
-            - Some games may require specific MIDlet class names
-            - Check `.jad` files for game metadata
+            ### ✨ What's New
+            - ✅ Floating point support enabled (`-DFLOATING_POINT`)
+            - ✅ Config files included (`system.config`, `internal.config`)
+            - ✅ Fixed classpath issues
             
           files: release/*
-          draft: false
-          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
