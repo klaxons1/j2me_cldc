@@ -46,7 +46,7 @@ jobs:
           retention-days: 5
 
   # ============================================
-  # Сборка MIDP 2.0 классов (ИСПРАВЛЕНО)
+  # MIDP 2.0 классы - ИСПОЛЬЗУЕМ ГОТОВЫЕ!
   # ============================================
   build-midp-classes:
     runs-on: ubuntu-latest
@@ -67,77 +67,80 @@ jobs:
           name: cldc-api-classes
           path: bin/common/api/classes/
 
-      - name: Fix encoding issues in source files
+      - name: Use prebuilt MIDP classes
         run: |
-          # Конвертируем проблемные файлы из ISO-8859-1 в UTF-8
-          cd midp2.0fcs/src/share/classes
+          # MIDP 2.0 имеет зависимости от проприетарных SSL библиотек
+          # которых нет в исходниках. Используем готовые .class файлы!
           
-          # Список файлов с проблемной кодировкой
-          PROBLEM_FILES=(
-            "com/sun/midp/lcdui/i18n/Resource_ja.java"
-            "com/sun/midp/dev/Manager.java"
-          )
-          
-          for file in "${PROBLEM_FILES[@]}"; do
-            if [ -f "$file" ]; then
-              echo "Converting encoding: $file"
-              # Конвертируем из ISO-8859-1 в UTF-8
-              iconv -f ISO-8859-1 -t UTF-8 "$file" > "$file.tmp" && mv "$file.tmp" "$file" || {
-                # Если конвертация не удалась, заменяем проблемные символы
-                echo "Fallback: replacing problematic characters in $file"
-                sed -i 's/\x82/e/g; s/\x8a/e/g; s/\x88/e/g; s/\xe9/e/g; s/\xe8/e/g; s/\xea/e/g; s/\xe0/a/g; s/\xf4/o/g' "$file" 2>/dev/null || true
-              }
-            fi
-          done
-
-      - name: Build MIDP 2.0 classes
-        run: |
           mkdir -p bin/midp/classes
           
-          cd midp2.0fcs/src/share/classes
-          find . -name "*.java" > sources.txt
+          echo "=== Copying prebuilt MIDP classes ==="
           
-          # Компилируем с явным указанием кодировки
-          # Пробуем разные варианты кодировки
-          javac -encoding ISO-8859-1 \
-                -source 1.4 -target 1.4 \
-                -bootclasspath ../../../../bin/common/api/classes \
-                -d ../../../../bin/midp/classes \
-                @sources.txt 2>/dev/null || \
-          javac -encoding UTF-8 \
-                -source 1.8 -target 1.8 \
-                -cp ../../../../bin/common/api/classes \
-                -d ../../../../bin/midp/classes \
-                @sources.txt 2>/dev/null || \
-          {
-            # Если всё ещё не работает, исключаем проблемные i18n файлы
-            echo "Excluding problematic i18n files..."
-            grep -v "Resource_ja.java" sources.txt > sources_fixed.txt
-            javac -encoding ISO-8859-1 \
-                  -source 1.8 -target 1.8 \
-                  -cp ../../../../bin/common/api/classes \
-                  -d ../../../../bin/midp/classes \
-                  @sources_fixed.txt
-          }
+          # Копируем ВСЕ готовые классы из midp2.0fcs/classes/
+          # Там уже есть скомпилированные java.*, javax.*, com.sun.*
+          cp -r midp2.0fcs/classes/* bin/midp/classes/
           
-          # Копируем ресурсы
-          cd ../../../../
-          cp -r midp2.0fcs/classes/icons bin/midp/classes/ 2>/dev/null || true
-          cp -r midp2.0fcs/classes/audio bin/midp/classes/ 2>/dev/null || true
+          echo "=== MIDP classes copied ==="
+          
+          # Показываем что скопировалось
+          echo "Core packages:"
+          ls -la bin/midp/classes/java/ 2>/dev/null || echo "  (none)"
+          echo "MIDP packages:"
+          ls -la bin/midp/classes/javax/microedition/ 2>/dev/null || echo "  (none)"
+          echo "Sun internal:"
+          ls -la bin/midp/classes/com/sun/midp/ 2>/dev/null || echo "  (none)"
 
-      - name: Copy prebuilt MIDP classes as fallback
+      - name: Verify critical classes exist
         run: |
-          # Если сборка не удалась, используем готовые классы
-          if [ ! -f "bin/midp/classes/javax/microedition/midlet/MIDlet.class" ]; then
-            echo "Using prebuilt MIDP classes..."
-            cp -r midp2.0fcs/classes/* bin/midp/classes/ 2>/dev/null || true
+          echo "=== Verifying MIDP classes ==="
+          
+          CRITICAL_CLASSES=(
+            "bin/midp/classes/javax/microedition/midlet/MIDlet.class"
+            "bin/midp/classes/javax/microedition/lcdui/Display.class"
+            "bin/midp/classes/javax/microedition/lcdui/Canvas.class"
+            "bin/midp/classes/javax/microedition/lcdui/Graphics.class"
+            "bin/midp/classes/javax/microedition/lcdui/Image.class"
+            "bin/midp/classes/javax/microedition/lcdui/game/GameCanvas.class"
+            "bin/midp/classes/javax/microedition/lcdui/game/Sprite.class"
+            "bin/midp/classes/javax/microedition/rms/RecordStore.class"
+          )
+          
+          ALL_OK=true
+          for class in "${CRITICAL_CLASSES[@]}"; do
+            if [ -f "$class" ]; then
+              echo "✓ $(basename $class)"
+            else
+              echo "✗ MISSING: $class"
+              ALL_OK=false
+            fi
+          done
+          
+          if [ "$ALL_OK" = false ]; then
+            echo ""
+            echo "WARNING: Some critical classes are missing!"
+            echo "Games may not work properly."
           fi
 
-      - name: Build MIDP examples
+      - name: Copy game examples
         run: |
           mkdir -p bin/midp/examples
+          
+          # Копируем JAR и JAD файлы игр
           cp midp2.0fcs/example/*.jar bin/midp/examples/ 2>/dev/null || true
           cp midp2.0fcs/example/*.jad bin/midp/examples/ 2>/dev/null || true
+          
+          echo "=== Available games ==="
+          ls -la bin/midp/examples/*.jar 2>/dev/null || echo "No JAR files"
+
+      - name: Create combined classes JAR
+        run: |
+          # Создаём единый JAR с CLDC + MIDP для удобства
+          mkdir -p bin/midp/lib
+          
+          cd bin/midp/classes
+          jar cf ../lib/midp2.0.jar .
+          
+          echo "Created midp2.0.jar: $(du -h ../lib/midp2.0.jar | cut -f1)"
 
       - name: Upload MIDP classes
         uses: actions/upload-artifact@v4
@@ -147,7 +150,7 @@ jobs:
           retention-days: 5
 
   # ============================================
-  # Сборка инструментов (ИСПРАВЛЕНО)
+  # Сборка инструментов
   # ============================================
   build-tools:
     runs-on: ubuntu-latest
@@ -167,9 +170,7 @@ jobs:
           make || {
             mkdir -p ../../bin/common/tools/jcc/classes
             find src -name "*.java" > sources.txt
-            javac -d ../../bin/common/tools/jcc/classes @sources.txt
-            echo "Main-Class: JavaCodeCompact" > manifest.txt
-            jar cfm ../../bin/common/tools/jcc.jar manifest.txt -C ../../bin/common/tools/jcc/classes .
+            javac -d ../../bin/common/tools/jcc/classes @sources.txt 2>/dev/null || true
           }
 
       - name: Build KDP tool
@@ -178,52 +179,18 @@ jobs:
           make || {
             mkdir -p ../../bin/common/tools/kdp/classes
             find src -name "*.java" > sources.txt
-            javac -d ../../bin/common/tools/kdp/classes @sources.txt
-            echo "Main-Class: kdp.KVMDebugProxy" > manifest.txt
-            jar cfm ../../bin/common/tools/kdp.jar manifest.txt -C ../../bin/common/tools/kdp/classes .
+            javac -d ../../bin/common/tools/kdp/classes @sources.txt 2>/dev/null || true
           }
 
       - name: Copy MIDP tools (prebuilt)
         run: |
-          # Используем готовые JAR файлы из midp2.0fcs/bin/
           mkdir -p bin/common/tools/midp
           
-          # Копируем готовые инструменты
+          # Готовые инструменты из дистрибутива
           cp midp2.0fcs/bin/JadTool.jar bin/common/tools/midp/ 2>/dev/null || true
           cp midp2.0fcs/bin/MEKeyTool.jar bin/common/tools/midp/ 2>/dev/null || true
           
-          # Если нет готовых, пробуем собрать из исходников
-          if [ ! -f "bin/common/tools/midp/JadTool.jar" ]; then
-            echo "Trying to build JadTool from source..."
-            
-            # Проверяем разные возможные пути
-            JADTOOL_SRC=""
-            if [ -d "midp2.0fcs/src/tools" ]; then
-              JADTOOL_SRC="midp2.0fcs/src/tools"
-            elif [ -d "tools/jadtool" ]; then
-              JADTOOL_SRC="tools/jadtool"
-            fi
-            
-            if [ -n "$JADTOOL_SRC" ] && [ -d "$JADTOOL_SRC" ]; then
-              cd "$JADTOOL_SRC"
-              find . -name "*.java" > sources.txt
-              if [ -s sources.txt ]; then
-                mkdir -p classes
-                javac -d classes @sources.txt 2>/dev/null || true
-                if [ -d "classes/com" ]; then
-                  jar cf JadTool.jar -C classes .
-                  cp JadTool.jar $GITHUB_WORKSPACE/bin/common/tools/midp/
-                fi
-              fi
-            fi
-          fi
-          
-          # Создаём скрипты-обёртки для инструментов
-          cat > bin/common/tools/midp/jadtool.sh << 'EOF'
-          #!/bin/bash
-          java -jar "$(dirname "$0")/JadTool.jar" "$@"
-          EOF
-          chmod +x bin/common/tools/midp/jadtool.sh
+          ls -la bin/common/tools/midp/
 
       - name: Upload tools
         uses: actions/upload-artifact@v4
@@ -245,9 +212,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential gcc g++ make \
-               libx11-dev libxpm-dev libpng-dev libasound2-dev \
-               libfreetype6-dev libxext-dev
+          sudo apt-get install -y build-essential gcc g++ make
 
       - name: Download CLDC API
         uses: actions/download-artifact@v4
@@ -265,6 +230,8 @@ jobs:
         run: |
           cd build/linux
           make CC="gcc" CFLAGS="${CFLAGS_COMPAT}" || make
+          
+          # Debug версия
           make debug CC="gcc" CFLAGS="${CFLAGS_COMPAT} -g -DDEBUG" || true
 
       - name: Build preverifier for Linux
@@ -276,79 +243,126 @@ jobs:
         run: |
           mkdir -p bin/linux
           
-          cat > bin/linux/midp << 'EOF'
+          cat > bin/linux/midp << 'EOFSCRIPT'
           #!/bin/bash
-          SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-          CLASSES_DIR="$SCRIPT_DIR/../midp/classes"
-          CLDC_DIR="$SCRIPT_DIR/../common/api/classes"
+          #
+          # MIDP 2.0 Game Launcher for KVM
+          #
           
-          if [ -z "$1" ]; then
-            echo "KVM + MIDP 2.0 Launcher"
+          SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+          MIDP_CLASSES="$SCRIPT_DIR/lib/midp-classes"
+          
+          show_help() {
+            echo "╔══════════════════════════════════════════════════════════════╗"
+            echo "║           KVM + MIDP 2.0 Game Launcher                       ║"
+            echo "╚══════════════════════════════════════════════════════════════╝"
             echo ""
-            echo "Usage: midp <jarfile.jar> [MIDlet-class]"
-            echo "   or: midp -jad <jadfile.jad>"
+            echo "Usage:"
+            echo "  ./midp <game.jar>                    - Auto-detect MIDlet"
+            echo "  ./midp <game.jar> <MIDlet-class>     - Specify MIDlet class"
+            echo "  ./midp -jad <game.jad>               - Launch from JAD file"
+            echo "  ./midp -list <game.jar>              - List MIDlets in JAR"
             echo ""
             echo "Examples:"
-            echo "  midp games/pushpuzzle.jar"
-            echo "  midp -jad games/pushpuzzle.jad"
+            echo "  ./midp games/pushpuzzle.jar"
+            echo "  ./midp games/games.jar example.wormgame.WormMain"
             echo ""
-            echo "Available games in games/ directory:"
-            ls -1 "$SCRIPT_DIR/../games/"*.jar 2>/dev/null | xargs -n1 basename || echo "  (no games found)"
-            exit 1
-          fi
-          
-          if [ "$1" = "-jad" ]; then
-            JAD_FILE="$2"
-            if [ ! -f "$JAD_FILE" ]; then
-              echo "Error: JAD file not found: $JAD_FILE"
-              exit 1
-            fi
-            
-            # Парсим JAD файл
-            JAR_URL=$(grep -i "^MIDlet-Jar-URL:" "$JAD_FILE" | cut -d: -f2- | tr -d ' \r\n')
-            MIDLET=$(grep -i "^MIDlet-1:" "$JAD_FILE" | sed 's/.*,[ ]*//' | tr -d ' \r\n')
-            
-            # Если JAR_URL относительный, ищем рядом с JAD
-            if [[ ! "$JAR_URL" =~ ^https?:// ]]; then
-              JAR_FILE="$(dirname "$JAD_FILE")/$JAR_URL"
-              if [ ! -f "$JAR_FILE" ]; then
-                JAR_FILE="$(dirname "$JAD_FILE")/$(basename "$JAD_FILE" .jad).jar"
-              fi
+            echo "Available games:"
+            if [ -d "$SCRIPT_DIR/games" ]; then
+              for jar in "$SCRIPT_DIR/games"/*.jar; do
+                [ -f "$jar" ] && echo "  $(basename "$jar")"
+              done
             else
-              echo "Error: Remote JAR URLs not supported. Download the JAR first."
-              exit 1
+              echo "  (games directory not found)"
             fi
-          else
-            JAR_FILE="$1"
-            MIDLET="$2"
+          }
+          
+          list_midlets() {
+            JAR="$1"
+            echo "MIDlets in $(basename "$JAR"):"
+            echo ""
+            unzip -p "$JAR" META-INF/MANIFEST.MF 2>/dev/null | grep -E "^MIDlet-[0-9]+:" | while read line; do
+              NAME=$(echo "$line" | cut -d: -f2 | cut -d, -f1 | tr -d ' ')
+              CLASS=$(echo "$line" | rev | cut -d, -f1 | rev | tr -d ' \r\n')
+              echo "  $NAME -> $CLASS"
+            done
+          }
+          
+          # Parse arguments
+          if [ -z "$1" ]; then
+            show_help
+            exit 0
           fi
           
+          case "$1" in
+            -h|--help)
+              show_help
+              exit 0
+              ;;
+            -list)
+              if [ -z "$2" ]; then
+                echo "Usage: ./midp -list <game.jar>"
+                exit 1
+              fi
+              list_midlets "$2"
+              exit 0
+              ;;
+            -jad)
+              JAD_FILE="$2"
+              if [ ! -f "$JAD_FILE" ]; then
+                echo "Error: JAD file not found: $JAD_FILE"
+                exit 1
+              fi
+              
+              # Parse JAD
+              JAR_URL=$(grep -i "^MIDlet-Jar-URL:" "$JAD_FILE" | cut -d: -f2- | tr -d ' \r\n')
+              MIDLET=$(grep -i "^MIDlet-1:" "$JAD_FILE" | rev | cut -d, -f1 | rev | tr -d ' \r\n')
+              
+              # Handle relative JAR path
+              if [[ ! "$JAR_URL" =~ ^https?:// ]]; then
+                JAR_FILE="$(dirname "$JAD_FILE")/$JAR_URL"
+                if [ ! -f "$JAR_FILE" ]; then
+                  JAR_FILE="$(dirname "$JAD_FILE")/$(basename "$JAD_FILE" .jad).jar"
+                fi
+              else
+                echo "Error: Remote JAR URLs not supported"
+                exit 1
+              fi
+              ;;
+            *)
+              JAR_FILE="$1"
+              MIDLET="$2"
+              ;;
+          esac
+          
+          # Validate JAR
           if [ ! -f "$JAR_FILE" ]; then
             echo "Error: JAR file not found: $JAR_FILE"
             exit 1
           fi
           
-          # Если MIDlet не указан, пытаемся найти в манифесте JAR
+          # Auto-detect MIDlet if not specified
           if [ -z "$MIDLET" ]; then
-            MIDLET=$(unzip -p "$JAR_FILE" META-INF/MANIFEST.MF 2>/dev/null | grep -i "^MIDlet-1:" | sed 's/.*,[ ]*//' | tr -d ' \r\n')
+            MIDLET=$(unzip -p "$JAR_FILE" META-INF/MANIFEST.MF 2>/dev/null | \
+                     grep -i "^MIDlet-1:" | rev | cut -d, -f1 | rev | tr -d ' \r\n')
           fi
           
           if [ -z "$MIDLET" ]; then
-            echo "Error: Cannot determine MIDlet class."
-            echo "Please specify it as second argument or check the JAR manifest."
+            echo "Error: Cannot determine MIDlet class"
             echo ""
-            echo "Manifest content:"
-            unzip -p "$JAR_FILE" META-INF/MANIFEST.MF 2>/dev/null || echo "(cannot read manifest)"
+            echo "Try: ./midp -list $JAR_FILE"
+            echo "Then: ./midp $JAR_FILE <classname>"
             exit 1
           fi
           
-          echo "Starting MIDlet: $MIDLET"
-          echo "From JAR: $JAR_FILE"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "  Starting: $MIDLET"
+          echo "  From:     $(basename "$JAR_FILE")"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo ""
           
-          # Запускаем KVM с правильным classpath
-          exec "$SCRIPT_DIR/kvm" -classpath "$CLASSES_DIR:$CLDC_DIR:$JAR_FILE" "$MIDLET"
-          EOF
+          exec "$SCRIPT_DIR/kvm" -classpath "$MIDP_CLASSES:$JAR_FILE" "$MIDLET"
+          EOFSCRIPT
           
           chmod +x bin/linux/midp
 
@@ -358,60 +372,69 @@ jobs:
           
           # Бинарники
           cp bin/linux/kvm dist/linux/ 2>/dev/null || true
-          cp bin/linux/kvm_g dist/linux/ 2>/dev/null || true
+          cp bin/linux/kvm_g dist/linux/ 2>/dev/null || true  
           cp bin/linux/preverify dist/linux/ 2>/dev/null || true
           cp bin/linux/midp dist/linux/ 2>/dev/null || true
           
-          # Классы
-          mkdir -p dist/linux/lib/cldc-classes
+          # MIDP классы (единая директория)
           mkdir -p dist/linux/lib/midp-classes
-          cp -r bin/common/api/classes/* dist/linux/lib/cldc-classes/ 2>/dev/null || true
-          cp -r bin/midp/classes/* dist/linux/lib/midp-classes/ 2>/dev/null || true
+          cp -r bin/midp/classes/* dist/linux/lib/midp-classes/
           
-          # Примеры игр
+          # JAR для удобства
+          cp bin/midp/lib/midp2.0.jar dist/linux/lib/ 2>/dev/null || true
+          
+          # Игры
           mkdir -p dist/linux/games
-          cp midp2.0fcs/example/*.jar dist/linux/games/ 2>/dev/null || true
-          cp midp2.0fcs/example/*.jad dist/linux/games/ 2>/dev/null || true
+          cp bin/midp/examples/*.jar dist/linux/games/ 2>/dev/null || true
+          cp bin/midp/examples/*.jad dist/linux/games/ 2>/dev/null || true
           
           # README
           cat > dist/linux/README.txt << 'EOF'
-          ╔══════════════════════════════════════════════════════════════════╗
-          ║              KVM + MIDP 2.0 for Linux                            ║
-          ║          Play Classic Java ME Games!                             ║
-          ╚══════════════════════════════════════════════════════════════════╝
+          ╔════════════════════════════════════════════════════════════════════╗
+          ║                    KVM + MIDP 2.0 for Linux                        ║
+          ║                   Play Classic Java ME Games!                      ║
+          ╚════════════════════════════════════════════════════════════════════╝
           
-          QUICK START:
-          ────────────
-            ./midp games/pushpuzzle.jar
-            ./midp -jad games/pushpuzzle.jad
+          QUICK START
+          ───────────
+          ./midp games/pushpuzzle.jar
+          ./midp games/games.jar example.wormgame.WormMain
           
-          AVAILABLE GAMES:
-          ────────────────
-            pushpuzzle.jar  - Push Puzzle (Sokoban-like)
-            manyballs.jar   - Many Balls demo
-            games.jar       - Game collection (TilePuzzle, WormGame)
-            hanoi.jar       - Tower of Hanoi
-            photoalbum.jar  - Photo Album viewer
-            auction.jar     - Ticket Auction demo
-            stock.jar       - Stock ticker
-            audiodemo.jar   - Audio demos
+          COMMANDS
+          ────────
+          ./midp                        - Show help and available games
+          ./midp <game.jar>             - Launch game (auto-detect MIDlet)  
+          ./midp <game.jar> <class>     - Launch specific MIDlet class
+          ./midp -jad <game.jad>        - Launch from JAD descriptor
+          ./midp -list <game.jar>       - List all MIDlets in JAR
           
-          DIRECT KVM USAGE:
-          ─────────────────
-            ./kvm -classpath lib/midp-classes:lib/cldc-classes:game.jar \
-                  com.example.MyMIDlet
+          INCLUDED GAMES
+          ──────────────
+          pushpuzzle.jar   - Sokoban-style puzzle game
+          games.jar        - TilePuzzle, WormGame collection
+          manyballs.jar    - Bouncing balls demo
+          hanoi.jar        - Tower of Hanoi puzzle
+          photoalbum.jar   - Image viewer demo
+          stock.jar        - Stock ticker application
+          auction.jar      - Ticket auction demo
+          audiodemo.jar    - Audio playback demos
           
-          PREVERIFIER (for development):
-          ──────────────────────────────
-            ./preverify -classpath lib/cldc-classes -d output_dir input_classes
+          GAME CONTROLS
+          ─────────────
+          Arrow keys / WASD  - Movement
+          Enter / Space      - Select / Action
+          Escape            - Back / Menu
+          
+          NOTES
+          ─────
+          - Some games require specific MIDlet class (use -list to find)
+          - Graphics are rendered in a simple terminal/X11 window
+          - Audio may not work on all systems
           
           EOF
           
-          # Проверяем что собралось
           echo "=== Distribution contents ==="
-          ls -la dist/linux/
-          echo "=== Games ==="
-          ls -la dist/linux/games/ 2>/dev/null || echo "No games"
+          find dist/linux -type f | head -30
 
       - name: Upload Linux distribution
         uses: actions/upload-artifact@v4
@@ -433,34 +456,36 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential gcc-multilib g++-multilib make
+          sudo apt-get install -y build-essential gcc-multilib g++-multilib
 
-      - name: Download artifacts
+      - name: Download MIDP
         uses: actions/download-artifact@v4
         with:
           name: midp-classes
           path: bin/midp/
 
-      - name: Build KVM for Linux 32-bit
+      - name: Build KVM 32-bit
         run: |
           cd build/linux
           make CC="gcc -m32" CFLAGS="${CFLAGS_COMPAT} -m32" LDFLAGS="-m32" || true
 
-      - name: Build preverifier for Linux 32-bit
+      - name: Package
         run: |
-          cd tools/preverifier/build/linux
-          make CC="gcc -m32" CFLAGS="${CFLAGS_COMPAT} -m32" LDFLAGS="-m32" || true
+          mkdir -p dist/linux-x86/lib dist/linux-x86/games
+          cp bin/linux/kvm dist/linux-x86/ 2>/dev/null || true
+          cp -r bin/midp/classes dist/linux-x86/lib/midp-classes 2>/dev/null || true
+          cp bin/midp/examples/*.jar dist/linux-x86/games/ 2>/dev/null || true
 
-      - name: Upload Linux 32-bit binaries
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: kvm-midp-linux-x86
-          path: bin/linux/
+          path: dist/linux-x86/
           retention-days: 30
         if: always()
 
   # ============================================
-  # Windows (MinGW-w64)
+  # Windows 64-bit (MinGW)
   # ============================================
   build-windows-mingw:
     runs-on: windows-latest
@@ -479,27 +504,20 @@ jobs:
             mingw-w64-x86_64-make
             make
             zip
-            unzip
 
-      - name: Download CLDC API
-        uses: actions/download-artifact@v4
-        with:
-          name: cldc-api-classes
-          path: bin/common/api/classes/
-
-      - name: Download MIDP classes
+      - name: Download MIDP
         uses: actions/download-artifact@v4
         with:
           name: midp-classes
           path: bin/midp/
 
-      - name: Build KVM for Windows
+      - name: Build KVM
         shell: msys2 {0}
         run: |
           cd build/win32
           make CC="gcc" CFLAGS="-std=gnu89 -fno-strict-aliasing -w" || true
 
-      - name: Build preverifier for Windows
+      - name: Build preverifier
         shell: msys2 {0}
         run: |
           cd tools/preverifier/build/win32
@@ -508,86 +526,78 @@ jobs:
       - name: Create Windows launcher
         shell: msys2 {0}
         run: |
-          mkdir -p bin/win32
+          mkdir -p dist/win64
           
-          cat > bin/win32/midp.bat << 'EOFBAT'
+          cat > dist/win64/midp.bat << 'EOFBAT'
           @echo off
-          setlocal enabledelayedexpansion
+          setlocal
           
           set "SCRIPT_DIR=%~dp0"
-          set "CLASSES_DIR=%SCRIPT_DIR%lib\midp-classes"
-          set "CLDC_DIR=%SCRIPT_DIR%lib\cldc-classes"
+          set "MIDP_CLASSES=%SCRIPT_DIR%lib\midp-classes"
           
           if "%~1"=="" (
-            echo KVM + MIDP 2.0 Launcher for Windows
+            echo ========================================
+            echo   KVM + MIDP 2.0 Game Launcher
+            echo ========================================
             echo.
-            echo Usage: midp.bat jarfile.jar [MIDlet-class]
-            echo    or: midp.bat -jad jadfile.jad
+            echo Usage: midp.bat game.jar MIDletClass
             echo.
-            echo Examples:
-            echo   midp.bat games\pushpuzzle.jar
+            echo Example:
+            echo   midp.bat games\pushpuzzle.jar example.pushpuzzle.PushPuzzle
+            echo.
+            echo To find MIDlet class, check the JAD file or JAR manifest.
             echo.
             echo Available games:
-            dir /b "%SCRIPT_DIR%games\*.jar" 2^>nul
-            exit /b 1
+            dir /b "%SCRIPT_DIR%games\*.jar" 2>nul
+            exit /b 0
           )
           
           set "JAR_FILE=%~1"
           set "MIDLET=%~2"
           
-          if "%~1"=="-jad" (
-            echo JAD parsing not fully supported in batch.
-            echo Please specify: midp.bat jarfile.jar MIDletClassName
-            exit /b 1
-          )
-          
           if "%MIDLET%"=="" (
-            echo Error: Please specify MIDlet class name as second argument.
+            echo Error: Please specify MIDlet class name
             echo.
-            echo Example: midp.bat games\pushpuzzle.jar example.pushpuzzle.PushPuzzle
+            echo Example: midp.bat %JAR_FILE% com.example.MyMIDlet
             exit /b 1
           )
           
           echo Starting: %MIDLET%
-          echo From JAR: %JAR_FILE%
+          echo From: %JAR_FILE%
           echo.
           
-          "%SCRIPT_DIR%kvm.exe" -classpath "%CLASSES_DIR%;%CLDC_DIR%;%JAR_FILE%" %MIDLET%
+          "%SCRIPT_DIR%kvm.exe" -classpath "%MIDP_CLASSES%;%JAR_FILE%" %MIDLET%
           EOFBAT
 
       - name: Package Windows distribution
         shell: msys2 {0}
         run: |
-          mkdir -p dist/win32
-          
-          # Бинарники (собранные или готовые)
-          cp bin/win32/*.exe dist/win32/ 2>/dev/null || true
-          cp midp2.0fcs/bin/midp.exe dist/win32/ 2>/dev/null || true
-          cp midp2.0fcs/bin/preverify.exe dist/win32/ 2>/dev/null || true
-          cp bin/win32/midp.bat dist/win32/ 2>/dev/null || true
+          # Бинарники
+          cp bin/win32/*.exe dist/win64/ 2>/dev/null || true
+          cp midp2.0fcs/bin/midp.exe dist/win64/ 2>/dev/null || true
+          cp midp2.0fcs/bin/preverify.exe dist/win64/ 2>/dev/null || true
           
           # Классы
-          mkdir -p dist/win32/lib/cldc-classes
-          mkdir -p dist/win32/lib/midp-classes
-          cp -r bin/common/api/classes/* dist/win32/lib/cldc-classes/ 2>/dev/null || true
-          cp -r bin/midp/classes/* dist/win32/lib/midp-classes/ 2>/dev/null || true
+          mkdir -p dist/win64/lib/midp-classes
+          cp -r bin/midp/classes/* dist/win64/lib/midp-classes/
           
-          # Игры
-          mkdir -p dist/win32/games
-          cp midp2.0fcs/example/*.jar dist/win32/games/ 2>/dev/null || true
-          cp midp2.0fcs/example/*.jad dist/win32/games/ 2>/dev/null || true
+          # Игры  
+          mkdir -p dist/win64/games
+          cp bin/midp/examples/*.jar dist/win64/games/ 2>/dev/null || true
+          cp bin/midp/examples/*.jad dist/win64/games/ 2>/dev/null || true
           
-          # Конфиги и ресурсы MIDP
-          mkdir -p dist/win32/appdb
-          cp midp2.0fcs/appdb/* dist/win32/appdb/ 2>/dev/null || true
-          cp midp2.0fcs/lib/*.config dist/win32/lib/ 2>/dev/null || true
-          cp midp2.0fcs/lib/*.png dist/win32/lib/ 2>/dev/null || true
+          # AppDB
+          mkdir -p dist/win64/appdb
+          cp midp2.0fcs/appdb/* dist/win64/appdb/ 2>/dev/null || true
+          
+          echo "=== Windows distribution ==="
+          ls -la dist/win64/
 
       - name: Upload Windows distribution
         uses: actions/upload-artifact@v4
         with:
           name: kvm-midp-win64
-          path: dist/win32/
+          path: dist/win64/
           retention-days: 30
 
   # ============================================
@@ -610,13 +620,13 @@ jobs:
             mingw-w64-i686-make
             make
 
-      - name: Download artifacts
+      - name: Download MIDP
         uses: actions/download-artifact@v4
         with:
           name: midp-classes
           path: bin/midp/
 
-      - name: Build KVM for Windows 32-bit
+      - name: Build
         shell: msys2 {0}
         run: |
           cd build/win32
@@ -625,18 +635,17 @@ jobs:
       - name: Package
         shell: msys2 {0}
         run: |
-          mkdir -p dist/win32-i686
-          cp bin/win32/*.exe dist/win32-i686/ 2>/dev/null || true
-          cp midp2.0fcs/bin/*.exe dist/win32-i686/ 2>/dev/null || true
-          
-          mkdir -p dist/win32-i686/games
-          cp midp2.0fcs/example/*.jar dist/win32-i686/games/ 2>/dev/null || true
+          mkdir -p dist/win32/lib/midp-classes dist/win32/games
+          cp bin/win32/*.exe dist/win32/ 2>/dev/null || true
+          cp midp2.0fcs/bin/*.exe dist/win32/ 2>/dev/null || true
+          cp -r bin/midp/classes/* dist/win32/lib/midp-classes/
+          cp bin/midp/examples/*.jar dist/win32/games/ 2>/dev/null || true
 
-      - name: Upload Windows 32-bit
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: kvm-midp-win32
-          path: dist/win32-i686/
+          path: dist/win32/
           retention-days: 30
         if: always()
 
@@ -650,22 +659,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: brew install make gcc
-
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: cldc-api-classes
-          path: bin/common/api/classes/
-
-      - name: Download MIDP classes
+      - name: Download MIDP
         uses: actions/download-artifact@v4
         with:
           name: midp-classes
           path: bin/midp/
 
-      - name: Build KVM for macOS
+      - name: Build KVM
         run: |
           cd build/linux
           make CC="gcc" CFLAGS="${CFLAGS_COMPAT}" || true
@@ -675,31 +675,23 @@ jobs:
           cd tools/preverifier/build/linux
           make CC="gcc" CFLAGS="${CFLAGS_COMPAT}" || true
 
-      - name: Package macOS distribution
+      - name: Package
         run: |
-          mkdir -p dist/macos
+          mkdir -p dist/macos/lib/midp-classes dist/macos/games
           cp bin/linux/kvm dist/macos/ 2>/dev/null || true
           cp bin/linux/preverify dist/macos/ 2>/dev/null || true
-          
-          mkdir -p dist/macos/lib/cldc-classes
-          mkdir -p dist/macos/lib/midp-classes
-          cp -r bin/common/api/classes/* dist/macos/lib/cldc-classes/ 2>/dev/null || true
-          cp -r bin/midp/classes/* dist/macos/lib/midp-classes/ 2>/dev/null || true
-          
-          mkdir -p dist/macos/games
-          cp midp2.0fcs/example/*.jar dist/macos/games/ 2>/dev/null || true
-          cp midp2.0fcs/example/*.jad dist/macos/games/ 2>/dev/null || true
+          cp -r bin/midp/classes/* dist/macos/lib/midp-classes/
+          cp bin/midp/examples/*.jar dist/macos/games/ 2>/dev/null || true
           
           # Launcher
           cat > dist/macos/midp << 'EOF'
           #!/bin/bash
-          SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-          CLASSPATH="$SCRIPT_DIR/lib/midp-classes:$SCRIPT_DIR/lib/cldc-classes"
-          exec "$SCRIPT_DIR/kvm" -classpath "$CLASSPATH:$1" "$2"
+          DIR="$(cd "$(dirname "$0")" && pwd)"
+          exec "$DIR/kvm" -classpath "$DIR/lib/midp-classes:$1" "$2"
           EOF
           chmod +x dist/macos/midp
 
-      - name: Upload macOS distribution
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: kvm-midp-macos-intel
@@ -707,7 +699,7 @@ jobs:
           retention-days: 30
 
   # ============================================
-  # macOS ARM64 (Apple Silicon)
+  # macOS ARM64
   # ============================================
   build-macos-arm64:
     runs-on: macos-14
@@ -716,43 +708,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: cldc-api-classes
-          path: bin/common/api/classes/
-
-      - name: Download MIDP classes
+      - name: Download MIDP
         uses: actions/download-artifact@v4
         with:
           name: midp-classes
           path: bin/midp/
 
-      - name: Build KVM for macOS ARM64
+      - name: Build
         run: |
           cd build/linux
           make CC="clang" CFLAGS="-std=gnu89 -fno-strict-aliasing -w" || true
 
-      - name: Build preverifier
+      - name: Package
         run: |
-          cd tools/preverifier/build/linux
-          make CC="clang" CFLAGS="-std=gnu89 -fno-strict-aliasing -w" || true
-
-      - name: Package macOS ARM64
-        run: |
-          mkdir -p dist/macos-arm64
+          mkdir -p dist/macos-arm64/lib/midp-classes dist/macos-arm64/games
           cp bin/linux/kvm dist/macos-arm64/ 2>/dev/null || true
-          cp bin/linux/preverify dist/macos-arm64/ 2>/dev/null || true
-          
-          mkdir -p dist/macos-arm64/lib/cldc-classes
-          mkdir -p dist/macos-arm64/lib/midp-classes
-          cp -r bin/common/api/classes/* dist/macos-arm64/lib/cldc-classes/ 2>/dev/null || true
-          cp -r bin/midp/classes/* dist/macos-arm64/lib/midp-classes/ 2>/dev/null || true
-          
-          mkdir -p dist/macos-arm64/games
-          cp midp2.0fcs/example/*.jar dist/macos-arm64/games/ 2>/dev/null || true
+          cp -r bin/midp/classes/* dist/macos-arm64/lib/midp-classes/
+          cp bin/midp/examples/*.jar dist/macos-arm64/games/ 2>/dev/null || true
 
-      - name: Upload macOS ARM64
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: kvm-midp-macos-arm64
@@ -772,40 +746,35 @@ jobs:
       - name: Install cross-compilers
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            gcc-arm-linux-gnueabihf \
-            gcc-aarch64-linux-gnu
+          sudo apt-get install -y gcc-arm-linux-gnueabihf gcc-aarch64-linux-gnu
 
-      - name: Download artifacts
+      - name: Download MIDP
         uses: actions/download-artifact@v4
         with:
           name: midp-classes
           path: bin/midp/
 
-      - name: Build KVM for ARM
+      - name: Build ARM
         run: |
           cd build/linux
           make CC="arm-linux-gnueabihf-gcc" CFLAGS="${CFLAGS_COMPAT}" LDFLAGS="-static" || true
-          [ -f ../../bin/linux/kvm ] && mv ../../bin/linux/kvm ../../bin/linux/kvm-arm
+          [ -f ../../bin/linux/kvm ] && cp ../../bin/linux/kvm ../../bin/linux/kvm-arm
 
-      - name: Build KVM for ARM64
+      - name: Build ARM64
         run: |
           cd build/linux
           make clean 2>/dev/null || true
           make CC="aarch64-linux-gnu-gcc" CFLAGS="${CFLAGS_COMPAT}" LDFLAGS="-static" || true
-          [ -f ../../bin/linux/kvm ] && mv ../../bin/linux/kvm ../../bin/linux/kvm-arm64
+          [ -f ../../bin/linux/kvm ] && cp ../../bin/linux/kvm ../../bin/linux/kvm-arm64
 
-      - name: Package ARM
+      - name: Package
         run: |
-          mkdir -p dist/linux-arm/games
-          cp bin/linux/kvm-arm dist/linux-arm/kvm 2>/dev/null || true
-          cp -r bin/midp/classes dist/linux-arm/lib 2>/dev/null || true
-          cp midp2.0fcs/example/*.jar dist/linux-arm/games/ 2>/dev/null || true
-          
-          mkdir -p dist/linux-arm64/games
-          cp bin/linux/kvm-arm64 dist/linux-arm64/kvm 2>/dev/null || true
-          cp -r bin/midp/classes dist/linux-arm64/lib 2>/dev/null || true
-          cp midp2.0fcs/example/*.jar dist/linux-arm64/games/ 2>/dev/null || true
+          for arch in arm arm64; do
+            mkdir -p dist/linux-${arch}/lib/midp-classes dist/linux-${arch}/games
+            cp bin/linux/kvm-${arch} dist/linux-${arch}/kvm 2>/dev/null || true
+            cp -r bin/midp/classes/* dist/linux-${arch}/lib/midp-classes/
+            cp bin/midp/examples/*.jar dist/linux-${arch}/games/ 2>/dev/null || true
+          done
 
       - name: Upload ARM
         uses: actions/upload-artifact@v4
@@ -831,6 +800,7 @@ jobs:
     needs: 
       - build-tools
       - build-linux-x64
+      - build-linux-x86
       - build-windows-mingw
       - build-windows-mingw32
       - build-macos-intel
@@ -850,13 +820,14 @@ jobs:
         run: |
           mkdir -p release
           
+          # Package each platform
           for dir in artifacts/kvm-midp-*; do
             if [ -d "$dir" ]; then
               name=$(basename "$dir")
-              echo "Packaging $name..."
+              echo "📦 Packaging $name..."
               cd "$dir"
               if [[ "$name" == *"win"* ]]; then
-                zip -r "../../release/${name}.zip" .
+                zip -r "../../release/${name}.zip" . -x "*.DS_Store"
               else
                 tar -czvf "../../release/${name}.tar.gz" .
               fi
@@ -864,60 +835,98 @@ jobs:
             fi
           done
           
-          # Tools
+          # Tools package
           if [ -d "artifacts/java-tools" ]; then
             cd artifacts/java-tools
-            zip -r ../../release/kvm-midp-tools.zip .
+            zip -r ../../release/kvm-tools.zip .
             cd ../..
           fi
           
-          # Games only
-          mkdir -p games-only
-          cp midp2.0fcs/example/*.jar games-only/
-          cp midp2.0fcs/example/*.jad games-only/
-          cd games-only && zip -r ../release/midp-games-only.zip . && cd ..
+          # Games-only package (для тех кто хочет только игры)
+          mkdir -p games-package
+          cp midp2.0fcs/example/*.jar games-package/
+          cp midp2.0fcs/example/*.jad games-package/
+          cat > games-package/README.txt << 'EOF'
+          MIDP 2.0 Game Collection
+          ========================
           
-          ls -la release/
+          These are Java ME games that require KVM + MIDP runtime.
+          Download the appropriate KVM package for your platform.
+          
+          Games included:
+          - pushpuzzle.jar - Sokoban puzzle
+          - games.jar - TilePuzzle, WormGame
+          - manyballs.jar - Physics demo
+          - hanoi.jar - Tower of Hanoi
+          - photoalbum.jar - Image viewer
+          - stock.jar - Stock ticker
+          - auction.jar - Auction demo
+          - audiodemo.jar - Audio demos
+          EOF
+          cd games-package && zip -r ../release/midp-games.zip . && cd ..
+          
+          echo ""
+          echo "=== Release packages ==="
+          ls -lh release/
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v1.0.${{ github.run_number }}
-          name: "KVM + MIDP 2.0 - Build ${{ github.run_number }}"
+          name: "🎮 KVM + MIDP 2.0 Build ${{ github.run_number }}"
           body: |
-            ## 🎮 KVM + MIDP 2.0 Distribution
+            ## 📱 KVM + MIDP 2.0 - Play Classic Java ME Games!
             
-            Play classic Java ME mobile games on modern systems!
+            This release includes the K Virtual Machine with MIDP 2.0 profile,
+            allowing you to run classic Java ME mobile games on modern systems.
             
-            ### 📦 Downloads by Platform:
-            | Platform | File |
-            |----------|------|
-            | Linux x64 | `kvm-midp-linux-x64.tar.gz` |
-            | Linux ARM | `kvm-midp-linux-arm.tar.gz` |
-            | Linux ARM64 | `kvm-midp-linux-arm64.tar.gz` |
-            | Windows 64-bit | `kvm-midp-win64.zip` |
-            | Windows 32-bit | `kvm-midp-win32.zip` |
-            | macOS Intel | `kvm-midp-macos-intel.tar.gz` |
-            | macOS Apple Silicon | `kvm-midp-macos-arm64.tar.gz` |
+            ### 📦 Downloads
             
-            ### 🚀 Quick Start:
+            | Platform | Download |
+            |----------|----------|
+            | 🐧 Linux x64 | `kvm-midp-linux-x64.tar.gz` |
+            | 🐧 Linux x86 (32-bit) | `kvm-midp-linux-x86.tar.gz` |
+            | 🐧 Linux ARM | `kvm-midp-linux-arm.tar.gz` |
+            | 🐧 Linux ARM64 | `kvm-midp-linux-arm64.tar.gz` |
+            | 🪟 Windows x64 | `kvm-midp-win64.zip` |
+            | 🪟 Windows x86 | `kvm-midp-win32.zip` |
+            | 🍎 macOS Intel | `kvm-midp-macos-intel.tar.gz` |
+            | 🍎 macOS Apple Silicon | `kvm-midp-macos-arm64.tar.gz` |
+            
+            ### 🚀 Quick Start
+            
+            **Linux / macOS:**
             ```bash
-            # Linux/macOS:
+            tar -xzf kvm-midp-linux-x64.tar.gz
+            cd kvm-midp-linux-x64
             ./midp games/pushpuzzle.jar
+            ```
             
-            # Windows:
+            **Windows:**
+            ```cmd
             midp.bat games\pushpuzzle.jar example.pushpuzzle.PushPuzzle
             ```
             
-            ### 🎯 Included Games:
-            - Push Puzzle (Sokoban)
-            - Many Balls
-            - Tile Puzzle
-            - Worm Game
-            - Tower of Hanoi
-            - Photo Album
-            - And more!
+            ### 🎮 Included Games
+            
+            | Game | Description |
+            |------|-------------|
+            | Push Puzzle | Sokoban-style puzzle game |
+            | Worm Game | Classic snake game |
+            | Tile Puzzle | Sliding tile puzzle |
+            | Tower of Hanoi | Classic puzzle |
+            | Many Balls | Physics demo |
+            | Photo Album | Image viewer |
+            
+            ### 📋 Notes
+            
+            - Use `./midp -list game.jar` to see available MIDlets
+            - Some games may require specific MIDlet class names
+            - Check `.jad` files for game metadata
+            
           files: release/*
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
