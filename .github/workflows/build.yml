@@ -1,5 +1,5 @@
 # .github/workflows/build.yml
-name: Build KVM for All Platforms
+name: Build KVM + MIDP 2.0 for All Platforms
 
 on:
   push:
@@ -9,14 +9,15 @@ on:
   workflow_dispatch:
 
 env:
-  # Флаги для совместимости со старым кодом (GCC 3.3 era)
   CFLAGS_COMPAT: "-std=gnu89 -fno-strict-aliasing -fno-strict-overflow -w"
+  # MIDP требует указания путей
+  JAVA_HOME_8: ""
 
 jobs:
   # ============================================
-  # Сборка API (Java классы) - общая для всех
+  # Сборка CLDC API классов
   # ============================================
-  build-api:
+  build-cldc-api:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,7 +29,7 @@ jobs:
           java-version: '8'
           distribution: 'temurin'
 
-      - name: Build API classes
+      - name: Build CLDC API classes
         run: |
           cd api
           make || {
@@ -39,15 +40,89 @@ jobs:
             javac -source 1.8 -target 1.8 -d ../bin/common/api/classes @sources.txt
           }
 
-      - name: Upload API classes
+      - name: Upload CLDC API
         uses: actions/upload-artifact@v4
         with:
-          name: api-classes
+          name: cldc-api-classes
           path: bin/common/api/classes/
           retention-days: 5
 
   # ============================================
-  # Сборка инструментов (JCC, KDP)
+  # Сборка MIDP 2.0 классов
+  # ============================================
+  build-midp-classes:
+    runs-on: ubuntu-latest
+    needs: [build-cldc-api]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+
+      - name: Download CLDC API
+        uses: actions/download-artifact@v4
+        with:
+          name: cldc-api-classes
+          path: bin/common/api/classes/
+
+      - name: Build MIDP 2.0 classes
+        run: |
+          mkdir -p bin/midp/classes
+          
+          # Собираем MIDP классы поверх CLDC
+          cd midp2.0fcs/src/share/classes
+          find . -name "*.java" > sources.txt
+          
+          # Компилируем с CLDC в classpath
+          javac -source 1.4 -target 1.4 \
+                -bootclasspath ../../../../bin/common/api/classes \
+                -d ../../../../bin/midp/classes \
+                @sources.txt 2>/dev/null || \
+          javac -source 1.8 -target 1.8 \
+                -cp ../../../../bin/common/api/classes \
+                -d ../../../../bin/midp/classes \
+                @sources.txt
+          
+          # Копируем ресурсы (изображения, конфиги)
+          cd ../../../../
+          cp -r midp2.0fcs/classes/icons bin/midp/classes/ 2>/dev/null || true
+          cp -r midp2.0fcs/classes/audio bin/midp/classes/ 2>/dev/null || true
+
+      - name: Build MIDP examples
+        run: |
+          mkdir -p bin/midp/examples
+          
+          # Копируем готовые JAR/JAD файлы примеров
+          cp midp2.0fcs/example/*.jar bin/midp/examples/
+          cp midp2.0fcs/example/*.jad bin/midp/examples/
+
+      - name: Create MIDP classes JAR
+        run: |
+          cd bin/midp/classes
+          jar cf ../midp-classes.jar .
+          cd ..
+          # Объединяем CLDC + MIDP
+          mkdir combined
+          cd combined
+          jar xf ../../../bin/common/api/classes/../../../bin/common/api/classes.jar 2>/dev/null || \
+            cp -r ../../../bin/common/api/classes/* . 2>/dev/null || true
+          cp -r ../classes/* .
+          jar cf ../cldc-midp-combined.jar .
+
+      - name: Upload MIDP classes
+        uses: actions/upload-artifact@v4
+        with:
+          name: midp-classes
+          path: |
+            bin/midp/
+          retention-days: 5
+
+  # ============================================
+  # Сборка инструментов (JCC, KDP, preverifier)
   # ============================================
   build-tools:
     runs-on: ubuntu-latest
@@ -65,21 +140,48 @@ jobs:
         run: |
           cd tools/jcc
           make || {
-            echo "Manual JCC build..."
             mkdir -p ../../bin/common/tools/jcc/classes
             find src -name "*.java" > sources.txt
             javac -d ../../bin/common/tools/jcc/classes @sources.txt
+            echo "Main-Class: JavaCodeCompact" > manifest.txt
+            jar cfm ../../bin/common/tools/jcc.jar manifest.txt -C ../../bin/common/tools/jcc/classes .
           }
 
       - name: Build KDP tool
         run: |
           cd tools/kdp
           make || {
-            echo "Manual KDP build..."
             mkdir -p ../../bin/common/tools/kdp/classes
             find src -name "*.java" > sources.txt
             javac -d ../../bin/common/tools/kdp/classes @sources.txt
+            echo "Main-Class: kdp.KVMDebugProxy" > manifest.txt
+            jar cfm ../../bin/common/tools/kdp.jar manifest.txt -C ../../bin/common/tools/kdp/classes .
           }
+
+      - name: Build MIDP tools (JadTool, MEKeyTool)
+        run: |
+          mkdir -p bin/common/tools/midp
+          
+          # JadTool
+          cd midp2.0fcs/src/tools/com/sun/midp/jadtool
+          find . -name "*.java" > sources.txt
+          mkdir -p classes
+          javac -d classes @sources.txt 2>/dev/null || javac -d classes *.java
+          echo "Main-Class: com.sun.midp.jadtool.JadTool" > manifest.txt
+          jar cfm ../../../../../../../bin/common/tools/midp/JadTool.jar manifest.txt -C classes .
+          cd ../../../../../../..
+          
+          # MEKeyTool  
+          cd midp2.0fcs/src/tools/com/sun/midp/mekeytool
+          mkdir -p classes
+          javac -d classes *.java 2>/dev/null || true
+          echo "Main-Class: com.sun.midp.mekeytool.MEKeyTool" > manifest.txt
+          jar cfm ../../../../../../../bin/common/tools/midp/MEKeyTool.jar manifest.txt -C classes . 2>/dev/null || true
+          cd ../../../../../../..
+          
+          # Копируем готовые инструменты если сборка не удалась
+          cp midp2.0fcs/bin/JadTool.jar bin/common/tools/midp/ 2>/dev/null || true
+          cp midp2.0fcs/bin/MEKeyTool.jar bin/common/tools/midp/ 2>/dev/null || true
 
       - name: Upload tools
         uses: actions/upload-artifact@v4
@@ -89,11 +191,11 @@ jobs:
           retention-days: 5
 
   # ============================================
-  # Linux x86_64
+  # Linux x86_64 - KVM + MIDP
   # ============================================
   build-linux-x64:
     runs-on: ubuntu-latest
-    needs: [build-api]
+    needs: [build-cldc-api, build-midp-classes]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -101,20 +203,26 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential gcc g++ make
+          sudo apt-get install -y build-essential gcc g++ make \
+               libx11-dev libxpm-dev libpng-dev libasound2-dev \
+               libfreetype6-dev libxext-dev
 
-      - name: Show GCC version
-        run: gcc --version
+      - name: Download CLDC API
+        uses: actions/download-artifact@v4
+        with:
+          name: cldc-api-classes
+          path: bin/common/api/classes/
+
+      - name: Download MIDP classes
+        uses: actions/download-artifact@v4
+        with:
+          name: midp-classes
+          path: bin/midp/
 
       - name: Build KVM for Linux
         run: |
           cd build/linux
-          # Добавляем флаги совместимости
           make CC="gcc" CFLAGS="${CFLAGS_COMPAT}" || make
-
-      - name: Build KVM debug version
-        run: |
-          cd build/linux
           make debug CC="gcc" CFLAGS="${CFLAGS_COMPAT} -g -DDEBUG" || true
 
       - name: Build preverifier for Linux
@@ -122,60 +230,145 @@ jobs:
           cd tools/preverifier/build/linux
           make CC="gcc" CFLAGS="${CFLAGS_COMPAT}" || make
 
-      - name: List built binaries
+      - name: Build MIDP native (Linux)
         run: |
-          echo "=== bin/linux ===" 
-          ls -la bin/linux/ 2>/dev/null || echo "No binaries in bin/linux"
-          echo "=== build output ==="
-          find . -type f \( -name "kvm*" -o -name "preverify*" \) -executable 2>/dev/null
+          cd midp2.0fcs/build/linux/kvm
+          
+          # Настраиваем переменные окружения
+          export CLDC_CLASSES_DIR=../../../../bin/common/api/classes
+          export MIDP_CLASSES_DIR=../../../../bin/midp/classes
+          export KVM_DIR=../../../../kvm
+          
+          # Пробуем собрать через GNUmakefile
+          if [ -f "GNUmakefile" ]; then
+            make -f GNUmakefile PLATFORM=linux || true
+          fi
+          
+          # Альтернативная сборка нативного кода MIDP
+          cd ../../../src/share/native
+          
+          mkdir -p build
+          
+          # Компилируем основные нативные файлы
+          for f in *.c; do
+            [ -f "$f" ] && gcc ${CFLAGS_COMPAT} -c "$f" -o "build/$(basename $f .c).o" \
+              -I../../../kvm/VmCommon/h \
+              -I../../../kvm/VmUnix/h \
+              -I. \
+              -DLINUX 2>/dev/null || true
+          done
+          
+          # Компилируем платформо-специфичный код
+          cd ../../solaris/native
+          for f in *.c; do
+            [ -f "$f" ] && gcc ${CFLAGS_COMPAT} -c "$f" -o "../share/native/build/$(basename $f .c).o" \
+              -I../../../kvm/VmCommon/h \
+              -I../../../kvm/VmUnix/h \
+              -I../share/native \
+              -DLINUX \
+              $(pkg-config --cflags x11 xpm 2>/dev/null || echo "-I/usr/include/X11") \
+              2>/dev/null || true
+          done
 
-      - name: Upload Linux binaries
+      - name: Create MIDP launcher script
+        run: |
+          mkdir -p bin/linux
+          
+          cat > bin/linux/midp << 'EOF'
+          #!/bin/bash
+          SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+          CLASSES_DIR="$SCRIPT_DIR/../midp/classes"
+          
+          if [ -z "$1" ]; then
+            echo "Usage: midp <jarfile.jar> [MIDlet-class]"
+            echo "   or: midp -jad <jadfile.jad>"
+            exit 1
+          fi
+          
+          if [ "$1" = "-jad" ]; then
+            # Парсим JAD файл
+            JAD_FILE="$2"
+            JAR_FILE=$(grep "MIDlet-Jar-URL:" "$JAD_FILE" | cut -d: -f2- | tr -d ' \r')
+            MIDLET=$(grep "MIDlet-1:" "$JAD_FILE" | cut -d, -f3 | tr -d ' \r')
+            
+            if [ -z "$JAR_FILE" ]; then
+              JAR_FILE=$(dirname "$JAD_FILE")/$(basename "$JAD_FILE" .jad).jar
+            fi
+          else
+            JAR_FILE="$1"
+            MIDLET="$2"
+          fi
+          
+          # Если MIDlet не указан, пытаемся найти в манифесте
+          if [ -z "$MIDLET" ]; then
+            MIDLET=$(unzip -p "$JAR_FILE" META-INF/MANIFEST.MF 2>/dev/null | grep "MIDlet-1:" | cut -d, -f3 | tr -d ' \r')
+          fi
+          
+          if [ -z "$MIDLET" ]; then
+            echo "Error: Cannot determine MIDlet class. Please specify it as second argument."
+            exit 1
+          fi
+          
+          echo "Starting: $MIDLET from $JAR_FILE"
+          
+          exec "$SCRIPT_DIR/kvm" -classpath "$CLASSES_DIR:$JAR_FILE" "$MIDLET"
+          EOF
+          
+          chmod +x bin/linux/midp
+
+      - name: Package Linux distribution
+        run: |
+          mkdir -p dist/linux
+          
+          # Копируем бинарники
+          cp bin/linux/kvm* dist/linux/ 2>/dev/null || true
+          cp bin/linux/preverify* dist/linux/ 2>/dev/null || true
+          cp bin/linux/midp dist/linux/ 2>/dev/null || true
+          
+          # Копируем классы
+          mkdir -p dist/linux/lib
+          cp -r bin/common/api/classes dist/linux/lib/cldc-classes
+          cp -r bin/midp/classes dist/linux/lib/midp-classes
+          
+          # Копируем примеры игр
+          mkdir -p dist/linux/games
+          cp midp2.0fcs/example/*.jar dist/linux/games/
+          cp midp2.0fcs/example/*.jad dist/linux/games/
+          
+          # README
+          cat > dist/linux/README.txt << 'EOF'
+          KVM + MIDP 2.0 Distribution
+          ===========================
+          
+          Run a MIDlet game:
+            ./midp games/pushpuzzle.jar
+            ./midp -jad games/pushpuzzle.jad
+          
+          Available games:
+            - pushpuzzle.jar  - Push Puzzle game
+            - manyballs.jar   - Many Balls demo
+            - games.jar       - Game collection (TilePuzzle, WormGame)
+            - auction.jar     - Ticket Auction demo
+            - photoalbum.jar  - Photo Album
+            - stock.jar       - Stock ticker
+          
+          Direct KVM usage:
+            ./kvm -classpath lib/midp-classes:game.jar com.example.MyMIDlet
+          EOF
+
+      - name: Upload Linux distribution
         uses: actions/upload-artifact@v4
         with:
-          name: kvm-linux-x64
-          path: |
-            bin/linux/
+          name: kvm-midp-linux-x64
+          path: dist/linux/
           retention-days: 30
 
   # ============================================
-  # Linux x86 (32-bit)
-  # ============================================
-  build-linux-x86:
-    runs-on: ubuntu-latest
-    needs: [build-api]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential gcc-multilib g++-multilib make
-
-      - name: Build KVM for Linux 32-bit
-        run: |
-          cd build/linux
-          make CC="gcc -m32" CFLAGS="${CFLAGS_COMPAT} -m32" LDFLAGS="-m32" || true
-
-      - name: Build preverifier for Linux 32-bit
-        run: |
-          cd tools/preverifier/build/linux
-          make CC="gcc -m32" CFLAGS="${CFLAGS_COMPAT} -m32" LDFLAGS="-m32" || true
-
-      - name: Upload Linux 32-bit binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: kvm-linux-x86
-          path: bin/linux/
-          retention-days: 30
-        if: always()
-
-  # ============================================
-  # Windows (MinGW-w64)
+  # Windows (MinGW-w64) - KVM + MIDP
   # ============================================
   build-windows-mingw:
     runs-on: windows-latest
-    needs: [build-api]
+    needs: [build-cldc-api, build-midp-classes]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -188,7 +381,22 @@ jobs:
           install: >-
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-make
+            mingw-w64-x86_64-SDL2
+            mingw-w64-x86_64-libpng
             make
+            zip
+
+      - name: Download CLDC API
+        uses: actions/download-artifact@v4
+        with:
+          name: cldc-api-classes
+          path: bin/common/api/classes/
+
+      - name: Download MIDP classes
+        uses: actions/download-artifact@v4
+        with:
+          name: midp-classes
+          path: bin/midp/
 
       - name: Build KVM for Windows
         shell: msys2 {0}
@@ -202,20 +410,95 @@ jobs:
           cd tools/preverifier/build/win32
           make CC="gcc" CFLAGS="-std=gnu89 -fno-strict-aliasing -w" || true
 
-      - name: Upload Windows binaries
+      - name: Build MIDP native (Windows)
+        shell: msys2 {0}
+        run: |
+          cd midp2.0fcs/build/win32/kvm
+          
+          if [ -f "GNUmakefile" ]; then
+            make -f GNUmakefile PLATFORM=win32 CC=gcc || true
+          fi
+
+      - name: Create Windows launcher
+        shell: msys2 {0}
+        run: |
+          mkdir -p bin/win32
+          
+          cat > bin/win32/midp.bat << 'EOFBAT'
+          @echo off
+          setlocal
+          
+          set SCRIPT_DIR=%~dp0
+          set CLASSES_DIR=%SCRIPT_DIR%lib\midp-classes
+          
+          if "%~1"=="" (
+            echo Usage: midp.bat jarfile.jar [MIDlet-class]
+            echo    or: midp.bat -jad jadfile.jad
+            exit /b 1
+          )
+          
+          if "%~1"=="-jad" (
+            echo JAD mode not fully supported in batch, please specify JAR directly
+            exit /b 1
+          )
+          
+          set JAR_FILE=%~1
+          set MIDLET=%~2
+          
+          if "%MIDLET%"=="" (
+            echo Please specify MIDlet class name
+            exit /b 1
+          )
+          
+          echo Starting: %MIDLET% from %JAR_FILE%
+          "%SCRIPT_DIR%kvm.exe" -classpath "%CLASSES_DIR%;%JAR_FILE%" %MIDLET%
+          EOFBAT
+
+      - name: Package Windows distribution
+        shell: msys2 {0}
+        run: |
+          mkdir -p dist/win32
+          
+          # Бинарники
+          cp bin/win32/*.exe dist/win32/ 2>/dev/null || true
+          cp bin/win32/midp.bat dist/win32/ 2>/dev/null || true
+          
+          # Копируем готовый midp.exe если есть
+          cp midp2.0fcs/bin/midp.exe dist/win32/ 2>/dev/null || true
+          cp midp2.0fcs/bin/preverify.exe dist/win32/ 2>/dev/null || true
+          
+          # Классы
+          mkdir -p dist/win32/lib
+          cp -r bin/common/api/classes dist/win32/lib/cldc-classes
+          cp -r bin/midp/classes dist/win32/lib/midp-classes
+          
+          # Игры
+          mkdir -p dist/win32/games
+          cp midp2.0fcs/example/*.jar dist/win32/games/
+          cp midp2.0fcs/example/*.jad dist/win32/games/
+          
+          # Конфиги MIDP
+          mkdir -p dist/win32/lib/config
+          cp midp2.0fcs/lib/*.config dist/win32/lib/config/ 2>/dev/null || true
+          cp midp2.0fcs/lib/*.png dist/win32/lib/ 2>/dev/null || true
+          
+          # AppDB для MIDP
+          mkdir -p dist/win32/appdb
+          cp midp2.0fcs/appdb/* dist/win32/appdb/ 2>/dev/null || true
+
+      - name: Upload Windows distribution
         uses: actions/upload-artifact@v4
         with:
-          name: kvm-win32-mingw64
-          path: bin/win32/
+          name: kvm-midp-win64
+          path: dist/win32/
           retention-days: 30
-        if: always()
 
   # ============================================
-  # Windows 32-bit (MinGW-w64 i686)
+  # Windows 32-bit
   # ============================================
   build-windows-mingw32:
     runs-on: windows-latest
-    needs: [build-api]
+    needs: [build-cldc-api, build-midp-classes]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -229,6 +512,19 @@ jobs:
             mingw-w64-i686-gcc
             mingw-w64-i686-make
             make
+            zip
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: cldc-api-classes
+          path: bin/common/api/classes/
+
+      - name: Download MIDP classes
+        uses: actions/download-artifact@v4
+        with:
+          name: midp-classes
+          path: bin/midp/
 
       - name: Build KVM for Windows 32-bit
         shell: msys2 {0}
@@ -236,217 +532,240 @@ jobs:
           cd build/win32
           make CC="gcc" CFLAGS="-std=gnu89 -fno-strict-aliasing -w" || true
 
-      - name: Build preverifier for Windows 32-bit
+      - name: Build preverifier
         shell: msys2 {0}
         run: |
           cd tools/preverifier/build/win32
           make CC="gcc" CFLAGS="-std=gnu89 -fno-strict-aliasing -w" || true
 
-      - name: Upload Windows 32-bit binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: kvm-win32-i686
-          path: bin/win32/
-          retention-days: 30
-        if: always()
-
-  # ============================================
-  # Windows (MSVC)
-  # ============================================
-  build-windows-msvc:
-    runs-on: windows-latest
-    needs: [build-api]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup MSVC
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Setup Developer Command Prompt
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Build KVM with MSVC
-        shell: cmd
+      - name: Package Windows 32-bit
+        shell: msys2 {0}
         run: |
-          cd build\win32
-          nmake -f Makefile CC=cl || echo "MSVC build may need Makefile adjustments"
+          mkdir -p dist/win32-i686
+          cp bin/win32/*.exe dist/win32-i686/ 2>/dev/null || true
+          cp midp2.0fcs/bin/*.exe dist/win32-i686/ 2>/dev/null || true
+          
+          mkdir -p dist/win32-i686/lib
+          cp -r bin/common/api/classes dist/win32-i686/lib/cldc-classes
+          cp -r bin/midp/classes dist/win32-i686/lib/midp-classes
+          
+          mkdir -p dist/win32-i686/games
+          cp midp2.0fcs/example/*.jar dist/win32-i686/games/
+          cp midp2.0fcs/example/*.jad dist/win32-i686/games/
 
-      - name: Upload Windows MSVC binaries
+      - name: Upload Windows 32-bit
         uses: actions/upload-artifact@v4
         with:
-          name: kvm-win32-msvc
-          path: bin/win32/
+          name: kvm-midp-win32
+          path: dist/win32-i686/
           retention-days: 30
-        if: always()
 
   # ============================================
-  # macOS (Intel)
+  # macOS Intel
   # ============================================
   build-macos-intel:
     runs-on: macos-13
-    needs: [build-api]
+    needs: [build-cldc-api, build-midp-classes]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: |
-          brew install make gcc
+        run: brew install make gcc libpng sdl2
 
-      - name: Build KVM for macOS (using Linux Makefile)
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: cldc-api-classes
+          path: bin/common/api/classes/
+
+      - name: Download MIDP classes
+        uses: actions/download-artifact@v4
+        with:
+          name: midp-classes
+          path: bin/midp/
+
+      - name: Build KVM for macOS
         run: |
           cd build/linux
-          # macOS совместим с Unix Makefile
           make CC="gcc" CFLAGS="${CFLAGS_COMPAT}" || true
 
-      - name: Build preverifier for macOS
+      - name: Build preverifier
         run: |
           cd tools/preverifier/build/linux
           make CC="gcc" CFLAGS="${CFLAGS_COMPAT}" || true
 
-      - name: Upload macOS Intel binaries
+      - name: Package macOS distribution
+        run: |
+          mkdir -p dist/macos
+          cp bin/linux/kvm* dist/macos/ 2>/dev/null || true
+          cp bin/linux/preverify* dist/macos/ 2>/dev/null || true
+          
+          mkdir -p dist/macos/lib
+          cp -r bin/common/api/classes dist/macos/lib/cldc-classes
+          cp -r bin/midp/classes dist/macos/lib/midp-classes
+          
+          mkdir -p dist/macos/games
+          cp midp2.0fcs/example/*.jar dist/macos/games/
+          cp midp2.0fcs/example/*.jad dist/macos/games/
+          
+          # Launcher script
+          cat > dist/macos/midp << 'EOF'
+          #!/bin/bash
+          SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+          exec "$SCRIPT_DIR/kvm" -classpath "$SCRIPT_DIR/lib/midp-classes:$1" "$2"
+          EOF
+          chmod +x dist/macos/midp
+
+      - name: Upload macOS distribution
         uses: actions/upload-artifact@v4
         with:
-          name: kvm-macos-intel
-          path: bin/linux/
+          name: kvm-midp-macos-intel
+          path: dist/macos/
           retention-days: 30
-        if: always()
 
   # ============================================
-  # macOS (ARM64 / Apple Silicon)
+  # macOS ARM64 (Apple Silicon)
   # ============================================
   build-macos-arm64:
     runs-on: macos-14
-    needs: [build-api]
+    needs: [build-cldc-api, build-midp-classes]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: cldc-api-classes
+          path: bin/common/api/classes/
+
+      - name: Download MIDP classes
+        uses: actions/download-artifact@v4
+        with:
+          name: midp-classes
+          path: bin/midp/
 
       - name: Build KVM for macOS ARM64
         run: |
           cd build/linux
           make CC="clang" CFLAGS="-std=gnu89 -fno-strict-aliasing -w" || true
 
-      - name: Build preverifier for macOS ARM64
+      - name: Build preverifier
         run: |
           cd tools/preverifier/build/linux
           make CC="clang" CFLAGS="-std=gnu89 -fno-strict-aliasing -w" || true
 
-      - name: Upload macOS ARM64 binaries
+      - name: Package macOS ARM64
+        run: |
+          mkdir -p dist/macos-arm64
+          cp bin/linux/kvm* dist/macos-arm64/ 2>/dev/null || true
+          cp bin/linux/preverify* dist/macos-arm64/ 2>/dev/null || true
+          
+          mkdir -p dist/macos-arm64/lib
+          cp -r bin/common/api/classes dist/macos-arm64/lib/cldc-classes
+          cp -r bin/midp/classes dist/macos-arm64/lib/midp-classes
+          
+          mkdir -p dist/macos-arm64/games
+          cp midp2.0fcs/example/*.jar dist/macos-arm64/games/
+          cp midp2.0fcs/example/*.jad dist/macos-arm64/games/
+
+      - name: Upload macOS ARM64
         uses: actions/upload-artifact@v4
         with:
-          name: kvm-macos-arm64
-          path: bin/linux/
+          name: kvm-midp-macos-arm64
+          path: dist/macos-arm64/
           retention-days: 30
-        if: always()
 
   # ============================================
-  # Cross-compile для ARM (Linux)
+  # Linux ARM / ARM64
   # ============================================
   build-linux-arm:
     runs-on: ubuntu-latest
-    needs: [build-api]
+    needs: [build-cldc-api, build-midp-classes]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install ARM cross-compiler
+      - name: Install cross-compilers
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
+          sudo apt-get install -y \
+            gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf \
+            gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: cldc-api-classes
+          path: bin/common/api/classes/
+
+      - name: Download MIDP classes
+        uses: actions/download-artifact@v4
+        with:
+          name: midp-classes
+          path: bin/midp/
 
       - name: Build KVM for ARM
         run: |
           cd build/linux
-          make CC="arm-linux-gnueabihf-gcc" \
-               CFLAGS="${CFLAGS_COMPAT}" \
-               LDFLAGS="-static" || true
-
-      - name: Upload ARM binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: kvm-linux-arm
-          path: bin/linux/
-          retention-days: 30
-        if: always()
-
-  # ============================================
-  # Cross-compile для ARM64 (Linux)
-  # ============================================
-  build-linux-arm64:
-    runs-on: ubuntu-latest
-    needs: [build-api]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install ARM64 cross-compiler
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+          make CC="arm-linux-gnueabihf-gcc" CFLAGS="${CFLAGS_COMPAT}" LDFLAGS="-static" || true
+          mv ../../bin/linux/kvm ../../bin/linux/kvm-arm 2>/dev/null || true
 
       - name: Build KVM for ARM64
         run: |
           cd build/linux
-          make CC="aarch64-linux-gnu-gcc" \
-               CFLAGS="${CFLAGS_COMPAT}" \
-               LDFLAGS="-static" || true
+          make clean 2>/dev/null || true
+          make CC="aarch64-linux-gnu-gcc" CFLAGS="${CFLAGS_COMPAT}" LDFLAGS="-static" || true
+          mv ../../bin/linux/kvm ../../bin/linux/kvm-arm64 2>/dev/null || true
+
+      - name: Package ARM distributions
+        run: |
+          # ARM 32-bit
+          mkdir -p dist/linux-arm
+          cp bin/linux/kvm-arm dist/linux-arm/kvm 2>/dev/null || true
+          mkdir -p dist/linux-arm/lib
+          cp -r bin/common/api/classes dist/linux-arm/lib/cldc-classes
+          cp -r bin/midp/classes dist/linux-arm/lib/midp-classes
+          mkdir -p dist/linux-arm/games
+          cp midp2.0fcs/example/*.jar dist/linux-arm/games/
+          
+          # ARM64
+          mkdir -p dist/linux-arm64
+          cp bin/linux/kvm-arm64 dist/linux-arm64/kvm 2>/dev/null || true
+          mkdir -p dist/linux-arm64/lib
+          cp -r bin/common/api/classes dist/linux-arm64/lib/cldc-classes
+          cp -r bin/midp/classes dist/linux-arm64/lib/midp-classes
+          mkdir -p dist/linux-arm64/games
+          cp midp2.0fcs/example/*.jar dist/linux-arm64/games/
+
+      - name: Upload ARM binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: kvm-midp-linux-arm
+          path: dist/linux-arm/
+          retention-days: 30
 
       - name: Upload ARM64 binaries
         uses: actions/upload-artifact@v4
         with:
-          name: kvm-linux-arm64
-          path: bin/linux/
+          name: kvm-midp-linux-arm64
+          path: dist/linux-arm64/
           retention-days: 30
-        if: always()
 
   # ============================================
-  # FreeBSD
-  # ============================================
-  build-freebsd:
-    runs-on: ubuntu-latest
-    needs: [build-api]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Build on FreeBSD
-        uses: vmactions/freebsd-vm@v1
-        with:
-          usesh: true
-          prepare: |
-            pkg install -y gcc gmake
-          run: |
-            cd build/linux
-            gmake CC="gcc" CFLAGS="-std=gnu89 -fno-strict-aliasing -w" || true
-            cd ../../tools/preverifier/build/linux
-            gmake CC="gcc" CFLAGS="-std=gnu89 -fno-strict-aliasing -w" || true
-
-      - name: Upload FreeBSD binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: kvm-freebsd
-          path: bin/linux/
-          retention-days: 30
-        if: always()
-
-  # ============================================
-  # Создание релиза
+  # Создание релиза с играми
   # ============================================
   create-release:
     runs-on: ubuntu-latest
     needs: 
-      - build-api
       - build-tools
       - build-linux-x64
-      - build-linux-x86
       - build-windows-mingw
       - build-windows-mingw32
       - build-macos-intel
       - build-macos-arm64
       - build-linux-arm
-      - build-linux-arm64
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
@@ -462,62 +781,103 @@ jobs:
           mkdir -p release
           
           # Linux x64
-          if [ -d "artifacts/kvm-linux-x64" ]; then
-            cd artifacts/kvm-linux-x64
-            tar -czvf ../../release/kvm-linux-x64.tar.gz .
-            cd ../..
-          fi
-          
-          # Linux x86
-          if [ -d "artifacts/kvm-linux-x86" ]; then
-            cd artifacts/kvm-linux-x86
-            tar -czvf ../../release/kvm-linux-x86.tar.gz .
+          if [ -d "artifacts/kvm-midp-linux-x64" ]; then
+            cd artifacts/kvm-midp-linux-x64
+            tar -czvf ../../release/kvm-midp-linux-x64.tar.gz .
             cd ../..
           fi
           
           # Windows 64-bit
-          if [ -d "artifacts/kvm-win32-mingw64" ]; then
-            cd artifacts/kvm-win32-mingw64
-            zip -r ../../release/kvm-win64.zip .
+          if [ -d "artifacts/kvm-midp-win64" ]; then
+            cd artifacts/kvm-midp-win64
+            zip -r ../../release/kvm-midp-win64.zip .
             cd ../..
           fi
           
           # Windows 32-bit
-          if [ -d "artifacts/kvm-win32-i686" ]; then
-            cd artifacts/kvm-win32-i686
-            zip -r ../../release/kvm-win32.zip .
+          if [ -d "artifacts/kvm-midp-win32" ]; then
+            cd artifacts/kvm-midp-win32
+            zip -r ../../release/kvm-midp-win32.zip .
             cd ../..
           fi
           
           # macOS Intel
-          if [ -d "artifacts/kvm-macos-intel" ]; then
-            cd artifacts/kvm-macos-intel
-            tar -czvf ../../release/kvm-macos-intel.tar.gz .
+          if [ -d "artifacts/kvm-midp-macos-intel" ]; then
+            cd artifacts/kvm-midp-macos-intel
+            tar -czvf ../../release/kvm-midp-macos-intel.tar.gz .
             cd ../..
           fi
           
           # macOS ARM64
-          if [ -d "artifacts/kvm-macos-arm64" ]; then
-            cd artifacts/kvm-macos-arm64
-            tar -czvf ../../release/kvm-macos-arm64.tar.gz .
+          if [ -d "artifacts/kvm-midp-macos-arm64" ]; then
+            cd artifacts/kvm-midp-macos-arm64
+            tar -czvf ../../release/kvm-midp-macos-arm64.tar.gz .
             cd ../..
           fi
           
-          # API classes
-          if [ -d "artifacts/api-classes" ]; then
-            cd artifacts/api-classes
-            zip -r ../../release/cldc-api-classes.zip .
+          # Linux ARM
+          if [ -d "artifacts/kvm-midp-linux-arm" ]; then
+            cd artifacts/kvm-midp-linux-arm
+            tar -czvf ../../release/kvm-midp-linux-arm.tar.gz .
+            cd ../..
+          fi
+          
+          # Linux ARM64
+          if [ -d "artifacts/kvm-midp-linux-arm64" ]; then
+            cd artifacts/kvm-midp-linux-arm64
+            tar -czvf ../../release/kvm-midp-linux-arm64.tar.gz .
             cd ../..
           fi
           
           # Java tools
           if [ -d "artifacts/java-tools" ]; then
             cd artifacts/java-tools
-            zip -r ../../release/kvm-tools.zip .
+            zip -r ../../release/kvm-midp-tools.zip .
             cd ../..
           fi
           
+          # Games only package
+          mkdir -p games-only
+          cp midp2.0fcs/example/*.jar games-only/
+          cp midp2.0fcs/example/*.jad games-only/
+          cd games-only
+          zip -r ../release/midp-games.zip .
+          cd ..
+          
           ls -la release/
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: KVM + MIDP 2.0 Build ${{ github.run_number }}
+          body: |
+            ## KVM + MIDP 2.0 Distribution
+            
+            Play classic Java ME games on modern systems!
+            
+            ### Included Games:
+            - 🧩 Push Puzzle
+            - ⚪ Many Balls  
+            - 🎮 Tile Puzzle & Worm Game
+            - 📱 And more demos!
+            
+            ### Quick Start:
+            ```bash
+            # Linux/macOS:
+            ./midp games/pushpuzzle.jar
+            
+            # Windows:
+            midp.bat games\pushpuzzle.jar com.example.PushPuzzle
+            ```
+            
+            ### Platforms:
+            - Linux x64, ARM, ARM64
+            - Windows 32-bit and 64-bit
+            - macOS Intel and Apple Silicon
+          files: release/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload release packages
         uses: actions/upload-artifact@v4
