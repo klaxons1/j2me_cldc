@@ -1,0 +1,166 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 16:27:00" />
+    <title>The Event Model</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="first-steps.html" />
+    <link rel="Next" href="storage.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="first-steps.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="storage.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="portIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp434413"> </a><h2 class="pChapNum">
+Chapter &#160; 3
+</h2>
+<a name="wp442099"> </a><h2 class="pNewHTMLPage">
+The Event Model
+</h2>
+<hr class="pHr"/>
+<a name="wp449042"> </a><p class="pBody">
+This chapter describes the event-handling mechanism of the MIDP Reference Implementation. The mechanism is implemented primarily in the <code class="cCode">com.sun.midp.lcdui.DefaultEventHandler</code> class. Because it is written in the Java&#8482; programming language, it will run without changes on a new device. event-handling mechanism also has a few native calls that deliver events to MIDP that you might have to port. This chapter explains how the event model works so that you can better understand the reference implementation, and briefly discusses the C function that you might have to port.
+</p>
+<a name="wp448648"> </a><p class="pBody">
+This chapter contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp449076"> </a><div class="pBullet1"><li><a  href="events.html#wp449087"><span style="color: #3366CC">Event Model Overview</span></a></li></div>
+<a name="wp449077"> </a><div class="pBullet1Plus"><li><a  href="events.html#wp449090"><span style="color: #3366CC">Events From the Virtual Machine</span></a></li></div>
+<a name="wp451272"> </a><div class="pBullet1Plus"><li><a  href="events.html#wp449091"><span style="color: #3366CC">Events From MIDP</span></a></li></div>
+<a name="wp449086"> </a><div class="pBullet1Last"><li><a  href="events.html#wp451249"><span style="color: #3366CC">Native Functions</span></a></li></div>
+</ul>
+<a name="wp449087"> </a><h2 class="pHeading1">
+3.1	Event Model Overview
+</h2>
+<a name="wp448649"> </a><p class="pBody">
+MIDP is one software layer in a Java 2 Platform, Micro Edition (J2ME&#8482;) implementation; multiple layers can generate events that MIDP must handle. MIDP&#8217;s event handling mechanism enables it to receive and process events that come from two sources:
+</p>
+<ul class="pBullet1"><a name="wp449170"> </a><div class="pBullet1"><li>Outside MIDP &#8211; Events, such as key presses, that originate in the device and propagate through the underlying layer to MIDP</li></div>
+<a name="wp449177"> </a><div class="pBullet1Last"><li>Inside MIDP &#8211; Events, such as screen changes, that originate in MIDP and have meaning only to it</li></div>
+</ul>
+<a name="wp448663"> </a><p class="pBody">
+MIDP processes all events, regardless of their source, with a single thread: the <em class="cEmphasis">event thread</em>. In addition to the event thread, MIDP also has a single queue, the <em class="cEmphasis">event queue</em>, that holds all pending events, regardless of their source. The event thread serially processes events from the event queue until the queue is empty.
+</p>
+<a name="wp450745"> </a><p class="pBody">
+When the event queue is empty, the event thread goes to sleep by calling the <code class="cCode">wait</code> method. When the event queue receives an event, it calls the <code class="cCode">notify</code> method to wake up the event thread so that the event can be processed. The <br />wait/notify mechanism of the Java programming language is an efficient way to process events, in terms of battery life. If MIDP used a mechanism that had threads busy-wait, the device&#39;s battery could be drained more quickly.
+</p>
+<a name="wp448677"> </a><p class="pBody">
+Having a a single event thread operating on a single queue simplifies event handling, although putting the events in the queue introduces some complexity because the events from the inside and outside MIDP are received differently. The following sections discuss how events from the two sources are received and processed.
+</p>
+<a name="wp449090"> </a><h2 class="pHeading1">
+3.2	Events From the Virtual Machine
+</h2>
+<a name="wp449375"> </a><p class="pBody">
+Passing an event from the virtual machine (VM) to MIDP is not straightforward because the VM typically is written and operates in a different computer language than the MIDP layer. The VM is often in C or C++, and MIDP is largely written in the Java programming language. 
+</p>
+<a name="wp449520"> </a><p class="pBody">
+MIDP solves the problem of getting events from the VM by implementing a special data stream between the VM and MIDP. The VM writes a series of integer values into the stream for each event that occurs, then MIDP reads the values from the stream to process the events. MIDP can receive the following predefined event types from the VM: key, pointer, command, and multimedia.
+</p>
+<a name="wp451033"> </a><p class="pBody">
+MIDP has two threads that work together to get an event from the stream. One thread, the <em class="cEmphasis">VM-event thread</em>, gets the initial integer of the series that describes an event. The event thread (the thread that handles the events on the event queue) gets the event&#8217;s remaining integers. Both threads use blocking reads. (That is, the <code class="cCode">read</code> method returns only when there is data available on the stream; if the stream is empty, the thread cannot do other work.)
+</p>
+<a name="wp451054"> </a><p class="pBody">
+In more detail, getting and processing an event from the VM happens like this:
+</p>
+<ol class="pList1"><a name="wp449696"> </a><div class="pList1"><li>The VM-event thread attempts to read an integer from the stream. When there is data on the stream, the read method unblocks and returns a single integer value. The integer identifies the type of event in the stream.</li></div>
+<a name="wp449688"> </a><div class="pList1Plus"><li>The VM-event thread places the event identifier into the event queue and waits by calling the <code class="cCode">wait</code> method. The VM-event thread waits because it does not know how many of the subsequent integers on the stream are part of this event. It cannot yet locate the next event identifier.</li></div>
+<a name="wp448718"> </a><div class="pList1Last"><li>The event thread processes the event on the event queue:</li></div>
+</ol>
+<ol type="a" class="pList2"><a name="wp450385"> </a><div class="pList2"><li>It reads the integers that are on the stream for the event it is processing. The event thread has access to the number of integers associated with each type of event, so it is able to read only the data for the current event. This read will not block because it is guaranteed that a specific number of integers are on the stream for each event ID.</li></div>
+<a name="wp449769"> </a><div class="pList2Plus"><li>It uses the integers to process the event.</li></div>
+<a name="wp450474"> </a><div class="pList2Plus"><li>It calls the <code class="cCode">notify</code> method to allow the VM-event thread to read the next event identifier from the stream. (The read operation in <a  href="events.html#wp450385"><span style="color: #3366CC">Step&#160;a</span></a> took enough data from the stream that the next integer on the stream will be an event identifier.)</li></div>
+<a name="wp450849"> </a><div class="pList2Last"><li>The VM-event thread awakens and the process repeats from <a  href="events.html#wp449696"><span style="color: #3366CC">Step&#160;1</span></a>.</li></div>
+</ol>
+<a name="wp448735"> </a><p class="pBody">
+There is a potential problem with the data stream: if a user caused events to happen at a rate that surpassed MIDP&#39;s ability to process them, the stream could overflow and incoming events would be ignored. In practice, it has not been an issue.
+</p>
+<a name="wp449091"> </a><h2 class="pHeading1">
+3.3	Events From MIDP
+</h2>
+<a name="wp450863"> </a><p class="pBody">
+Getting events from MIDP onto the event queue is more straightforward: they are placed into the event queue by the MIDP system thread or MIDlet-created thread that is executing the call that generated the event. Unlike the VM-event thread, this thread does not wait for the event to be processed; it puts the event on the event queue and returns immediately. MIDP can receive the following predefined event types from MIDP application code: repaints, screen changes, serialized callbacks, content invalidations (such as a <code class="cCode">Form</code>), and item state change notifications.
+</p>
+<a name="wp450037"> </a><p class="pBody">
+The event queue, from which the event thread serially processes elements, has special processing to keep MIDP&#8217;s events from causing an overflow. (The chances of overflow would otherwise be greater for application-generated events, since an application might have a very tight loop that generate events.) The event queue does the following special processing:
+</p>
+<ul class="pBullet1"><a name="wp450230"> </a><div class="pBullet1"><li>It coalesces repaint events &#8211; If a repaint for region R1 has been scheduled but not yet processed, and a thread attempts to schedule a subsequent repaint for region R2, the end result is a single repaint event with a region that is the union of R1 and R2.</li></div>
+<a name="wp450237"> </a><div class="pBullet1Last"><li>It discards any prior, unprocessed screen-change event when a new screen-change event arrives &#8211; The event queue keeps only the most recent screen-change event for processing.</li></div>
+</ul>
+<a name="wp450240"> </a><p class="pBody">
+Both actions are explicitly permitted by the MIDP specification. In addition to keeping the event queue from overflowing, the special processing keeps the memory footprint of the event queue at or below a small maximum limit (basically the sum of one pending event of each type).
+</p>
+<a name="wp451249"> </a><h2 class="pHeading1">
+3.4	Native Functions
+</h2>
+<a name="wp451432"> </a><p class="pBody">
+The virtual machine (VM) has its own event handling mechanism, from which MIDP gets events. Part of the virtual machine&#8217;s event handling is the function <code class="cCode">GetAndStoreNextKVMEvent</code>. Systems built on the VM, such as MIDP, must implement this method. (The Porting Guide that came with CLDC for more detailed information.) 
+</p>
+<a name="wp451436"> </a><p class="pBody">
+The MIDP Reference Implementation implements the <code class="cCode">GetAndStoreNextKVMEvent</code> function in the <code class="cCode">nativeGUI.c</code> file, which is in the platform-specific directories <em class="cEmphasis">midpInstallDir</em><code class="cCode">\src\win32\native</code> and <em class="cEmphasis">midpInstallDir</em><code class="cCode">/src/solaris/native</code>. Because the method is device-specific, you will have to port it to your device. The following paragraphs describe its actions.
+</p>
+<a name="wp451563"> </a><p class="pBody">
+Because the MIDP Reference Implementation defines a number of events, one task that <code class="cCode">GetAndStoreNextKVMEvent</code> performs is to determine whether an event should be passed to the Java platform event handler. The MIDP Reference Implementation typically passes key presses, button presses, mouse movement, mouse clicks (on the emulator screen and the keypad), multimedia, application shutdown, and timers. Events that are not passed to the Java platform event handler are those that occur when the system menu is displayed (the system menu is a native component controlled entirely by native code). In this case, key presses go directly to the native system menu event handler, not to the Java platform event handler.
+</p>
+<a name="wp451566"> </a><p class="pBody">
+If an event will be passed to the Java platform event handler, <code class="cCode">GetAndStoreNextKVMEvent</code> calls the <code class="cCode">StoreMIDPEvent</code> function. The function encodes the event and makes it available to the Java platform. The <code class="cCode">StoreMIDPEvent</code> function is in the file <em class="cEmphasis">midpInstallDir</em><code class="cCode">\src\share\native\kvm\midpEvent.c</code>.
+</p>
+<a name="wp451662"> </a><p class="pBody">
+MIDP gains access to the event using the special data stream described in <a  href="events.html#wp449090"><span style="color: #3366CC">Section&#160;3.2 &quot;Events From the Virtual Machine&quot; </span></a>. The native methods to access the special data stream are defined in <em class="cEmphasis">midpInstallDir</em><code class="cCode">\src\share\native\kvm\midpEvents.c</code> and are called by the class <code class="cCode">com.sun.midp.lcdui.Events</code>. 
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="first-steps.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="storage.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Porting MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

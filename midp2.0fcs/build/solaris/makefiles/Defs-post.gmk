@@ -1,0 +1,20 @@
+#
+# @(#)Defs-post.gmk	1.9 02/08/30 @(#)
+#
+# Copyright (c) 1999-2002 Sun Microsystems, Inc.  All rights reserved.
+# PROPRIETARY/CONFIDENTIAL
+# Use is subject to license terms.
+#
+#########
+#
+#
+#
+
+# Add platform-specific entries to the vpath
+#
+vpath %.c $(KVM_DIR)/kvm/VmUnix/src
+
+# Unix include files for kVM
+#
+EXTRA_INCLUDES += -I$(KVM_DIR)/kvm/VmUnix/h
+

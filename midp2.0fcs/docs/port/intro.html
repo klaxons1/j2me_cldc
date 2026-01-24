@@ -1,0 +1,464 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 16:26:58" />
+    <title>Introduction</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="preface.html" />
+    <link rel="Next" href="first-steps.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="preface.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="first-steps.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="portIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp432511"> </a><h2 class="pChapNum">
+Chapter &#160; 1
+</h2>
+<a name="wp432513"> </a><h2 class="pNewHTMLPage">
+Introduction
+</h2>
+<hr class="pHr"/>
+<a name="wp433375"> </a><p class="pBody">
+The <em class="cEmphasis">Mobile Information Device Profile</em> (MIDP) is a set of APIs (a profile) for the Java&#8482; 2 Platform, Micro Edition (J2ME&#8482;). It is for small, resource-constrained devices such as mobile phones and personal organizers.
+</p>
+<a name="wp443180"> </a><p class="pBody">
+This product, MIDP Reference Implementation 2.0 FCS, complies with the <em class="cEmphasis">MIDP 2.0 Specification</em> produced by the Mobile Information Device Profile 2.0 [JSR-000118] available at <a href="http://jcp.org/jsr/detail/118.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/118.jsp</span></a>.
+</p>
+<a name="wp443205"> </a><p class="pBody">
+MIDP Reference Implementation 2.0 FCS runs a device emulator on the Microsoft Windows 2000 platform. It has also been run on the Solaris&#8482; 8 Operating Environment (Solaris OE) and RedHat Linux 7.2, although these are not supported platforms.
+</p>
+<a name="wp443226"> </a><p class="pBody">
+MIDP applications are called <em class="cEmphasis">MIDlets</em>. One or more MIDlets packaged together for installation onto a device is called a <em class="cEmphasis">MIDlet suite</em>.
+</p>
+<a name="wp433416"> </a><p class="pBody">
+This chapter introduces MIDP porting. It contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp438088"> </a><div class="pBullet1"><li><a  href="intro.html#wp437912"><span style="color: #3366CC">Product Architecture</span></a></li></div>
+<a name="wp433420"> </a><div class="pBullet1Last"><li><a  href="intro.html#wp433430"><span style="color: #3366CC">Porting Requirements</span></a></li></div>
+</ul>
+<a name="wp437912"> </a><h2 class="pHeading1">
+1.1	Product Architecture
+</h2>
+<a name="wp437913"> </a><p class="pBody">
+MIDP works with the Connected Limited Device Configuration (CLDC) of the J2ME platform. The following figure shows the J2ME architecture from the perspective of MIDP:
+</p>
+<a name="wp437941"> </a><p class="pBody">
+<img src="images/introa.gif" height="155" width="339" alt="J2ME stack for MIDP" longdesc="images/introa.txt" border="0" hspace="0" vspace="0"/><a href="images/introa.txt" title="Description link for J2ME stack for MIDP">[D]</a>    
+</p>
+<a name="wp437942"> </a><div class="pFigureCaption">
+FIGURE&#160;1&#160;&#160;&#8211;&#160;&#160;J2ME Architecture with MIDP and MIDP Applications
+<br /><br />
+</div><a name="wp437943"> </a><p class="pBody">
+MIDP itself is made up of modules, many of which are implemented in two layers:
+</p>
+<ul class="pBullet1"><a name="wp437944"> </a><div class="pBullet1"><li>Java programming language layer <br />(This part typically can run without changes on a new device.)</li></div>
+<a name="wp437945"> </a><div class="pBullet1Last"><li>Native layer, implemented in the C programming language <br />(This part typically needs to be changed so that it can run on a new device.)</li></div>
+</ul>
+<a name="wp437949"> </a><p class="pBody">
+The following figure shows the modules that comprise MIDP Reference Implementation. A module shown atop and overlapping another module uses code from that other module. (In some cases, the upper module might use only the native layer of another module.)
+</p>
+<a name="wp438044"> </a><p class="pBody">
+<img src="images/intro2.gif" height="233" width="575" alt="Software modules of the MIDP Reference Implementation" longdesc="images/intro2.txt" border="0" hspace="0" vspace="0"/><a href="images/intro2.txt" title="Description link for Software modules of the MIDP Reference Implementation">[D]</a>    
+</p>
+<a name="wp438045"> </a><div class="pFigureCaption">
+FIGURE&#160;2&#160;&#160;&#8211;&#160;&#160;MIDP 2.0 Modules
+<br /><br />
+</div><a name="wp438046"> </a><p class="pBody">
+The chapters in this guide are organized in a way similar to the modules shown in the previous figure: they start with a module at the bottom of the stack, then work upwards. If you work in this order, you will always be ready to test a ported module because the layers underneath it will ready.
+</p>
+<a name="wp445239"> </a><p class="pBody">
+The modules are:
+</p>
+<ul class="pBullet1"><a name="wp446666"> </a><div class="pBullet1"><li><b class="cBold">Event Handling</b> &#8212; Receives and processes events from the virtual machine and from MIDP. Events include key presses, requests for screen changes, and so on. </li></div>
+<a name="wp446670"> </a><p class="pIndented1">
+See <a  href="events.html#wp442099"><span style="color: #3366CC">Chapter&#160;3, &#8220;The Event Model</span></a>&#8221; for more information.
+</p>
+<a name="wp438047"> </a><div class="pBullet1Plus"><li><b class="cBold">Record Management System (RMS)</b> &#8212; Provides a platform-independent interface to MIDlets that need to store data on the device.</li></div>
+<a name="wp445249"> </a><p class="pIndented1">
+See <a  href="storage.html#wp431760"><span style="color: #3366CC">Chapter&#160;4, &#8220;Persistent Storage</span></a>&#8221; for detailed porting&#160;information.
+</p>
+<a name="wp446680"> </a><div class="pBullet1Plus"><li><b class="cBold">Graphics</b> &#8212; Provides high-level graphical components, such as text boxes and forms, and a low-level component that includes graphics primitives such as lines and arcs.</li></div>
+<a name="wp446686"> </a><p class="pIndented1">
+See <a  href="thread-safety.html#wp513488"><span style="color: #3366CC">Chapter&#160;5, &#8220;Thread-Safety in LCDUI</span></a>&#8221; and <a  href="gui.html#wp431760"><span style="color: #3366CC">Chapter&#160;6, &#8220;LCDUI Graphical User Interface</span></a>,&#8221; for detailed porting information.
+</p>
+<a name="wp438051"> </a><div class="pBullet1Plus"><li><b class="cBold">Security</b> &#8212; Provides a policy that protects security-sensitive APIs by requiring permission to use them. It sets up a notion of trusted and untrusted MIDlet suites; these MIDlets typically have different sets of permissions.</li></div>
+<a name="wp438052"> </a><p class="pIndented1">
+See <a  href="security.html#wp442099"><span style="color: #3366CC">Chapter&#160;7, &#8220;Security</span></a>&#8221; for more information.
+</p>
+<a name="wp446712"> </a><div class="pBullet1Plus"><li><b class="cBold">Networking</b> &#8212; Provides the following communication protocols:</li></div>
+<ul class="pBullet2"><a name="wp446713"> </a><div class="pBullet2"><li>HTTP</li></div>
+<a name="wp446714"> </a><div class="pBullet2Plus"><li>HTTPS</li></div>
+<a name="wp446715"> </a><div class="pBullet2Plus"><li>Sockets</li></div>
+<a name="wp446716"> </a><div class="pBullet2Plus"><li>Server sockets</li></div>
+<a name="wp446717"> </a><div class="pBullet2Plus"><li>Datagram</li></div>
+<a name="wp446718"> </a><div class="pBullet2Last"><li>Comm</li></div>
+</ul>
+<a name="wp446722"> </a><p class="pIndented1">
+See <a  href="network.html#wp445115"><span style="color: #3366CC">Chapter&#160;8, &#8220;Networking</span></a>&#8221; for more information.
+</p>
+<a name="wp438053"> </a><div class="pBullet1Plus"><li><b class="cBold">Application Management System (AMS)</b> &#8212; Installs, updates, and lists MIDlets on the device, removes MIDlets from the device, and manages the life cycles of the MIDlets on the device.</li></div>
+<a name="wp445291"> </a><p class="pIndented1">
+See <a  href="ams.html#wp433637"><span style="color: #3366CC">Chapter&#160;9, &#8220;The Application Management System</span></a>&#8221; for detailed porting&#160;information.
+</p>
+<a name="wp438068"> </a><div class="pBullet1Plus"><li><b class="cBold">Over the Air Provisioning (OTA)</b> &#8212; Enables users to discover MIDlet suites on a network, download them using HTTP 1.1 or another protocol that implements the HTTP 1.1 functionality, and install or update them on their device.</li></div>
+<a name="wp445301"> </a><p class="pIndented1">
+See <a  href="ams.html#wp433637"><span style="color: #3366CC">Chapter&#160;9, &#8220;The Application Management System</span></a>&#8221; for detailed porting information.
+</p>
+<a name="wp438069"> </a><div class="pBullet1Plus"><li><b class="cBold">Push</b> &#8212; Enables a MIDlet to be launched in order to accept data from a server at the server&#8217;s request. When server data arrives, the user can accept or reject it. If the user accepts, the AMS exits any currently running MIDlet and launches the MIDlet that will receive the data.</li></div>
+<a name="wp445315"> </a><p class="pIndented1">
+See <a  href="push.html#wp442099"><span style="color: #3366CC">Chapter&#160;10, &#8220;Push Functionality</span></a>&#8221; for more information.
+</p>
+<a name="wp446728"> </a><div class="pBullet1Plus"><li><b class="cBold">Games</b> &#8212; Extends the low-level graphics component to provide game-specific capabilities such as an off-screen graphics buffer and the ability to query key status. This functionality can be the basis for the user interface of an action-style game.</li></div>
+<a name="wp446732"> </a><p class="pIndented1">
+See <a  href="gui.html#wp431760"><span style="color: #3366CC">Chapter&#160;6, &#8220;LCDUI Graphical User Interface</span></a>&#8221; for detailed porting information.
+</p>
+<a name="wp438076"> </a><div class="pBullet1Last"><li><b class="cBold">I18N</b> &#8212; Contains the input method handlers and resource message strings that provide a localized LCDUI interface. This porting guide does not cover I18N.</li></div>
+</ul>
+<a name="wp445890"> </a><p class="pBody">
+In addition, the MIDP Reference Implementation contains an optional module, the audio building block. The audio building block makes it possible to play single tones, tone sequences, and, optionally, synthetic audio such as WAV files. See <a  href="sound.html#wp442099"><span style="color: #3366CC">Chapter&#160;11, &#8220;Porting the Audio Building Block</span></a>&#8221; for detailed porting information.
+</p>
+<a name="wp433430"> </a><h2 class="pHeading1">
+1.2	Porting Requirements
+</h2>
+<a name="wp438152"> </a><p class="pBody">
+MIDP Reference Implementation 2.0 FCS can be ported to platforms that both meet the device requirements in the <em class="cEmphasis">MIDP 2.0 Specification</em> and have an ANSI C compiler. When you have completed your port, it must meet certain requirements to be compliant with the MIDP 2.0 specification. This section discusses these porting requirements in the topics:
+</p>
+<ul class="pBullet1"><a name="wp445100"> </a><div class="pBullet1"><li><a  href="intro.html#wp445123"><span style="color: #3366CC">Hardware Requirements</span></a></li></div>
+<a name="wp447112"> </a><div class="pBullet1Plus"><li><a  href="intro.html#wp447113"><span style="color: #3366CC">Software Requirements</span></a></li></div>
+<a name="wp445191"> </a><div class="pBullet1Plus"><li><a  href="intro.html#wp438091"><span style="color: #3366CC">Compiler Requirements</span></a></li></div>
+<a name="wp445199"> </a><div class="pBullet1Last"><li><a  href="intro.html#wp445102"><span style="color: #3366CC">Requirements of the Completed Port</span></a></li></div>
+</ul>
+<a name="wp445123"> </a><h3 class="pHeading2">
+1.2.1	Hardware Requirements
+</h3>
+<a name="wp445101"> </a><p class="pBody">
+The minimum hardware requirements for a device are:
+</p>
+<ul class="pBullet1"><a name="wp438171"> </a><div class="pBullet1"><li>Display &#8211; </li></div>
+<ul class="pBullet2"><a name="wp438178"> </a><div class="pBullet2"><li>Screen-size: 96x54 pixels</li></div>
+<a name="wp438173"> </a><div class="pBullet2Plus"><li>Display depth: 1-bit </li></div>
+<a name="wp438099"> </a><div class="pBullet2Last"><li>Pixel shape (aspect ratio): approximately 1:1</li></div>
+</ul>
+<a name="wp438100"> </a><div class="pBullet1Plus"><li>One or more of the following user-input mechanisms &#8211; </li></div>
+<ul class="pBullet2"><a name="wp438203"> </a><div class="pBullet2"><li>One-handed keyboard</li></div>
+<a name="wp438207"> </a><div class="pBullet2Plus"><li>Two-handed keyboard</li></div>
+<a name="wp438211"> </a><div class="pBullet2Last"><li>Touch screen </li></div>
+</ul>
+<a name="wp438102"> </a><div class="pBullet1Plus"><li>Memory &#8211; </li></div>
+<ul class="pBullet2"><a name="wp438223"> </a><div class="pBullet2"><li>256 kilobytes of non-volatile memory for the MIDP implementation, beyond what&#39;s required for CLDC. </li></div>
+<a name="wp438224"> </a><div class="pBullet2Plus"><li>8 kilobytes of non-volatile memory for application-created persistent data</li></div>
+<a name="wp438225"> </a><div class="pBullet2Last"><li>128 kilobytes of volatile memory for the Java runtime</li></div>
+</ul>
+<a name="wp438106"> </a><div class="pBullet1Plus"><li>Networking &#8211; Two-way, wireless, possibly intermittent, with limited bandwidth </li></div>
+<a name="wp438108"> </a><div class="pBullet1Last"><li>Sound &#8211; The ability to play tones, either with dedicated hardware or a software algorithm.</li></div>
+</ul>
+<a name="wp447113"> </a><h3 class="pHeading2">
+1.2.2	Software Requirements
+</h3>
+<a name="wp438302"> </a><p class="pBody">
+The software requirements for a device are:
+</p>
+<ul class="pBullet1"><a name="wp438303"> </a><div class="pBullet1"><li>A minimal kernel to manage the underlying hardware. It must:</li></div>
+<ul class="pBullet2"><a name="wp443060"> </a><div class="pBullet2"><li>Handle interrupts, exceptions, and minimal scheduling.</li></div>
+<a name="wp443061"> </a><div class="pBullet2Last"><li>Provide at least one schedulable entity to run the virtual machine for the Java platform (JVM&#8482;).</li></div>
+</ul>
+<a name="wp438317"> </a><p class="pBody">
+The kernel does not need to support separate address spaces (or processes) or make any guarantees about either real-time scheduling or latency behavior. 
+</p>
+<a name="wp438114"> </a><div class="pBullet1Plus"><li>A mechanism to read and write from non-volatile memory.</li></div>
+<a name="wp438115"> </a><div class="pBullet1Plus"><li>Read and write access to the device&#39;s wireless networking.</li></div>
+<a name="wp443140"> </a><div class="pBullet1Plus"><li>A mechanism to access the current date and the current time in milliseconds.</li></div>
+<a name="wp438117"> </a><div class="pBullet1Plus"><li>Ability to write to a bit-mapped graphics display. </li></div>
+<a name="wp438278"> </a><div class="pBullet1Plus"><li>A way to capture user input from one (or more) of the three user-input mechanisms previously listed. </li></div>
+<a name="wp438279"> </a><div class="pBullet1Last"><li>A way to manage the application life-cycle of the device. </li></div>
+</ul>
+<a name="wp438252"> </a><p class="pBody">
+Examples of MIDs include, but are not restricted to, cellular phones, two-way pagers, and wireless-enabled personal digital assistants (PDAs).
+</p>
+<a name="wp438091"> </a><h3 class="pHeading2">
+1.2.3	Compiler Requirements
+</h3>
+<a name="wp445134"> </a><p class="pBody">
+The compiler must give users a way to indicate additional directories to be searched for included files. It must also define the basic types shown in the table below. &#160;</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq433740">
+  <caption><a name="wp433743"> </a><div class="pTableCaption">
+TABLE&#160;1&#160;&#160;&#8211;&#160;&#160;Required Types in the C Programming Language 
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp433749"> </a><div style="text-align: left" class="pTableHead">
+Type
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp433751"> </a><div style="text-align: left" class="pTableHead">
+Size
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp433753"> </a><div style="text-align: left" class="pTableHead">
+Semantics
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><a name="wp433755"> </a><div class="pTableText">
+<code class="cCode">char</code>
+</div>
+</td>
+    <td><a name="wp433757"> </a><div class="pTableText">
+8 bits
+</div>
+</td>
+    <td><a name="wp433759"> </a><div class="pTableText">
+Signed or unsigned
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp433761"> </a><div class="pTableText">
+<code class="cCode">signed char</code>
+</div>
+</td>
+    <td><a name="wp433763"> </a><div class="pTableText">
+8 bits
+</div>
+</td>
+    <td><a name="wp433765"> </a><div class="pTableText">
+Signed
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp433767"> </a><div class="pTableText">
+<code class="cCode">unsigned char</code>
+</div>
+</td>
+    <td><a name="wp433769"> </a><div class="pTableText">
+8 bits
+</div>
+</td>
+    <td><a name="wp433771"> </a><div class="pTableText">
+Unsigned
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp433773"> </a><div class="pTableText">
+<code class="cCode">short</code>
+</div>
+</td>
+    <td><a name="wp433775"> </a><div class="pTableText">
+16 bits
+</div>
+</td>
+    <td><a name="wp433777"> </a><div class="pTableText">
+Signed
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp433779"> </a><div class="pTableText">
+<code class="cCode">unsigned short</code>
+</div>
+</td>
+    <td><a name="wp433781"> </a><div class="pTableText">
+16 bits
+</div>
+</td>
+    <td><a name="wp433783"> </a><div class="pTableText">
+Unsigned
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp433785"> </a><div class="pTableText">
+<code class="cCode">int</code>
+</div>
+</td>
+    <td><a name="wp433787"> </a><div class="pTableText">
+32 bits
+</div>
+</td>
+    <td><a name="wp433789"> </a><div class="pTableText">
+Signed
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp433791"> </a><div class="pTableText">
+<code class="cCode">unsigned int</code>
+</div>
+</td>
+    <td><a name="wp433793"> </a><div class="pTableText">
+32 bits
+</div>
+</td>
+    <td><a name="wp433795"> </a><div class="pTableText">
+Unsigned
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp433797"> </a><div class="pTableText">
+<code class="cCode">long</code>
+</div>
+</td>
+    <td><a name="wp433799"> </a><div class="pTableText">
+32 bits
+</div>
+</td>
+    <td><a name="wp433801"> </a><div class="pTableText">
+Signed
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp433803"> </a><div class="pTableText">
+<code class="cCode">unsigned long</code>
+</div>
+</td>
+    <td><a name="wp433805"> </a><div class="pTableText">
+32 bits
+</div>
+</td>
+    <td><a name="wp433807"> </a><div class="pTableText">
+Unsigned
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp433809"> </a><div class="pTableText">
+<code class="cCode">void *</code>
+</div>
+</td>
+    <td><a name="wp433811"> </a><div class="pTableText">
+32 bits
+</div>
+</td>
+    <td><a name="wp433813"> </a><div class="pTableText">
+Pointer
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+<a name="wp433509"> </a><p class="pBody">
+The compiler should, but is not required to, support 64-bit integers. (64-bit integer arithmetic is the only non-ANSI characteristic of the source code.) 
+</p>
+<a name="wp433513"> </a><p class="pBody">
+MIDP Reference Implementation has been compiled with the following compilers:
+</p>
+<ul class="pBullet1"><a name="wp433514"> </a><div class="pBullet1"><li>Sun Microsystems Inc. C Compiler 5.0 and 5.2 on the Solaris OE</li></div>
+<a name="wp433515"> </a><div class="pBullet1Plus"><li>GNU C 2.95.2 compiler on the Solaris OE and Windows 2000, as well as 2.95.3 and 3.03 on Linux. For more information, see <a href="http://www.gnu.org" target="_blank">
+<span class="cWebJump">http://www.gnu.org</span></a>.</li></div>
+<a name="wp443086"> </a><div class="pBullet1Plus"><li>CygWin project version 1.3.1 with gcc. For more information, see <a href="http://sources.redhat.com/cygwin" target="_blank">
+<span class="cWebJump">http://sources.redhat.com/cygwin</span></a>.</li></div>
+<a name="wp433517"> </a><div class="pBullet1Last"><li>Microsoft Visual C++ 6.0 Professional on Windows 2000.</li></div>
+</ul>
+<a name="wp433521"> </a><p class="pBody">
+The MIDP Reference Implementation has been tested on only machines that have 32-bit pointers and <code class="cCode">int</code>s, and do not require far pointers.
+</p>
+<a name="wp433528"> </a><p class="pBody">
+When you port the MIDP Reference Implementation 2.0 FCS to a new device, you must ensure that there is a CLDC/KVM 1.0.4 implementation available for it. See the <em class="cEmphasis">KVM Porting Guide</em> for KVM porting instructions if an implementation is not already available.
+</p>
+<a name="wp445102"> </a><h3 class="pHeading2">
+1.2.4	Requirements of the Completed Port
+</h3>
+<a name="wp433529"> </a><p class="pBody">
+For a port to be certified as compliant with the <em class="cEmphasis">MIDP 2.0 Specification</em>, it must pass the tests in the MIDP Reference Implementation Technology Compatibility Kit (TCK). For information on the MIDP TCK, see <a href="http://java.sun.com/products/midp/" target="_blank">
+<span class="cWebJump">http://java.sun.com/products/midp/</span></a>.
+</p>
+<a name="wp445116"> </a><p class="pBody">
+The <em class="cEmphasis">MIDP 2.0 Specification</em> lists these requirements, which are among those embodied in the TCK:
+</p>
+<ul class="pBullet1"><a name="wp445104"> </a><div class="pBullet1"><li>MUST support MIDP 1.0 and MIDP 2.0 MIDlets and MIDlet Suites.</li></div>
+<a name="wp445154"> </a><div class="pBullet1Plus"><li>MUST include all packages, classes, and interfaces described in this specification.</li></div>
+<a name="wp445158"> </a><div class="pBullet1Plus"><li>MUST implement the OTA User Initiated Provisioning specification.</li></div>
+<a name="wp445159"> </a><div class="pBullet1Plus"><li>MAY incorporate zero or more supported protocols for push.</li></div>
+<a name="wp445160"> </a><div class="pBullet1Plus"><li>MUST give the user a visual indication of network usage generated when using the mechanisms indicated in this specification.</li></div>
+<a name="wp445161"> </a><div class="pBullet1Plus"><li>MAY provide support for accessing any available serial ports on their devices through the <code class="cCode">CommConnection</code> interface.</li></div>
+<a name="wp445162"> </a><div class="pBullet1Plus"><li>MUST provide support for accessing HTTP 1.1 servers and services either directly, or by using gateway services such as provided by WAP or i-mode. </li></div>
+<a name="wp445163"> </a><div class="pBullet1Plus"><li>MUST provide support for secure HTTP connections either directly, or by using gateway services such as provided by WAP or i-mode.</li></div>
+<a name="wp445164"> </a><div class="pBullet1Plus"><li>SHOULD provide support for datagram connections.</li></div>
+<a name="wp445165"> </a><div class="pBullet1Plus"><li>SHOULD provide support for server socket stream connections</li></div>
+<a name="wp445166"> </a><div class="pBullet1Plus"><li>SHOULD provide support for socket stream connections.</li></div>
+<a name="wp445168"> </a><div class="pBullet1Plus"><li>SHOULD provide support for secure socket stream connections.</li></div>
+<a name="wp445169"> </a><div class="pBullet1Plus"><li>MUST support PNG image transparency.</li></div>
+<a name="wp445170"> </a><div class="pBullet1Plus"><li>MAY include support for additional image formats.</li></div>
+<a name="wp445171"> </a><div class="pBullet1Plus"><li>MUST support Tone Generation in the media package.</li></div>
+<a name="wp446161"> </a><div class="pBullet1Plus"><li>MUST implement a tone control and SHOULD implement a volume control for tone generation. (This is a requirement of the Multi Media API<em class="cEmphasis"> </em>[JSR 000135]. The MIDP 2.0 media support is a direct subset of the <em class="cEmphasis">Multi Media API Specification</em>. See <a href="http://jcp.org/jsr/detail/135.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/135.jsp</span></a> for more information.)</li></div>
+<a name="wp445172"> </a><div class="pBullet1Plus"><li>MUST support 8-bit, 8 KHz, mono linear PCM <code class="cCode">wav</code> format IF any sampled sound support is provided.</li></div>
+<a name="wp446187"> </a><div class="pBullet1Plus"><li>SHOULD implement a volume control if sampled sound support is provided. (This is a requirement of the Multi Media API<em class="cEmphasis"> </em>[JSR 000135]. The MIDP 2.0 media support is a direct subset of the <em class="cEmphasis">Multi Media API Specification</em>. See <a href="http://jcp.org/jsr/detail/135.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/135.jsp</span></a> for more information.)</li></div>
+<a name="wp445173"> </a><div class="pBullet1Plus"><li>MAY include support for additional sampled sound formats.</li></div>
+<a name="wp445174"> </a><div class="pBullet1Plus"><li>MUST support Scalable Polyphony MIDI (SP-MIDI) and SP-MIDI Device 5-to-24 Note Profile IF any synthetic sound support is provided.</li></div>
+<a name="wp445175"> </a><div class="pBullet1Plus"><li>MAY include support for additional MIDI formats.</li></div>
+<a name="wp445176"> </a><div class="pBullet1Plus"><li>MUST implement the mechanisms needed to support &#8220;Untrusted MIDlet Suites&#8221;. </li></div>
+<a name="wp445177"> </a><div class="pBullet1Plus"><li>MUST implement &#8220;Trusted MIDlet Suite Security&#8221; unless the device security policy does not permit or support trusted applications.</li></div>
+<a name="wp445178"> </a><div class="pBullet1Plus"><li>MUST implement &#8220;Trusted MIDlet Suites Using X.509 PKI&#8221; to recognize signed MIDlet suites as trusted unless PKI is not used by the device for signing applications.</li></div>
+<a name="wp445179"> </a><div class="pBullet1Plus"><li>MUST implement &#8220;MIDP x.509 Certificate Profile&#8221; for certificate handling of HTTPS and secure connections.</li></div>
+<a name="wp445180"> </a><div class="pBullet1Plus"><li>MUST enforce the same security requirements for I/O access from the Media API as from the Generic Connection framework, as specified in the package documentation for javax.microedition.io.</li></div>
+<a name="wp445181"> </a><div class="pBullet1Plus"><li>MUST support at least the UTF-8 character encoding for APIs that allow the application to define character encodings.</li></div>
+<a name="wp445182"> </a><div class="pBullet1Plus"><li>MAY support other character encodings.</li></div>
+<a name="wp445183"> </a><div class="pBullet1Last"><li>SHOULD NOT allow copies to be made of any MIDlet suite unless the device implements a copy protection mechanism.</li></div>
+</ul>
+<a name="wp445778"> </a><p class="pBody">
+Definitions for the terms MAY, MUST, and SHOULD are defined in RFC 2119 at <a href="http://www.ietf.org" target="_blank">
+<span class="cWebJump">http://www.ietf.org</span></a>.
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="preface.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="first-steps.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Porting MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

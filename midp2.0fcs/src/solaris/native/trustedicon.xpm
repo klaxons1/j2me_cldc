@@ -1,0 +1,30 @@
+/*
+ * @(#)trustedicon.xpm	1.3 02/09/24 @(#)
+ *
+ * Copyright (c) 1999-2002 Sun Microsystems, Inc.  All rights reserved.
+ * PROPRIETARY/CONFIDENTIAL
+ * Use is subject to license terms.
+ */
+
+/* This is the image of the trusted icon to be displayed. */
+
+
+/* XPM */
+char * trustedicon_xpm[] = {
+"12 12 4 1",
+" 	c #B6B6B6B6AAAA",
+".	c #FFFFFFFFFFFF",
+"X	c #000000000000",
+"o	c #6D6D6D6D5555",
+"     .      ",
+"    .Xo     ",
+" ...XoXo..  ",
+" XXXo  XXXo ",
+" Xo .... Xo ",
+".Xo XXXo Xo ",
+"Xo   Xo  .Xo",
+" Xo  Xo  Xo ",
+" Xo.   ..Xo ",
+" XXXo .XXXo ",
+"    XoXo    ",
+"     Xo     "};

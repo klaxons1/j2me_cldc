@@ -1,0 +1,213 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 11:35:12" />
+    <title>The JadTool Utility</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="ca-keys.html" />
+    <link rel="Next" href="appx-mekeytool.html" />
+    <link rel="Index" href="useIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="ca-keys.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="appx-mekeytool.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="useIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp1004019"> </a><h2 class="pAppxNum">
+Appendix &#160; A
+</h2>
+<a name="wp1004021"> </a><h2 class="pNewHTMLPage">
+The JadTool Utility
+</h2>
+<hr class="pHr"/>
+<a name="wp1004022"> </a><p class="pBody">
+<code class="cCode">JadTool</code> &#8212; add certificates to and see certificates in a Java&#8482; application descriptor (JAD) file; create a digital signature of a JAR file, and add that signature to a JAD file.
+</p>
+<a name="wp1000017"> </a><h3 class="pHeading2">
+Synopsis
+</h3>
+<div class="pPreformatted"><pre class="pPreformatted">
+java -jar JadTool.jar<a name="wp1005398"> </a>
+&#160;[ -addcert -alias <em class="cEmphasis">keyAlias</em> [ -keystore <em class="cEmphasis">keystore</em> ] [ -storepass <em class="cEmphasis">password </em>] [ -certnum <em class="cEmphasis">certNumber </em>] [-chainnum <em class="cEmphasis">chainNumber</em> ] [-encoding <em class="cEmphasis">encoding</em> ] -inputjad <em class="cEmphasis">inputJadFile</em> -outputjad<em class="cEmphasis"> outputJadFile </em>]<a name="wp1005989"> </a>
+&#160;[ -addjarsig [ -jarfile <em class="cEmphasis">jarFile</em> ] -alias <em class="cEmphasis">keyAlias </em>[ -keystore <em class="cEmphasis">keystore</em> ] -storepass <em class="cEmphasis">password</em> -keypass <em class="cEmphasis">keyPassword</em> [ -encoding <em class="cEmphasis">encoding</em> ] -inputjad <em class="cEmphasis">inputJadFile</em> -outputjad<em class="cEmphasis"> outputJadFile </em>]<a name="wp1007604"> </a>
+&#160;[ -help ]<a name="wp1007605"> </a>
+&#160;[ -showcert [ ( [ -certnum <em class="cEmphasis">certNumber</em> ] [ -chainnum <em class="cEmphasis">chainNumber</em> ] ) | -all ][ -encoding <em class="cEmphasis">encoding</em> ] -inputjad <em class="cEmphasis">inputJadFile</em> ]<a name="wp1004199"> </a>
+</pre></div>
+<a name="wp1004054"> </a><h3 class="pHeading2">
+Description
+</h3>
+<a name="wp1004765"> </a><p class="pBody">
+The <code class="cCode">JadTool</code> utility signs a JAR file, which means that it adds a certificate and the JAR file&#8217;s digital signature to a JAD file. Signing a JAR file is one way that a MIDP environment that includes security might trust a MIDlet suite. Trusted MIDlet suites typically have more permissions to use protected, security-sensitive APIs and functionality than untrusted MIDlet suites.
+</p>
+<a name="wp1004766"> </a><p class="pBody">
+Adding a certificate and a JAR file&#8217;s digital signature to a JAD file are separate steps, both of which must be completed to sign a JAR file. A JAD file can have more than one certificate, but can hold the signature for only one JAR file. When a certificate in the JAD file expires, a new certificate must be added to the it, and the JAR file re-signed. (The <code class="cCode">JadTool</code> utility will overwrite the digital signature it currently holds with the new signature.)
+</p>
+<hr class="pHr"/><div class="note">
+<a name="wp1004781"> </a>
+<b>Note &#8211;</b>  It is up to the user of the <code class="cCode">JadTool</code> utility to ensure that the certificate in the JAD file is from the same JCA keystore<em class="cEmphasis"> </em>entry as the one used to sign the JAR file.
+<hr class="pHr"/></div>
+<a name="wp1004823"> </a><p class="pBody">
+The <code class="cCode">JadTool</code> utility can also provide information about a certificate in a JAD file, including the name of the entity that issued the certificate, the certificate&#8217;s serial number, the dates between which is it valid, and its MD5 and SHA fingerprints.
+</p>
+<a name="wp1000019"> </a><h3 class="pHeading2">
+Options
+</h3>
+<a name="wp1000163"> </a><p class="pBody">
+The following options are supported:
+</p>
+<a name="wp1007166"> </a><p class="pBody">
+<em class="cEmphasis">none</em>
+</p>
+<a name="wp1007167"> </a><p class="pIndented1">
+Running the tool without options returns the same information as the <code class="cCode">-help</code> option.
+</p>
+<a name="wp1005786"> </a><p class="pBody">
+<code class="cCode">-addcert</code> <code class="cCode">-alias</code> <em class="cEmphasis">keyAlias</em><code class="cCode"> [</code> <code class="cCode">-keystore</code> <em class="cEmphasis">keystore</em> <code class="cCode">]</code> <code class="cCode">[</code> <code class="cCode">-storepass </code><em class="cEmphasis">password</em> <code class="cCode">]</code> <br /><code class="cCode">&#160;&#160;[</code> <code class="cCode">-chainnum</code> <em class="cEmphasis">chainNumber</em> <code class="cCode">]</code> <code class="cCode">[</code> <code class="cCode">-certnum</code> <em class="cEmphasis">certNumber</em> <code class="cCode">]</code> <br /><code class="cCode">&#160;&#160;[</code> <code class="cCode">-encoding</code> <em class="cEmphasis">encoding</em> <code class="cCode">]</code> -inputjad <em class="cEmphasis">inputJadFile</em><code class="cCode"> </code>-outputjad<em class="cEmphasis"> outputJadFile</em><em class="cEmphasis"> </em><code class="cCode">]</code>
+</p>
+<a name="wp1005721"> </a><p class="pIndented1">
+Adds a certificate to a JAD file. To do this, this utility first creates the certificate from the entry identified by <em class="cEmphasis">keyAlias</em> in <em class="cEmphasis">keystore</em>. The <em class="cEmphasis">keystore</em>, if provided, must be a JCA keystore (a file containing data such as key entries in a format that the Java 2 Platform, Standard Edition (J2SE&#8482;) can use). If <em class="cEmphasis">keystore</em> is not provided, its default, <code class="cCode">$HOME/.keystore</code>, is used. If <em class="cEmphasis">keystore</em> requires a password to access its contents, <em class="cEmphasis">password</em> must be provided.
+</p>
+<a name="wp1007174"> </a><p class="pIndented1">
+After creating the certificate and attribute name, this utility concatenates the contents of <em class="cEmphasis">inputJadFile</em> with the new certificate and writes it as <em class="cEmphasis">outputJadFile</em>. The certificate is in the JAD file as the value of an attribute named <br /><code class="cCode">MIDlet-Certificate-</code><em class="cEmphasis">m</em><code class="cCode">-</code><em class="cEmphasis">n, </em>where:
+</p>
+<ul class="pBullet2"><a name="wp1007175"> </a><div class="pBullet2"><li><em class="cEmphasis">m</em> is <em class="cEmphasis">chainNumber</em>, or 1 if it is not provided. (A JAD file can contain more than one certificate chain.)</li></div>
+<a name="wp1007176"> </a><div class="pBullet2Last"><li><em class="cEmphasis">n</em> is <em class="cEmphasis">certNumber</em>. The value <em class="cEmphasis">certNumber</em> depends on whether the new certificate will replace an existing certificate. If the certificate is a replacement, then <em class="cEmphasis">certNumber</em> should be the number of the certificate to replace. For example, if the new certificate would replace the one stored as the value of attribute <code class="cCode">MIDlet-Certificate-1-3</code><em class="cEmphasis">,</em> then <em class="cEmphasis">certNumber</em> should be <code class="cCode">3</code>. If the certificate is new, <em class="cEmphasis">certNumber</em> is ignored. </li></div>
+</ul>
+<a name="wp1007177"> </a><p class="pIndented1">
+If <em class="cEmphasis">inputJadFile</em> uses an encoding other than UTF-8 (ascii with unicode escapes), <em class="cEmphasis">encoding</em> must be specified. This utility uses the same encoding for reading <em class="cEmphasis">inputJadFile</em> and writing <em class="cEmphasis">outputJadFile</em>.
+</p>
+<a name="wp1007346"> </a><p class="pBody">
+<code class="cCode">-addjarsig</code> <code class="cCode">[</code> <code class="cCode">-jarfile</code> <em class="cEmphasis">jarFile</em> <code class="cCode">]</code> <code class="cCode">-alias</code> <em class="cEmphasis">keyAlias </em><code class="cCode">[</code> <code class="cCode">-keystore</code> <em class="cEmphasis">keystore</em> <code class="cCode">]</code> <br /><code class="cCode">&#160;&#160;-storepass</code> <em class="cEmphasis">storePassword</em> <code class="cCode">-keypass</code> <em class="cEmphasis">keyPassword</em> <br /><code class="cCode">&#160;&#160;[</code> <code class="cCode">-encoding</code> <em class="cEmphasis">encoding</em> <code class="cCode">]</code> -inputjad <em class="cEmphasis">inputJadFile</em> &#160;-outputjad<em class="cEmphasis"> outputJadFile</em>
+</p>
+<a name="wp1007347"> </a><p class="pIndented1">
+Creates a digital signature for <em class="cEmphasis">jarFile</em>. If <em class="cEmphasis">jarFile</em> is not specified, the value of the <code class="cCode">MIDlet-Jar-URL</code> attribute from <em class="cEmphasis">inputJadFile</em> is used. (The attribute&#8217;s value must be a valid HTTP URL.)
+</p>
+<a name="wp1006174"> </a><p class="pIndented1">
+This utility creates a digital signature for the JAR file using the private key identified by <em class="cEmphasis">keyAlias</em> in <em class="cEmphasis">keystore</em>. If <em class="cEmphasis">keystore</em> is not provided, its default is <br /><code class="cCode">$HOME/.keystore</code>. This utility gets the key from <em class="cEmphasis">keystore</em> using <em class="cEmphasis">storePassword</em> and <em class="cEmphasis">keyPassword</em>, and creates the signature with it using the EMSA-PKCS1-v1_5 encoding method of PKCS #1, version 2.0. (See RFC 2437 at <br /><a href="http://www.ietf.org/rfc/rfc2437.txt" target="_blank">
+<span class="cWebJump">http://www.ietf.org/rfc/rfc2437.txt</span></a>.)
+</p>
+<a name="wp1006468"> </a><p class="pIndented1">
+After creating the signature, this utility concatenates the contents of <em class="cEmphasis">inputJadFile</em> with the signature, and writes it as <em class="cEmphasis">outputJadFile</em>. The signature is base64 encoded, and is in the output JAD file as the value of the <br /><code class="cCode">MIDlet-Jar-RSA-SHA1</code> attribute.
+</p>
+<a name="wp1006556"> </a><p class="pIndented1">
+If <em class="cEmphasis">inputJadFile</em> uses an encoding other than UTF-8 (ascii with unicode escapes), <em class="cEmphasis">encoding</em> must be specified. This utility uses the same encoding for reading <em class="cEmphasis">inputJadFile</em> and writing <em class="cEmphasis">outputJadFile</em>.
+</p>
+<a name="wp1000025"> </a><p class="pBody">
+<code class="cCode">-help</code> 
+</p>
+<a name="wp1007418"> </a><p class="pIndented1">
+Prints a usage summary.
+</p>
+<a name="wp1007419"> </a><p class="pBody">
+<code class="cCode">-showcert</code> [ ( [ <code class="cCode">-certnum</code> <em class="cEmphasis">certNumber</em> ] [ <code class="cCode">-chainnum</code> <em class="cEmphasis">chainNumber</em> ] ) | <code class="cCode">-all</code> ] <br /><code class="cCode">&#160;&#160;[</code> <code class="cCode">-encoding</code> <em class="cEmphasis">encoding</em> <code class="cCode">]</code> -inputjad <em class="cEmphasis">inputJadFile</em>
+</p>
+<a name="wp1006580"> </a><p class="pIndented1">
+Prints information about either all certificates, or the certificate that corresponds to the given <em class="cEmphasis">certNumber</em> and <em class="cEmphasis">chainNumber</em> in the <em class="cEmphasis">inputJadFile</em>. (The option <code class="cCode">-all </code>cannot be combined with the <code class="cCode">-certnum</code> and <code class="cCode">-chainnum</code> options.) The <em class="cEmphasis">chainNumber</em> of a certificate is the <em class="cEmphasis">m</em> in the JAD file&#8217;s <br /><code class="cCode">MIDlet-Certificate-</code><em class="cEmphasis">m</em><code class="cCode">-</code><em class="cEmphasis">n</em> attribute, while the <em class="cEmphasis">certNumber</em> is the <em class="cEmphasis">n</em>. For example, to show the certificate that is the value of attribute <br /><code class="cCode">MIDlet-Certificate-2-3</code><em class="cEmphasis">,</em> then <em class="cEmphasis">chainNumber</em> should be <code class="cCode">2</code> and <em class="cEmphasis">certNumber</em> should be <code class="cCode">3</code>. If <em class="cEmphasis">certNumber </em>or <em class="cEmphasis">chainNumber</em> are not provided, this utility uses a <code class="cCode">1</code>.
+</p>
+<a name="wp1004969"> </a><p class="pIndented1">
+The information printed includes the certificate&#8217;s subject, issuer, serial number, dates between which it is valid, and fingerprints (md5 and SHA). The attributes in the subject and issuer names are shown in reverse order from what is in the certificate (a side effect of using the J2SE platform certificate API). As a result, the names may not match what is returned from other tools that display a certificate&#39;s subject and issuer names. 
+</p>
+<a name="wp1004987"> </a><p class="pIndented1">
+If <em class="cEmphasis">inputJadFile</em> uses an encoding other than UTF-8 (ascii with unicode escapes), <em class="cEmphasis">encoding</em> must be specified. The tool uses the same encoding for reading <em class="cEmphasis">inputJadFile</em> and writing <em class="cEmphasis">outputJadFile</em>.
+</p>
+<a name="wp1000034"> </a><h3 class="pHeading2">
+Examples
+</h3>
+<a name="wp1003709"> </a><p class="pBody">
+In the following examples the JCA keystore is <em class="cEmphasis">midpInstallDir</em>\<code class="cCode">bin\j2se_test_keystore.bin</code>. The password for the keystore is <code class="cCode">keystorepwd</code>. The keystore has RSA key pair with an alias of <code class="cCode">dummyca</code>; it has a password of <code class="cCode">keypwd</code>.
+</p>
+<a name="wp1003643"> </a><h5 class="pHeading4">
+Adding a Certificate to a JAD file
+</h5>
+<a name="wp1007767"> </a><p class="pBody">
+The following command creates a new JAD file that contains the contents of the input JAD file and a certificate created from the specified key:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt;<span class="cUserType"> java -jar bin/JadTool.jar -addcert -alias dummyca -keystore bin/j2se_test_keystore.bin -storepass keystorepwd -inputjad example/pushdemo.jad -outputjad example/pushdemo-w-mykey.jad</span><a name="wp1007771"> </a>
+</pre></div>
+<a name="wp1003644"> </a><h5 class="pHeading4">
+Viewing a Certificate
+</h5>
+<a name="wp1005075"> </a><p class="pBody">
+The following command shows the certificate associated with certificate number two (and, by default, chain number one) in the named JAD file:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">java -jar bin/JadTool.jar -showcert -certnum 2 -inputjad example/pushdemo-w-mykey.jad</span><a name="wp1005082"> </a>
+Subject: C=myserver, O=Sun Microsystems<a name="wp1005061"> </a>
+Issuer : C=myserver, O=Sun Microsystems<a name="wp1005062"> </a>
+Serial number: 3cf7e309<a name="wp1005063"> </a>
+Valid from Sun Jul 28 15:06:50 PDT 2002 to Wed Jul 25 15:06:50 PDT 2012<a name="wp1006777"> </a>
+Certificate fingerprints:<a name="wp1005065"> </a>
+  MD5: df:b1:40:a7:3c:4d:5b:f5:91:27:68:86:9c:a6:68:9e<a name="wp1005066"> </a>
+  SHA: 20:c4:1e:53:cc:cd:d0:7e:eb:a3:64:57:c2:1f:eb:88:23:cc:aa:25<a name="wp1003620"> </a>
+</pre></div>
+<a name="wp1003689"> </a><h5 class="pHeading4">
+Signing a JAR File
+</h5>
+<a name="wp1003703"> </a><p class="pBody">
+The following command signs a JAR file:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">java -jar bin/JadTool.jar -addjarsig -alias dummyca -keystore bin/j2se_test_keystore.bin -storepass keystorepwd -keypass keypwd -jarfile example/pushdemo.jar -inputjad example/pushdemo-w-mykey.jad -outputjad example/pushdemo-w-certsig.jad</span><a name="wp1007516"> </a>
+</pre></div>
+<a name="wp1003963"> </a><h3 class="pHeading2">
+See Also
+</h3>
+<a name="wp1003967"> </a><p class="pBody">
+<em class="cEmphasis">Creating MIDlet Suites</em>
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="ca-keys.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="appx-mekeytool.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="useIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Using MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

@@ -1,0 +1,627 @@
+<html>
+ <head>
+  <title>Release Notes - MIDP Reference Implementation - Version 2.0 FCS</title>
+  <link rel="stylesheet" href="../share/document.css" type="text/css">
+ </head>
+
+ <body>
+  <table class="full-width"
+       summary="This table is for formatting purposes only.">
+    <tr> 
+      <td class=sun-darkblue> 
+        <h1>Release Notes</h1>
+        <h2>MIDP Reference Implementation<br>
+            Version 2.0 FCS</h2>
+        <h4>November, 2002</h4>
+      </td>
+    </tr>
+    <tr> 
+      <td class=sun-lightblue>&nbsp;</td>
+    </tr>
+  </table>
+  <br>
+
+  <a name="_top"></a>
+
+  
+<p class=nav-link>[<a href="#_maincontent">Skip
+	<abbr title="Table of Contents">TOC</abbr></a>]</p>
+  <h2>Table of Contents</h2>
+  
+  <dl> 
+    <dt><a href="#introduction">Introduction</a></dt>
+    <dt><a href="#new_features">New Features</a></dt>
+    <dt><a href="#system_requirements">System Requirements</a></dt>
+    <dt><a href="#release_contents">Release Contents</a></dt>
+    <dt><a href="#installation">Installation</a></dt>
+    <dt><a href="#accessibility">Accessibility Features</a></dt>
+    <dt><a href="#known_bugs_and_issues">Known Bugs and Issues</a></dt>
+  </dl>
+  
+  <a name="introduction"></a><a name="_maincontent"></a>
+  <h2>Introduction</h2>
+  
+  
+  <p>MIDP (Mobile Information Device Profile) is part of the Java&#153; 2
+  Platform, Micro Edition (J2ME&#153;). MIDP is built on top of the
+  Connected Limited Device Configuration (CLDC) and defines the Java
+  application environment for mobile information devices (MIDs), such as
+  mobile phones and personal digital assistants (PDAs). This product, the
+  MIDP Reference Implementation is for developers who will be porting MIDP
+  to mobile information devices.</p>
+  
+  
+  <p>The MIDP Reference Implementation, Version 2.0 FCS, implements the
+  specification from the Mobile Information Device Profile 2.0
+  [JSR-000118]. The <i>MIDP 2.0 specification</i> is based on the <i>MIDP
+  1.0 specification</i> and provides backward compatibility with MIDP 1.0
+  so that MIDlets written for MIDP 1.0 can execute in MIDP 2.0
+  environments. For detailed information on both MIDP specifications, see
+  <a href="http://jcp.org">http://jcp.org</a>. </p>
+  
+  <p>MIDP runs a device emulator on your desktop system.  An application that
+  runs in a MIDP environment (whether in an emulator or on a device) is called
+  a <i>MIDlet</i>. One or more MIDlets packaged together for distribution are
+  called a <i>MIDlet suite</i>.</p>
+  
+  
+  <a name="new_features"></a> <h2>New Features</h2>
+  
+  <p>Compared to MIDP 1.0, the MIDP Reference Implementation, Version 2.0
+  FCS, has the following new features:</p>
+  
+  <ul>
+    <li>Sound &#8212; the Audio Building Block from the Mobile Multimedia
+    API (JSR-000135) </li>
+  
+    <li>Security for MIDlet suites &#8212; a notion of trust for MIDlet
+    suites, and security domains to protect security-sensitive APIs from
+    untrusted MIDlet suites </li>
+  
+    <li>Games API &#8212; a series of classes that enable the development of
+    rich gaming content for wireless devices </li>
+  
+    <li>Additional LCDUI components &#8212; new components include a spacer
+    (a blank, non-interactive item used to help position other items), a
+    custom item (customizable item that can introduce new visual and
+    interactive elements into a form), and so on. </li>
+  
+    <li>Additional LCDUI features &#8212; new features include the ability
+    to add abstract commands to alerts and items, a full-screen mode for the
+    <tt>Canvas</tt> class, vibrate, and so on. </li>
+  
+    <li>Additional network protocols &#8212; networking support, although
+    still based on the Generic Connection framework from the Connected
+    Limited Device Configuration, contains more predefined protocols:
+  
+      <ul>
+        <li>Comm</li>
+        <li>Datagram</li>
+        <li>HTTP</li>
+        <li>HTTPS</li>
+        <li>Socket</li>
+        <li>Server Socket</li>
+        <li>SSL</li>
+      </ul>
+    </li>
+  
+    <li>Push functionality &#8212; ability to launch a MIDlet in response to
+    an incoming message.  </li>
+  </ul>
+   
+  
+   <a name="system_requirements"></a>
+  <h2>System Requirements</h2>
+   
+   
+<p>The supported platform for this release is Microsoft Windows 2000. Systems
+  running the Solaris&#153; Operating Environment (OE) and the Linux operating
+  system are not officially supported. This section details the hardware and
+  software requirements for the supported and unsupported systems:</p>
+
+  <ul>
+    <li><a href="#w2k-requirements">Microsoft Windows 2000</a> </li>
+    <li><a href="#solaris-requirements">Solaris Operating Environment</a></li>
+    <li><a href="#linux-requirements">Linux</a> </li>
+  </ul>
+   
+  <p>&nbsp;</p>
+  <a name="w2k-requirements"><h3>Microsoft Windows 2000</h3></a>
+    
+  <p>The hardware requirements are:
+  
+<ul>
+  <li>Pentium II-based PC </li>
+  <li>128 MB memory </li>
+  <li>100 MB free disk space</li>
+  <li>Sound device for audio playback</li>
+  <li>RS-232 serial cable for testing the serial connection<br>
+  </li>
+</ul>
+     
+  <p>The software requirements are: 
+<ul>
+  <li>All current critical updates to Microsoft Windows 2000 </li>
+  <li>Java Development Kit (JDK&#153;), no earlier than version
+    1.3.<i>x</i></li>
+</ul>
+  
+  
+<p>In addition, the build environment requires: 
+<ul>
+    <li>A system locale based on the ISO 8859-1 (Latin-1) character set </li>
+    <li>Cygwin 1.3.11</li>
+    <li>CLDC, Version 1.0.4 (See <i>Installing MIDP</i> for information on
+      where to install this on your system, if it is not already
+      installed.)</li>
+  </ul>
+  
+  
+<p>The MIDP Reference Implementation was tested on a Gateway PII, 350 MHz
+  system with 128 MB RAM and a Creative Audio PCI (ES1371/ES1373) sound card
+  running Windows 2000.<br>
+</p>
+
+<a name="solaris-requirements">  </a>
+  <h3>Solaris Operating Environment</h3>
+
+  <p>The hardware requirements are:
+  
+<ul>
+  <li>Ultra&#153; 1 workstation</li>
+  <li>128 MB memory</li>
+  <li>200 MB swap</li>
+  <li>100 MB free disk space</li>
+  <li>Sound device for audio playback</li>
+  <li>RS-232 serial cable for testing the serial connection</li>
+</ul>
+
+<p>The software requirements are:
+  
+<ul>
+  <li>JDK, no earlier than version 1.3.<i>x</i></li>
+  <li>Solaris OE (SPARC<sup>&#174;</sup> Platform Edition), Version 2.5 or
+  later</li>
+  <li>SUNWcsu &#8212; Core operating system software</li>
+</ul>
+
+<p>In addition, the build environment requires: 
+<ul>
+  <li>CLDC, Version 1.0.4</li>
+  <li>GNU Make, Version 3.74</li>
+  <li>Zip utility</li>
+  <li>Solaris OE Software: 
+    <ul>
+      <li>SUNWbtool &#8212; Software development utilities </li>
+      <li>SUNWtool &#8212; Programming tools </li>
+      <li>SUNWsprot &#8212; Tools bundled with the Solaris OE</li>
+    </ul>
+  </li>
+</ul>
+
+<p>The MIDP Reference Implementatnion was tested on a Sun Ultra 2 workstation 
+  running Solaris 8 (2.8) with 1024 MB of RAM and a CS4231 sound device.</p>
+
+<a name="linux-requirements"></a>
+<h3>Linux</h3>
+  
+  <p>The hardware requirements are:
+  
+<ul>
+  <li>Pentium-II based PC </li>
+  <li>128 MB memory </li>
+  <li>200 MB swap </li>
+  <li>100 MB free disk space </li>
+  <li>Sound device for audio playback</li>
+  <li>RS-232 serial cable for testing the serial connection</li>
+</ul>
+  
+  <p>The software requirements are:
+  
+<ul>
+  <li>Red Hat Linux distribution, Version 7.2, x86 release </li>
+  <li>JDK, no earlier than version 1.3.<i>x</i></li>
+</ul>
+
+<p>In addition, the build environment requires: 
+<ul>
+  <li>CLDC, Version 1.0.4 (See <i>Installing MIDP</i> for information on where 
+    to install this on your system, if it is not already installed.)</li>
+  <li><tt>gcc-2.95.3 or gcc-3.03</tt> (C compiler) </li>
+</ul>
+
+<p>The MIDP Reference Implementation was tested on a Dell PIII 733 MHz system
+  with 256 MB RAM running Linux RedHat 7.2 (kernel version 2.4.7-10). The
+  sound system consists of a Creative SoundBlaster Live! sound card with the
+  Creative EMU10K1 PCI Audio Driver, version 0.6, 16:53:07 Aug 22 2000.<br>
+</p> 
+
+<a name="release_contents"></a> 
+<h2>Release Contents</h2>
+  
+  <p>Unzipping the distribution creates the directory <tt>midp2.0-FCS</tt>
+  with the subdirectories:</p>
+  <ul>
+    <li><tt>appdb </tt> &#8212; Information for the device emulator, such as a
+    keystore</li>
+    <li><tt>bin </tt> &#8212; Executables</li>
+    <li><tt>build </tt> &#8212; Compilation tools</li>
+    <li><tt>classes </tt> &#8212; Class files</li>
+    <li><tt>docs </tt> &#8212; Documentation included with this release</li>
+    <li><tt>example </tt> &#8212; Example MIDlets</li>
+    <li><tt>lib </tt> &#8212; Default configuration files</li>
+    <li><tt>src </tt> &#8212; Source code</li>
+    <li><tt>tools </tt> &#8212; Source for supporting build tools</li>
+  </ul>
+  
+<a name="installation"></a> 
+<h2>Installation</h2>
+
+  <p>See <i>Installing MIDP</i> for installation instructions.</p>
+
+  <a name="accessibility"></a><h2>Accessibility Features</h2>
+
+  
+  <p>The following keys can be used instead of the mouse to operate the
+  graphical user interface (GUI) of the device emulator: </p>
+  <table>
+    <tr>
+      <th class=sun-verylightblue scope="col">Button</th>
+      <th class=sun-verylightblue scope="col">Button Function</th>
+      <th class=sun-verylightblue scope="col">Keyboard Equivalent</th>
+    </tr>
+    <tr>
+      <td>Up, down, left, and right navigation buttons</td>
+      
+    <td>To navigate (move the highlight on the screen), and<br>
+	for game controls (up, down, left, and right)</td>
+      <td>Arrow keys</td>
+    </tr>
+    <tr>
+      <td>Select button</td>
+      
+      <td>To make a choice (for example, to choose an element from a
+      list), and<br> for game controls (select/fire)</td>
+
+      <td>Enter key</td>
+    </tr>
+    <tr>
+      <td>End Call button</td>
+      <td>To exit a MIDlet</td>
+      
+    <td>F10 key</td>
+    </tr>
+    <tr>
+      <td>Clear button</td>
+      <td>
+      <p>To remove the character to the left of the cursor in a text box
+      or text field</p>
+
+      <p>(Press and hold to remove all the text.)</p>
+    </td>
+      <td>Backspace key</td>
+    </tr>
+    <tr>
+      <td>Left soft button</td>
+
+      <td>To select any command assigned to the left soft button <br>(the
+      command label will be at the bottom left corner of the emulator's
+      screen)</td>
+
+      <td>F1 key</td>
+    </tr>
+    <tr>
+      <td>Right soft button</td>
+
+      <td>To select any command assigned to the right soft button<br> (the
+      command label will be at the bottom right corner of the emulator's
+      screen)</td>
+
+      <td>F2 key</td>
+    </tr>
+    <tr>
+      <td>
+        <p>Standard phone keypad:</p>
+        <ul>
+          <li>Numbers 0-9</li>
+          <li>Pound (#) function key<br />(also used as a space)</li>
+          <li>Star (*) function key<br />(also used as mode shift)</li>
+        </ul>
+      </td>
+      <td>
+        <p>To enter letters, numbers, and other supported characters; also
+        to enter game controls, as shown in the following figure:</p>
+
+	<img src="images/device-itu-t-keypad-w-callouts.gif" alt="keypad
+	for gamecontrols: 1 is A, 2 is Up, 3 is B, 4 is Left, 5 is
+	select/fire, 6 is Right, 7 is C, 8 is down, and 9 is D"/>
+
+      </td>
+      
+      <td>The corresponding letter, number, #, *, shift, and space keys</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr> 
+      <td colspan=3> 
+        <hr class=pTableHr />
+      </td>
+    </tr>
+  </table>
+
+  
+<p>&nbsp;</p>
+<p>In addition, the HTML documentation is accessible.</p>
+ 
+  
+  <a name="known_bugs_and_issues"></a>
+  <h2>Known Bugs and Issues</h2>
+
+  This section covers the topics:
+       
+<ul>
+  <!--  <li><a href="#installation_bugs">Installation Bugs</a></li>
+        <li><a href="#documentation_issues">Documentation Issues</a></li> -->
+  <li><a href="#midlet_issues">API Usage Issues</a> 
+  <li><a href="#software_limitations">Software Limitations</a></li>
+  <li><a href="#documentation_issues">Documentation Issues</a></li>
+  <li><a href="#software_bugs">Software Bugs</a></li>
+</ul>
+	  
+  <a name="midlet_issues"></a>
+  <h3>API Usage Issues</h3>
+  
+  
+  <p>The <i>MIDP 2.0 Specification</i> warns that blocking the
+  <code>commandAction</code> method of the <code>CommandListener</code>
+  interface might block the virtual machine (VM). The specification
+  provides this warning because it requires the event handler to process
+  an event to completion before moving on to the next one. If an
+  application blocks the event thread, the user will not be able operate
+  the MIDlet and will think that the VM is hung. (Note that the VM might
+  appear to be hung but, if there are multiple threads, the other threads
+  are still running.)</p>
+  
+  
+  <p>As a practical matter, it is most important to heed the warning
+  against calling blocking methods when you are considering calling
+  security-sensitive APIs. Merely updating a <code>Displayable</code> or
+  moving from one screen to another is unlikely to cause a problem. When
+  you use security-sensitive APIs the system might need to ask the user to
+  grant a permission. Because the permission request is done on a new
+  screen, a permission request is a new event. The event thread cannot
+  process that permission-request event, however, because it is blocked
+  waiting for the security-sensitive call to complete. The event thread is
+  deadlocked.</p> <p>The correct way to perform blocking operations, such
+  as calls to use the network, is to spawn a new thread. When it is run in
+  a new thread, the blocking call no longer blocks the event thread. The
+  event thread is free to process the next event. Using the example in the
+  previous paragraph, that next event could be a permission request. The
+  MIDlet avoided the deadlock.</p>
+   
+  <p>The following example shows how to correctly spawn the thread that
+  makes blocking calls:</p>
+
+<pre>public void commandAction(Command c, Displayable s) {
+    synchronized (this) {
+        currentCommand = c;
+        new Thread(this).start();
+    }
+
+    // Let the run method get into its synchronized block.
+    try {
+        Thread.sleep(1);
+    } catch (InterruptedException e) {
+        // ignore
+    }
+}
+  
+public void run() {
+    synchronized (this) {
+        if (currentCommand == exitCommand) {
+            destroyApp(false);
+            notifyDestroyed();
+        } else if (currentCommand == goCommand) {
+            // Make a network connection
+            ...
+        }
+    }
+}</pre>
+  
+  
+  <p>Note that making blocking calls in a separate thread was good
+  practice in MIDP 1.0.<i>x</i> releases too. In those release, however,
+  making calls to access the network did not require permission from the
+  user. As a result, they did not cause deadlocks.</p>
+
+  <a name="software_limitations"></a>
+  <h3>Software Limitations</h3>
+  
+  
+<ul>
+  <li>When building the MIDP Reference Implementation on the Solaris OE, the
+    directory <code>/usr/bin</code> must appear before <code>/usr/ucb</code>
+    on your <code>PATH</code> environment variable. If they are in the reverse
+    order, the build environment tries to use the <code>tr</code> command from
+    the <code>/usr/ucb</code> directory and the build fails with the error
+    message,
+    <pre>No rule to make target `obj/lcWi'</pre>
+  </li>
+  <li>Running MIDlets from the classpath (that is, using the
+    <code>-Xdescriptor</code> option) is no longer a feature of the MIDP
+    Reference Implementation on any platform. MIDlets must be packaged into a
+    Java Archive (JAR) and Java Application Descriptor (JAD) file pair and
+    downloaded from a URL. You can run a packaged MIDlet with the device
+    emulator's graphical user interface (install the MIDlet suite, if
+    necessary, then launch it), or with the command line (using the
+    <code>midp</code> command's <code>-autotest</code>,
+    <code>-transient</code>, or, if the MIDlet suite is installed, the
+    <code>-run</code> switch). See <i>Using MIDP</i> for more information.<br>
+    &nbsp; </li>
+
+  <li> Using comm network connections can be a problem on Linux systems because 
+    the default permissions on the serial port do not allow access to regular 
+    users. A workaround is to become super user and change the permissions on 
+    the device before using the serial port. The command, as super user, is: 
+    <pre>% <b>chmod 666 /dev/ttyS0</b></pre>
+    Another solution is to update the configuration file that controls these permissions, 
+    <code>/etc/security/console.perms</code>. See your Linux documentation for 
+    more information. <br>
+    &nbsp;
+  </li>
+
+  <li>There could be a mismatch between the number of serial ports assumed by 
+    the MIDP Reference Implementation and the number available on your system. 
+    The MIDP Reference Implementation expects two ports. It gets this number from 
+    the <code>microedition.commports</code> parameter in the <i>midpInstallDir</i><code>\lib\system.config</code> 
+    file. You can change this value permanently by editing the file. You can also 
+    set the value on the command line using the <code>-D</code> argument, as shown 
+    in the following example. The example, which is for a Unix<sup>&#174;</sup> 
+    system, has the MIDP executable run with no serial ports:<br>
+    <pre>% <b>midp -Dmicroedition.commports=0</b></pre>
+    See <i>Using MIDP</i> for more information on setting attribute values.
+  </li>
+</ul>
+
+  <a name="documentation_issues"></a>
+  <h3>Documentation Issues</h3>
+  
+  
+<p>Appendix C, "Reference Documentation for <code>com.sun.midp.ssl</code>," 
+   in <i>Porting MIDP</i> has two links that are redirected to the search page 
+   at <code>docs.sun.com</code><span class="copyright"><sup>SM</sup></span>. 
+   The following list shows those URLs, along with alternative links you can 
+   use instead. </p>
+   
+<ul>
+  <li><code>http://docs.iplanet.com/docs/manuals/security/sslin/index.htm</code> &#8211; The 
+    substitute URL is <a href="http://docs.sun.com/source/816-6156-10/index.html"> 
+    <code>http://docs.sun.com/source/816-6156-10/index.html</code></a>.</li>
+  <li><code>http://docs.iplanet.com/docs/manuals/security/pkin/index.htm</code> &#8211; The 
+    substitute URL is <a href="http://docs.sun.com/source/816-6154-10/index.html">
+	<code>http://docs.sun.com/source/816-6154-10/index.html</code></a>.</li>
+</ul>
+
+  
+  <a name="software_bugs"></a>
+  <h3>Software Bugs</h3>
+  
+  <p>The following table shows the bug numbers and synopses of bugs that
+  were open at this release: </p>
+  
+  
+<table>
+  <tr> 
+    <th class=sun-verylightblue scope="col"> BUG&nbsp;ID </th>
+    <th class=sun-verylightblue scope="col"> CATEGORY </th>
+    <th class=sun-verylightblue scope="col"> DESCRIPTION </th>
+  </tr>
+  <tr> 
+    <td>4768822</td>
+    <td>emulator</td>
+    <td>No <code>keyReleased</code> events for certain keys in <code>GameCanvas</code></td>
+  </tr>
+  <tr> 
+    <td>4682193</td>
+    <td>I18N</td>
+    <td>Asian character can not be used as Project Name or MIDlet name.</td>
+  </tr>
+  <tr> 
+    <td>4762500</td>
+    <td>networking</td>
+    <td>IOE thrown sending POST requests to URLs that don't accept them, from 
+      a proxy</td>
+  </tr>
+  <tr> 
+    <td>4776825 </td>
+    <td>networking</td>
+    <td>Push connection filter matches address longer than filter string</td>
+  </tr>
+  <tr> 
+    <td>4745913</td>
+    <td>other</td>
+    <td>Build fails on Solaris OE if <code>/usr/ucb</code> is in
+    <code>PATH</code> ahead of <code>/usr/bin</code>.</td>
+  </tr>
+  <tr> 
+    <td>4770320</td>
+    <td>other</td>
+    <td>Exception is thrown if <code>internal.config</code> or
+    <code>system.config</code> are in DOS format.</td>
+  </tr>
+  <tr> 
+    <td>4718933</td>
+    <td>rms</td>
+    <td>Record compaction is done only when a record store is closed.</td>
+  </tr>
+  <tr> 
+    <td>4698131</td>
+    <td>ui </td>
+    <td>Light gray is drawn as white on some Windows configurations.</td>
+  </tr>
+  <tr> 
+    <td>4745993</td>
+    <td>ui </td>
+    <td>StringItems cause unnecessary row breaks under certain conditions.</td>
+  </tr>
+  <tr> 
+    <td>4756139</td>
+    <td>ui </td>
+    <td>The <code>inputMode</code> indicator is never set to
+    '<code>none</code>'
+    </td>
+  </tr>
+  <tr> 
+    <td>4759088</td>
+    <td>ui </td>
+    <td>Key repeat is not implemented on specified components.</td>
+  </tr>
+  <tr> 
+    <td>4762338</td>
+    <td>ui </td>
+    <td><code>Display.setCurrent</code> can call into the application
+    while holding <code>LCDUILock</code></td>
+  </tr>
+  <tr> 
+    <td>4766164</td>
+    <td>ui </td>
+    <td>"Indefinite-Running" gauge animation pauses under certain
+    conditions.</td>
+  </tr>
+  <tr> 
+    <td>4767138</td>
+    <td>ui </td>
+    <td>AlertType <code>ALARM</code>, <code>ERROR</code>,
+    <code>WARNING</code>: <code>playSound</code> played only after first
+    Alert</td>
+  </tr>
+  <tr> 
+    <td>4767223</td>
+    <td>ui </td>
+    <td>Popup choice group width is fixed and cannot be changed.</td>
+  </tr>
+  <tr> 
+    <td>4740143</td>
+    <td>usability</td>
+    <td>Long elements with <code>TEXT_WRAP_OFF</code> not implemented as
+    per HI spec</td>
+  </tr>
+  <tr> 
+    <td colspan=3> 
+      <hr class=pTableHr />
+    </td>
+  </tr>
+</table>
+  
+  
+  <p>&nbsp;  </p>
+
+  <hr noshade>
+  <p class=copyright><a href="../share/copyright.html">Copyright</a> &#169;
+  2002 Sun Microsystems, Inc. All rights reserved. </p>
+  
+ </body>
+</html>

@@ -1,0 +1,177 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/29/02 14:46:42" />
+    <title>Compiling and Preverifying a MIDlet</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="create.html" />
+    <link rel="Next" href="package.html" />
+    <link rel="Index" href="midletsIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="create.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="package.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="midletsIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp9095"> </a><h2 class="pChapNum">
+Chapter &#160; 3
+</h2>
+<a name="wp9178"> </a><h2 class="pNewHTMLPage">
+Compiling and Preverifying a MIDlet
+</h2>
+<hr class="pHr"/>
+<a name="wp997250"> </a><p class="pBody">
+Like all applications written in the Java&#8482; programming language, you must compile a MIDlet before running it. In addition to compiling, you must preverify the MIDlet. The preverification step adds additional information to your <code class="cCode">.class</code> files so that they can be run in the MIDP environment. (Preverified class files can still be run by the Java 2 Platform, Standard Edition.)
+</p>
+<a name="wp997985"> </a><p class="pBody">
+This chapter covers both steps. It contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp997986"> </a><div class="pBullet1"><li><a  href="compile.html#wp997998"><span style="color: #3366CC">Compiling MIDlet Source Files</span></a></li></div>
+<a name="wp998324"> </a><div class="pBullet1Last"><li><a  href="compile.html#wp998129"><span style="color: #3366CC">Preverifying Compiled Files</span></a></li></div>
+</ul>
+<a name="wp997282"> </a><p class="pBody">
+You will use the <code class="cCode">.class</code> files from the preverifier when you run your MIDlet. Therefore, when you compile your MIDlet, put the compiled files into a temporary directory for the preverifier. Put the preverifier&#8217;s output into a more permanent location, from which you can package or run the MIDlet. The following figure illustrates this sequence:
+</p>
+<a name="wp997331"> </a><p class="pBody">
+<img src="images/compilea.gif" height="140" width="481" alt="Compiling, preverifying, and packagine a MIDlet&#39;s files, as described in the text." border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997332"> </a><div class="pFigureCaption">
+FIGURE&#160;7&#160;&#160;&#8211;&#160;&#160;Building a MIDlet
+<br /><br />
+</div><a name="wp997998"> </a><h2 class="pHeading1">
+Compiling MIDlet Source Files
+</h2>
+<a name="wp997999"> </a><p class="pBody">
+To compile a MIDlet, use the usual compiler, <code class="cCode">javac</code>. (See the <em class="cEmphasis">Release Notes</em> for version requirements.) Use the <code class="cCode">-d</code> option to <code class="cCode">javac</code> so that all the <code class="cCode">.class</code> files are put into a single, temporary directory. This makes the rest of the build process easier.
+</p>
+<a name="wp998000"> </a><p class="pBody">
+For example, to create an output directory, <code class="cCode">c:\midp2.0fcs\tmpclasses</code>, and compile the MIDlet into that directory, you would enter the following commands:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:&gt; <span class="cUserType">cd midp2.0fcs</span><a name="wp998001"> </a>
+c:\midp2.0fcs&gt; <span class="cUserType">mkdir tmpclasses</span><a name="wp998002"> </a>
+c:\midp2.0fcs&gt; <span class="cUserType">javac -classpath classes -d tmpclasses src/example/HelloMIDlet.java</span><a name="wp998006"> </a>
+</pre></div>
+<a name="wp998007"> </a><p class="pBody">
+There is an option for <code class="cCode">javac</code> that you must use if your MIDlet is using the <em class="cEmphasis">push</em> functionality defined in the <em class="cEmphasis">MIDP 2.0 Specification</em>; the option is&#160; <br /><code class="cCode">-bootclasspath</code>. (Push functionality enables MIDP to launch a MIDlet to handle a message being sent to it. For example, if you are writing a MIDlet from which a user can get traffic reports, you might have the MIDlet use push to receive urgent warnings about the user&#8217;s commute route.)
+</p>
+<a name="wp998008"> </a><p class="pBody">
+The <code class="cCode">-bootclasspath</code> option must specify the location of the MIDP class files (<em class="cEmphasis">midpInstallDir</em><code class="cCode">/classes</code>) because of differences in the class hierarchies of the J2ME and J2SE platforms. For example, the J2SE platform&#8217;s <code class="cCode">FilterInputStream</code> class is not part of the J2ME platform. If the MIDlet were compiled with J2SE classes, it would fail preverification (the next step in the build process). With the &#160;<br /><code class="cCode">-bootclasspath</code> option, <code class="cCode">javac</code> uses the J2ME platform class files.
+</p>
+<a name="wp998009"> </a><p class="pBody">
+The following example shows the <code class="cCode">javac</code> command and the <code class="cCode">-bootclasspath</code> option being used to compile a MIDlet called PushExample:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\myMIDlet&gt; <span class="cUserType">javac -bootclasspath c:/midp2.0fcs/classes&#160;-classpath c:/midp2.0fcs/classes PushExample.java</span><a name="wp998010"> </a>
+</pre></div>
+<a name="wp998011"> </a><p class="pBody">
+Note that the command uses both the <code class="cCode">-classpath</code> option and the&#160;<br /><code class="cCode">-bootclasspath</code> option. The <code class="cCode">-classpath</code> option gives the <code class="cCode">javac</code> command places to search for classes that are not in the J2SE platform, such as classes in the <code class="cCode">javax.microedition</code> package. It does not effect which platform (J2SE or J2ME) is used. The <code class="cCode">-bootclasspath</code> option specifies the location of the Java platform files.
+</p>
+<a name="wp998129"> </a><h2 class="pHeading1">
+Preverifying Compiled Files
+</h2>
+<a name="wp998486"> </a><p class="pBody">
+The preverifier creates new <code class="cCode">.class</code> files that contain additional information that the MIDP Reference Implementation implementation requires. If a class file has not been preverified, MIDP will not be able to use it. (Preverified class files can still be used with a Java 2 Runtime Environment (JRE).) The preverifier can also check the class files to make sure that they do not use any Java programming language features that are prohibited by the CLDC specification. (See &#160;<br /><a href="http://jcp.org/jsr/detail/30.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/30.jsp</span></a> for the CLDC specification.)
+</p>
+<a name="wp998490"> </a><p class="pBody">
+The preverifier is in the <em class="cEmphasis">midpInstallDir</em><code class="cCode">\bin</code> directory; the executable name is <code class="cCode">preverify</code>. Using the command with no options provides help. For example, you could get help with the command:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs\bin&gt; <span class="cUserType">preverify</span><a name="wp998138"> </a>
+</pre></div>
+<a name="wp998141"> </a><p class="pBody">
+For a summary of the command in a man page format, see <em class="cEmphasis">Using MIDP</em>.
+</p>
+<a name="wp998143"> </a><h3 class="pHeading2">
+Preverifying Class Files
+</h3>
+<a name="wp998144"> </a><p class="pBody">
+The simplest way to run the preverifier is to have it create new <code class="cCode">.class</code> files without checking for the use of prohibited features. You might want to use the preverifier this way if you recompile after making a simple bug fix.
+</p>
+<a name="wp998145"> </a><p class="pBody">
+To run the preverifier this way, provide the classes and input files to be preverified. The input files can be directories that contain <code class="cCode">.class</code> files, or JAR or ZIP files that contain <code class="cCode">.class</code> files. If you provide a directory, the preverifier also checks its subdirectories. The following example shows the <code class="cCode">preverify</code> command being used to check all the <code class="cCode">.class</code> files in the <code class="cCode">tmpclasses</code> directory and its subdirectories:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">bin\preverify -classpath classes;tmpclasses tmpclasses</span><a name="wp998150"> </a>
+</pre></div>
+<a name="wp998151"> </a><p class="pBody">
+By default, the preverifier writes its new class files to the <code class="cCode">./output</code> directory. You can change this directory, as shown in the following example, which preverifies a class and puts the preverified <code class="cCode">.class</code> file into the <code class="cCode">classes</code> directory
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">bin\preverify -classpath classes;tmpclasses -d classes HelloMIDlet</span><a name="wp998214"> </a>
+</pre></div>
+<a name="wp998157"> </a><p class="pBody">
+After you run the preverifier, the contents of the output directory correspond to the types of <em class="cEmphasis">inputFile</em>s you provide. The directory will contain a <code class="cCode">.class</code> file that corresponds to each input class, a directory tree that corresponds to each input directory, and a JAR file that corresponds to each input JAR file.
+</p>
+<a name="wp998158"> </a><h3 class="pHeading2">
+Preverifying and Examining Class Files
+</h3>
+<a name="wp998516"> </a><p class="pBody">
+To both check for the use of Java programming language features that are not part of the CLDC specification and preverify your class files, you need to use one or more additional arguments to the <code class="cCode">preverify</code> command. The additional arguments are can check for the presence of floating point operations, the use of finalizers, and calls to native methods from application classes. The following example checks for these problems:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">bin\preverify -nofp -nofinalize -nonative -classpath classes;tmpclasses -d classes HelloMIDlet</span><a name="wp998163"> </a>
+</pre></div>
+<a name="wp998167"> </a><p class="pBody">
+The following example is a simpler version of the previous one. It uses a single switch that is equivalent to using the <code class="cCode">-nofp</code>, <code class="cCode">-nofinalize</code>, and <code class="cCode">-nonative</code> switches together:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">bin\preverify -cldc -classpath classes;tmpclasses -d classes HelloMIDlet</span><a name="wp998419"> </a>
+<a name="wp998407"> </a>
+</pre></div>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="create.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="package.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="midletsIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Creating MIDlet Suites <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

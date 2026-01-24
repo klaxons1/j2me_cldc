@@ -1,0 +1,261 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 11:35:18" />
+    <title>The preverify Tool</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="appx-midp.html" />
+    <link rel="Next" href="useIX.html" />
+    <link rel="Index" href="useIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="appx-midp.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="useIX.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="useIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp1000944"> </a><h2 class="pAppxNum">
+Appendix &#160; D
+</h2>
+<a name="wp1000008"> </a><h2 class="pNewHTMLPage">
+The preverify Tool
+</h2>
+<hr class="pHr"/>
+<a name="wp1000975"> </a><p class="pBody">
+<code class="cCode">preverify</code> &#8212; prepare class files so that a MIDP implementation can run them. Optionally inspect the files for features of the Java&#8482; programming language that are not part of the CLDC specification.
+</p>
+<a name="wp1000976"> </a><h3 class="pHeading2">
+Synopsis
+</h3>
+<div class="pPreformatted"><pre class="pPreformatted">
+<code class="cCode">preverify </code>[ -classpath <em class="cEmphasis">path </em>] [ -d <em class="cEmphasis">directory </em>] [ -cldc ] [ -nofinalize<code class="cCode"> ] [ -nonative ] [-nofp] [ @</code><em class="cEmphasis">file</em> ] [ -verbose ] <em class="cEmphasis">inputFiles</em><a name="wp1000019"> </a>
+</pre></div>
+<a name="wp1000864"> </a><h3 class="pHeading2">
+Description
+</h3>
+<a name="wp1000887"> </a><p class="pBody">
+The <code class="cCode">preverify</code> tool prepares class files, JAR files, and directory trees of class files so that they can be run by MIDP implementations. (The preverified class files can still be run by the Java 2 Platform, Standard Edition.)
+</p>
+<a name="wp1000888"> </a><p class="pBody">
+The output of the tool mirrors the input: For each class file the tool is given, it writes a new class file of the same name to the destination directory. For each JAR file, it writes a new JAR file of the same name to the destination directory. For each directory name, it recursively handles every class file under that directory and writes new class files of the same names in the same hierarchical structures as the original directories.
+</p>
+<a name="wp1000160"> </a><p class="pBody">
+In addition to creating new class files, the <code class="cCode">preverify</code> tool can check the class files for Java programming language features that are not part of the CLDC specification. If a feature is not part of the CLDC specification, it cannot be used in code that MIDP will run. If it finds a forbidden feature, it reports the problem.
+</p>
+<a name="wp1000105"> </a><h3 class="pHeading2">
+Options
+</h3>
+<a name="wp1000106"> </a><p class="pBody">
+The following options are supported:
+</p>
+<a name="wp1002001"> </a><p class="pBody">
+<em class="cEmphasis">none</em>
+</p>
+<a name="wp1002002"> </a><p class="pIndented1">
+Running the tool without options returns the same information as the <code class="cCode">-help</code> option.
+</p>
+<a name="wp1000023"> </a><p class="pBody">
+<code class="cCode">-classpath </code><em class="cEmphasis">path</em>
+</p>
+<a name="wp1000024"> </a><p class="pIndented1">
+Specifies the location of the MIDP and CLDC classes. The <em class="cEmphasis">path</em> can contain directories or JAR files. On systems that run the Solaris&#8482; Operating Environment, the list of locations is colon-separated. On Microsoft Windows platforms the list is semicolon separated.
+</p>
+<a name="wp1000025"> </a><p class="pBody">
+<code class="cCode">-d</code> <em class="cEmphasis">directory</em>
+</p>
+<a name="wp1000026"> </a><p class="pIndented1">
+Specifies the destination directory where this tool writes its output files. The default directory is <code class="cCode">./output</code>.
+</p>
+<a name="wp1000027"> </a><p class="pBody">
+<code class="cCode">-cldc</code>
+</p>
+<a name="wp1000029"> </a><p class="pIndented1">
+Causes checks in the input class files for all Java programming language features that are not part of the CLDC Specification: floating point operations, finalizers, and native methods. It reports errors if it finds them.
+</p>
+<a name="wp1000985"> </a><p class="pIndented1">
+Using this switch is equivalent to using the <code class="cCode">-nofinalize</code>, <code class="cCode">-nonative</code>, and <br /><code class="cCode">-nofp</code> switches.
+</p>
+<a name="wp1000198"> </a><p class="pBody">
+<code class="cCode">-nofinalize</code>
+</p>
+<a name="wp1000030"> </a><p class="pIndented1">
+Causes checks for the use of finalizers in the input class files. It reports errors if it finds them.
+</p>
+<a name="wp1000031"> </a><p class="pBody">
+<code class="cCode">-nonative</code>
+</p>
+<a name="wp1000032"> </a><p class="pIndented1">
+Causes checks for the use of native methods in the input class files. It reports errors if it finds them.
+</p>
+<a name="wp1000033"> </a><p class="pBody">
+<code class="cCode">-nofp</code>
+</p>
+<a name="wp1000034"> </a><p class="pIndented1">
+Causes checks for the use of floating point operations in application classes. It reports errors if it finds them.
+</p>
+<a name="wp1000303"> </a><p class="pBody">
+<code class="cCode">-verbose</code>
+</p>
+<a name="wp1000306"> </a><p class="pIndented1">
+Causes the printing of additional messages that describe the tool&#8217;s actions. If this flag is not used and there are errors when creating an output JAR file, the errors will be written to <em class="cEmphasis">directory</em>/<code class="cCode">jarlog.txt</code>. The <em class="cEmphasis">directory</em>/<code class="cCode">jarlog.txt</code> file will not be created if <em class="cEmphasis">inputFiles</em> does not contain a JAR file or if there are no errors.
+</p>
+<a name="wp1000035"> </a><p class="pBody">
+<code class="cCode">@</code><em class="cEmphasis">fileName</em>
+</p>
+<a name="wp1000273"> </a><p class="pIndented1">
+Specifies the name of a text file from which the options and operands to the tool will be read. The parameters must be on a single line. If <code class="cCode">-classpath</code> or <code class="cCode">-d</code> are present, their values (<em class="cEmphasis">path</em> and <em class="cEmphasis">directory</em>) must be enclosed in double quotes.
+</p>
+<a name="wp1000038"> </a><p class="pIndented1">
+For example, the contents of <em class="cEmphasis">fileName</em> could be:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+-classpath &#8220;api/classes;e:/samples/classes&#8221; -d &#8220;output&#8221; -nofp -verbose HelloWorld1 HelloWorld2 HelloWorld3<a name="wp1000903"> </a>
+</pre></div>
+<a name="wp1000876"> </a><h3 class="pHeading2">
+Operands
+</h3>
+<a name="wp1000342"> </a><p class="pBody">
+The following operand is supported:
+</p>
+<a name="wp1000343"> </a><p class="pBody">
+<em class="cEmphasis">inputFiles</em>
+</p>
+<a name="wp1000041"> </a><p class="pIndented1">
+One or more files to be preverified. The files can be in three different formats:
+</p>
+<ul class="pBullet2"><a name="wp1000042"> </a><div class="pBullet2"><li>Java class files</li></div>
+<a name="wp1000043"> </a><div class="pBullet2Plus"><li>Directories containing Java class files</li></div>
+<a name="wp1000044"> </a><div class="pBullet2Last"><li>JAR files containing Java class files</li></div>
+</ul>
+<a name="wp1000512"> </a><p class="pIndented1">
+The names of the input files should be separated by white space.
+</p>
+<a name="wp1000113"> </a><h3 class="pHeading2">
+Exit Status
+</h3>
+<a name="wp1000134"> </a><p class="pBody">
+0
+</p>
+<a name="wp1000136"> </a><p class="pIndented1">
+Successful completion.
+</p>
+<a name="wp1000135"> </a><p class="pBody">
+&gt;0
+</p>
+<a name="wp1000137"> </a><p class="pIndented1">
+An error occurred
+</p>
+<a name="wp1000381"> </a><h3 class="pHeading2">
+Examples
+</h3>
+<a name="wp1001215"> </a><p class="pBody">
+The following examples assume that the directory that holds the <code class="cCode">preverify</code> command is a value on your <code class="cCode">PATH</code> environment variable.
+</p>
+<a name="wp1000800"> </a><h5 class="pHeading4">
+Verifying Class Files
+</h5>
+<a name="wp1000801"> </a><p class="pBody">
+The following command preverifies class files but does not check them for features that are not in the CLDC specification. It writes the output to the <code class="cCode">c:\work\myMIDlet\classes</code> directory. 
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\work\myMIDlet\tmpclasses&gt; <span class="cUserType">preverify -d c:/work/myMIDlet/classes -classpath c:/midp2.0fcs/classes MyMIDlet alerts/About forms/Splash</span><a name="wp1000802"> </a>
+</pre></div>
+<a name="wp1000803"> </a><p class="pBody">
+The following command is a simpler version of the preceding one. Instead of listing the class files individually, it specifies the parent directory of the class files.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\work\myMIDlet&gt; <span class="cUserType">preverify -d c:/work/myMIDlet/classes -classpath c:/midp2.0fcs/classes tmpclasses</span><a name="wp1000804"> </a>
+</pre></div>
+<a name="wp1000702"> </a><h5 class="pHeading4">
+Verifying and Checking Files
+</h5>
+<a name="wp1000811"> </a><p class="pBody">
+The following example preverifies Java class files and checks them for the features that are not in the CLDC specification. Its output will go into the default location,<code class="cCode"> </code>the <code class="cCode">./output/</code> directory.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\work&gt;<code class="cCode"> </code><span class="cUserType">preverify -classpath c:/midp2.0fcs/classes -cldc myMIDlet/tmpclasses MIDletFromCoworker.jar AnotherClass</span><a name="wp1000812"> </a>
+</pre></div>
+<a name="wp1000721"> </a><p class="pBody">
+The following example preverifies Java class files and checks them for floating point operations. It assumes that the MIDP class files are in the <code class="cCode">CLASSPATH</code> environment variable, and writes the output to <code class="cCode">c:\work\myMIDlet\classes</code> directory:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\work&gt;<code class="cCode"> </code><span class="cUserType">preverify -d c:/work/myMIDlet/classes -nofp myMIDlet/tmpclasses/MyMIDlet MIDletFromCoworker.jar</span><a name="wp1000724"> </a>
+</pre></div>
+<a name="wp1000595"> </a><h3 class="pHeading2">
+Environment Variables
+</h3>
+<a name="wp1000825"> </a><p class="pBody">
+The following environment variables interact with specific features of this tool:
+</p>
+<a name="wp1000521"> </a><p class="pBody">
+<code class="cCode">PATH</code>
+</p>
+<a name="wp1000477"> </a><p class="pIndented1">
+Provides the location of the <code class="cCode">jar</code> tool, which this tool calls to create the new, output JAR file. The <code class="cCode">jar</code> tool must be accessible on your <code class="cCode">PATH</code> if you provide a JAR file as input to the <code class="cCode">preverify</code> tool.
+</p>
+<a name="wp1000487"> </a><p class="pBody">
+<code class="cCode">CLASSPATH</code>
+</p>
+<a name="wp1000527"> </a><p class="pIndented1">
+Provides this tool with a path to MIDP, CLDC, and user-defined classes. The &#160;<br /><code class="cCode">-classpath</code> switch overrides the value of this environment variable.
+</p>
+<a name="wp1000948"> </a><h3 class="pHeading2">
+See Also
+</h3>
+<a name="wp1000962"> </a><p class="pBody">
+<em class="cEmphasis">Creating MIDlet Suites</em>
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="appx-midp.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="useIX.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="useIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Using MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

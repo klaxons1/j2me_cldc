@@ -1,0 +1,1 @@
+MIDP stack that has the following structure, from bottom to top: operating system, virtual machine, libraries, profile, and applications. In this stack, the VM and libraries are the CLDC,  profile is MIDP, and applications are MIDlets.

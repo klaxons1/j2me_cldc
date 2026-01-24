@@ -1,0 +1,865 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 11:35:14" />
+    <title>The midp Command</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="appx-mekeytool.html" />
+    <link rel="Next" href="appx-preverify.html" />
+    <link rel="Index" href="useIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="appx-mekeytool.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="appx-preverify.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="useIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp999669"> </a><h2 class="pAppxNum">
+Appendix &#160; C
+</h2>
+<a name="wp1000011"> </a><h2 class="pNewHTMLPage">
+The midp Command
+</h2>
+<hr class="pHr"/>
+<a name="wp1003879"> </a><p class="pBody">
+<code class="cCode">midp</code> &#8212; device emulator and Java&#8482; programming language interpreter for the Mobile Information Device Profile (MIDP).
+</p>
+<a name="wp1012120"> </a><h3 class="pHeading2">
+Synopsis
+</h3>
+<div class="pPreformatted"><pre class="pPreformatted">
+midp&#160;[ -classpath <em class="cEmphasis">path</em> ] [ -D<em class="cEmphasis">property</em>=<em class="cEmphasis">value</em> ]&#160;[ -heapsize <em class="cEmphasis">size</em> ]<a name="wp1013154"> </a>
+<em class="cEmphasis">command-switch</em><a name="wp1012123"> </a>
+&#160;<a name="wp1013089"> </a>
+midp_g&#160;[ -classpath <em class="cEmphasis">path</em> ] [ -D<em class="cEmphasis">property</em>=<em class="cEmphasis">value</em> ]&#160;[ -heapsize <em class="cEmphasis">size</em> ]<a name="wp1013165"> </a>
+<em class="cEmphasis">command-switch</em><a name="wp1013092"> </a>
+</pre></div>
+<a name="wp1013093"> </a><h3 class="pHeading2">
+Description
+</h3>
+<a name="wp1000088"> </a><p class="pBody">
+The <code class="cCode">midp</code> command runs a device emulator and executes bytecodes that have been created by the compiler, <code class="cCode">javac</code>, and preverified by the <code class="cCode">preverify</code> utility. The <code class="cCode">midp_g</code> command is a version of the <code class="cCode">midp</code> command built with debug capabilities. Unless otherwise noted, running the <code class="cCode">midp</code> or <code class="cCode">midp_g</code> command displays a device skin.
+</p>
+<a name="wp1004118"> </a><p class="pBody">
+MIDP is part of the Java 2 Platform, Micro Edition (J2ME&#8482;). MIDP was initially defined in the Mobile Information Device Profile for the J2ME Platform [JSR-000037], and refined in the Mobile Information Device Next Generation [JSR-000118]. For more information on the JSRs, see <a href="http://www.jcp.org/jsr/tech/j2me.jsp" target="_blank">
+<span class="cWebJump">http://www.jcp.org/jsr/tech/j2me.jsp</span></a>
+</p>
+<a name="wp1004419"> </a><p class="pBody">
+Applications that the <code class="cCode">midp</code> command runs are called <em class="cEmphasis">MIDlets</em>. When one or more MIDlets are packaged as a unit for download onto a device, the bundle is called a <em class="cEmphasis">MIDlet suite</em>. The <code class="cCode">midp</code> command can run MIDlets and MIDlet suites.
+</p>
+<a name="wp1010857"> </a><p class="pBody">
+In addition to running MIDlets and MIDlet suites, the <code class="cCode">midp</code> command manages MIDlet suites. It can download and install them on the emulator, list the MIDlet suites installed on the emulator, remove a MIDlet suite from the emulator, and so on.
+</p>
+<a name="wp1004420"> </a><p class="pBody">
+The behavior of the emulator during MIDlet execution is controlled by configuration files:
+</p>
+<ul class="pBullet1"><a name="wp1004388"> </a><div class="pBullet1"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\share\lib\internal.config</code> &#8212; Properties that enable MIDP to better simulate the capabilities of a device (such as number of colors). </li></div>
+<a name="wp1004389"> </a><div class="pBullet1Last"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\share\lib\system.config</code> &#8212; Properties that describe the MIDP environment (such as the version number of the MID profile).</li></div>
+</ul>
+<a name="wp1004146"> </a><p class="pBody">
+Where <em class="cEmphasis">midpInstallDir</em> is the directory where MIDP is installed. The files are property files that use a colon to separate the property name from its value:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">propertyName</em> : <em class="cEmphasis">propertyValue</em><a name="wp1004147"> </a>
+</pre></div>
+<a name="wp1004148"> </a><p class="pBody">
+White space around the colon is not significant.
+</p>
+<a name="wp1014792"> </a><p class="pBody">
+The tables below describe the properties in each file.&#160;</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq1014415">
+  <caption><a name="wp1014421"> </a><div style="color: #000000; font-size: 12pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 0pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+TABLE&#160;2 	Properties in the <code class="cCode">internal.config</code> File &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp1014429"> </a><div style="text-align: left" class="pTableHead">
+Property Name
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp1014431"> </a><div style="text-align: left" class="pTableHead">
+Type
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp1014433"> </a><div style="text-align: left" class="pTableHead">
+Default Value
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp1014435"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+system.jam_space<a name="wp1014437"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+integer<a name="wp1014439"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+4194304<a name="wp1014441"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014443"> </a><div class="pTableText">
+Amount of space to reserve for MIDlet Suites. This includes storage of the MIDlet Suites themselves as well as any RMS storage. The value is specified in bytes.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+system.i18n.lang<a name="wp1014445"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014447"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+en<a name="wp1014449"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014451"> </a><div class="pTableText">
+Default language for I18N processing.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+system.i18n.encoding<a name="wp1014453"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014455"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+ISO8859_1<a name="wp1014457"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014459"> </a><div class="pTableText">
+Default encoding for I18N processing.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+system.display.double_buffered<a name="wp1014461"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp1014463"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+true<a name="wp1014465"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014467"> </a><div class="pTableText">
+Whether to use double buffering when writing to the graphics display. 
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+system.display.screen_depth<a name="wp1014469"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+integer<a name="wp1014471"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+4<a name="wp1014473"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014475"> </a><div class="pTableText">
+Number of bits to use for each color. The maximum number of colors is 2 to the power of this number. Set to 1, 2, 4 or 8 for 2, 4, 16 or 256 colors respectively.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+system.display.visual_type<a name="wp1014477"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014479"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&quot;&quot;<a name="wp1014481"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014483"> </a><div class="pTableText">
+Visual class of window. Value can be one of:
+</div>
+<div class="pTableBullet"><ul class="pTableBullet">
+<a name="wp1014484"> </a><div class="pTableBullet"><li><code class="cCode">StaticGray</code></li></div>
+<a name="wp1014485"> </a><div class="pTableBullet"><li><code class="cCode">GrayScale</code></li></div>
+<a name="wp1014486"> </a><div class="pTableBullet"><li><code class="cCode">StaticColor</code></li></div>
+<a name="wp1014487"> </a><div class="pTableBullet"><li><code class="cCode">PseudoColor</code></li></div>
+<a name="wp1014488"> </a><div class="pTableBullet"><li><code class="cCode">TrueColor</code></li></div>
+<a name="wp1014489"> </a><div class="pTableBullet"><li><code class="cCode">DirectColor</code></li></div>
+</ul></div>
+<a name="wp1014490"> </a><div class="pTableText">
+This property is valid only on the Solaris&#8482; Operating Environment (OE).
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.midlet.platformRequestCommand<a name="wp1014492"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014494"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&quot;&quot;<a name="wp1014496"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014809"> </a><div class="pTableText">
+Command spawned when the method <code class="cCode">MIDlet.platformRequest</code> is called. The command should take a single argument, a URL; it will be given the URL passed to the <code class="cCode">MIDlet.platformRequest </code>method.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.io.http.proxy<a name="wp1014500"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014502"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&quot;&quot;<a name="wp1014504"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014506"> </a><div class="pTableText">
+Host and port of the HTTP proxy in the format of <em class="cEmphasis">host</em>:<em class="cEmphasis">port</em>. The value of this property is also used to tunnel HTTPS connections.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.io.http.force_non_persistent<a name="wp1014508"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp1014510"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+false<a name="wp1014512"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014514"> </a><div class="pTableText">
+Force all connections to be non persistent.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.io.http.max_persistent_connections<a name="wp1014516"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+integer<a name="wp1014518"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+1<a name="wp1014520"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014522"> </a><div class="pTableText">
+Maximum number of persistent connections allowed at any given time.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.io.http.persistent_connection_linger_time<a name="wp1014524"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+Integer<a name="wp1014526"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+60000<a name="wp1014528"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014530"> </a><div class="pTableText">
+Number of milliseconds an unused persistent connection should remain in the connection pool.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.io.http.inputBufferSize<a name="wp1014532"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+integer<a name="wp1014534"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+256<a name="wp1014536"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014538"> </a><div class="pTableText">
+The size, in bytes, of the input buffer. There is an input buffer for every connection.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.io.http.outputBufferSize<a name="wp1014540"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+integer<a name="wp1014542"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+2048<a name="wp1014544"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014546"> </a><div class="pTableText">
+The size, in bytes, of the output buffer. There is an output buffer for every connection.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.lcdui.eventHandler<a name="wp1014548"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014550"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.lcdui.DefaultEventHandler<a name="wp1014552"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014554"> </a><div class="pTableText">
+The name of the class that handles events.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.lcdui.inputMethodHandler<a name="wp1014556"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014558"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.<a name="wp1014560"> </a>
+lcdui.i18n.<a name="wp1014561"> </a>
+DefaultInput<a name="wp1014562"> </a>
+MethodHandler_<a name="wp1014563"> </a>
+<em class="cEmphasis">locale</em><a name="wp1014564"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014566"> </a><div class="pTableText">
+The name of the class to handle input.
+</div>
+<a name="wp1014567"> </a><div class="pTableText">
+The default input handler uses the value of the <code class="cCode">microedtion.locale</code> attribute to determine the correct class name.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.midlet.scheduler<a name="wp1014585"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014587"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.midlet.Scheduler<a name="wp1014589"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014591"> </a><div class="pTableText">
+The name of the class used to schedule MIDlets.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.graphicalmanager<a name="wp1014593"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014595"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.dev.Manager<a name="wp1014597"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014599"> </a><div class="pTableText">
+The name of the class used to manage MIDlet Suites in the device emulator&#8217;s graphical user interface.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.midletsuite.installer<a name="wp1014601"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+string<a name="wp1014603"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.midletsuite.Installer<a name="wp1014605"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014607"> </a><div class="pTableText">
+Name of the class used to install MIDlet suites.
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq1014640">
+  <caption><a name="wp1014646"> </a><div class="pTableText">
+TABLE&#160;3 	Properties in the <code class="cCode">system.config</code> File &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp1014654"> </a><div style="text-align: left" class="pTableHead">
+Property Name
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp1014656"> </a><div style="text-align: left" class="pTableHead">
+Type
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp1014658"> </a><div style="text-align: left" class="pTableHead">
+Default Value
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp1014660"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+microedition.configuration<a name="wp1014662"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014664"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+CLDC-1.0<a name="wp1014666"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014668"> </a><div class="pTableText">
+Version number of the underlying J2ME platform configuration. When there are multiple configurations, they will be separated by blanks (Unicode <code class="cCode">x20</code>)
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+microedition.encoding<a name="wp1014670"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014672"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+ISO-8859-1<a name="wp1014674"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014676"> </a><div class="pTableText">
+Current character encoding
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+microedition.hostname<a name="wp1014678"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014680"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp1014682"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014684"> </a><div class="pTableText">
+Name of the host platform
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+microedition.profiles<a name="wp1014686"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014688"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+MIDP-2.0<a name="wp1014690"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014692"> </a><div class="pTableText">
+List of version numbers of supported J2ME platform profiles; profiles are separated by blanks (Unicode <code class="cCode">x20</code>)
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+microedition.locale<a name="wp1014694"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014696"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp1014698"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014700"> </a><div class="pTableText">
+Current locale for I18N support. 
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+microedition.platform<a name="wp1014702"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014704"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+j2me<a name="wp1014706"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014708"> </a><div class="pTableText">
+Current host platform. 
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.io.j2me.comm.buffersize<a name="wp1014710"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+Integer<a name="wp1014712"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+256<a name="wp1014714"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014716"> </a><div class="pTableText">
+The size, in bytes, of the input buffer. Each comm connection has an input buffer.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.midp.io.j2me.socket.buffersize<a name="wp1014718"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+Integer<a name="wp1014720"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+0<a name="wp1014722"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014724"> </a><div class="pTableText">
+The size, in bytes, of the input buffer. Each socket connection has an input buffer.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.protocolpath<a name="wp1014726"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp1014728"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+com.sun.cldc.io<a name="wp1014730"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1014732"> </a><div class="pTableText">
+Package prefix used to find protocols The protocol class name will be <em class="cEmphasis">protocolPath</em><code class="cCode">.j2me.</code><em class="cEmphasis">protocol</em><code class="cCode">.<br />Protocol.class</code>.
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+&#160;&#160;&#160;&#160;&#160;
+</p>
+<a name="wp1014794"> </a><p class="pBody">
+To permanently change a property value, edit the appropriate file. To temporarily change a property value, use the <code class="cCode">-D</code> command-line option to the <code class="cCode">midp</code> command.
+</p>
+<a name="wp1000019"> </a><h3 class="pHeading2">
+Options
+</h3>
+<a name="wp1009543"> </a><p class="pBody">
+The following options are supported:
+</p>
+<a name="wp1009656"> </a><p class="pBody">
+<em class="cEmphasis">none</em>
+</p>
+<a name="wp1013106"> </a><p class="pIndented1">
+Running the tool without options launches the device emulator&#8217;s graphical user interface.
+</p>
+<a name="wp1013171"> </a><p class="pBody">
+<code class="cCode">-classpath</code> <em class="cEmphasis">path</em>
+</p>
+<a name="wp1013280"> </a><p class="pIndented1">
+Specifies the directories, zip files, and JAR files to search for Java class files. This argument is passed to CLDC.
+</p>
+<a name="wp1008502"> </a><p class="pBody">
+<code class="cCode">-D</code><em class="cEmphasis">property</em><code class="cCode">=</code><em class="cEmphasis">value</em>
+</p>
+<a name="wp1008504"> </a><p class="pIndented1">
+Overrides the value of <em class="cEmphasis">property</em> set in the configuration file. This argument is passed to CLDC.
+</p>
+<a name="wp1013177"> </a><p class="pBody">
+<code class="cCode">-heapsize</code> <em class="cEmphasis">size</em>
+</p>
+<a name="wp1013178"> </a><p class="pIndented1">
+Specifies the amount of memory to be set aside for the heap, specified as number of bytes (such as <code class="cCode">65536</code>), number of kilobytes (such as <code class="cCode">128k</code>) or number of megabytes (such as <code class="cCode">1M</code>). This argument is passed to CLDC.
+</p>
+<a name="wp1014976"> </a><p class="pIndented1">
+The minimum heap required to run the <code class="cCode">midp</code> executable when there are no applications installed on the emulator is 32k. (When applications are installed, the minimum amount varies but is never lower than 32k.)
+</p>
+<a name="wp1009375"> </a><p class="pBody">
+The following command switches are supported:
+</p>
+<a name="wp1009386"> </a><p class="pBody">
+<code class="cCode">-autotest</code> <code class="cCode">[</code> <code class="cCode">-domain</code> <em class="cEmphasis">domain</em> <code class="cCode">] </code><em class="cEmphasis">descriptorURL</em>
+</p>
+<a name="wp1009388"> </a><p class="pIndented1">
+Repeatedly installs, runs, and removes the first MIDlet from the MIDlet suite described by the Java application descriptor (JAD) file at the <em class="cEmphasis">descriptorURL</em> location. (The JAD file specifies the location of its corresponding JAR file.)
+</p>
+<a name="wp1011954"> </a><p class="pIndented1">
+This command installs the MIDlet suite into <em class="cEmphasis">domain</em>. If <em class="cEmphasis">domain</em> is not provided the domain maximum is used. The command removes the MIDlet suite when it gets a 404 code from the server.
+</p>
+<a name="wp1012901"> </a><p class="pBody">
+<code class="cCode">-debugger</code> [ <code class="cCode">-port</code> <em class="cEmphasis">portNumber</em> ]
+</p>
+<a name="wp1012902"> </a><p class="pIndented1">
+Starts the MIDP executable in debug mode. The <em class="cEmphasis">portNumber</em> should be the number of the port on which the KVM debug proxy expects the debugger to be running. See the KVM documentation for more information on this and other options that are available for a MIDP executable in debug mode.
+</p>
+<a name="wp1009393"> </a><p class="pBody">
+<code class="cCode">-help</code>
+</p>
+<a name="wp1009395"> </a><p class="pIndented1">
+Prints text to standard output that describes the options to the <code class="cCode">midp</code> command and exits.
+</p>
+<a name="wp1011963"> </a><p class="pIndented1">
+<b class="cBold">Note:</b> Using the <code class="cCode">-help</code> switch does not display the device skin.
+</p>
+<a name="wp1011964"> </a><p class="pBody">
+<code class="cCode">-install</code> <code class="cCode">[</code> <code class="cCode">-force</code> <code class="cCode">]</code> <code class="cCode">[</code> <code class="cCode">-domain</code> <em class="cEmphasis">domain </em><code class="cCode">]</code> [ <code class="cCode">-removeRMS</code> ]<em class="cEmphasis"> descriptorURL</em> 
+</p>
+<a name="wp1011965"> </a><p class="pIndented1">
+Installs the MIDlet suite represented by the JAD file at <em class="cEmphasis">descriptorURL</em> location. This command installs the MIDlet suite into <em class="cEmphasis">domain</em>. If <em class="cEmphasis">domain</em> is not provided, and the suite is unsigned, the default domain, <code class="cCode">untrusted</code>, is used.
+</p>
+<a name="wp1011982"> </a><p class="pIndented1">
+Using <code class="cCode">-removeRMS</code> removes any persistent data written by any previous versions of the MIDlet suite. This option only has an affect if the installation is overwriting an existing installation of the MIDlet suite.
+</p>
+<a name="wp1011994"> </a><p class="pIndented1">
+Using <code class="cCode">-force</code> has the MIDP Reference Implementation runtime ignore any overwrite errors that occur during the installation.
+</p>
+<a name="wp1009406"> </a><p class="pIndented1">
+<b class="cBold">Note:</b> Using the <code class="cCode">-install</code> command-switch does not display the device skin.
+</p>
+<a name="wp1009408"> </a><p class="pBody">
+<code class="cCode">-list</code>
+</p>
+<a name="wp1012329"> </a><p class="pIndented1">
+Prints information to standard output on the installed MIDlets, including their names, vendors, descriptions, storage names, sizes, original locations (URLs), and lists of MIDlets.
+</p>
+<a name="wp1009412"> </a><p class="pIndented1">
+<b class="cBold">Note:</b> Using the <code class="cCode">-list</code> switch does not display the device skin.
+</p>
+<a name="wp1009414"> </a><p class="pBody">
+<code class="cCode">-remove</code> (<em class="cEmphasis"> suitenumber</em> | <em class="cEmphasis">storagename</em> | <code class="cCode">all</code> )
+</p>
+<a name="wp1009416"> </a><p class="pIndented1">
+Removes the installed MIDlet suite identified by the given <em class="cEmphasis">suitenumber</em> or <em class="cEmphasis">storagename</em>, or removes all MIDlet suites. 
+</p>
+<a name="wp1009418"> </a><p class="pIndented1">
+<b class="cBold">Note:</b> Using the -remove switch does not display the device skin.
+</p>
+<a name="wp1009420"> </a><p class="pBody">
+<code class="cCode">-run</code> ( <em class="cEmphasis">suitenumber</em> | <em class="cEmphasis">storagename </em>) [ <em class="cEmphasis">MIDletName</em> ]
+</p>
+<a name="wp1009422"> </a><p class="pIndented1">
+Runs the installed MIDlet suite that is identified by <em class="cEmphasis">suitenumber</em> or <em class="cEmphasis">storagename</em>. The <em class="cEmphasis">suitenumber</em> is the number displayed by the <code class="cCode">-list</code> option to the <code class="cCode">midp</code> command, and <em class="cEmphasis">storagename</em> is the name displayed by the <code class="cCode">-storage</code>Names option to the <code class="cCode">midp</code> command.
+</p>
+<a name="wp1009428"> </a><p class="pIndented1">
+If <em class="cEmphasis">suitenumber</em> or <em class="cEmphasis">storagename</em> identifies a MIDlet suite that contains multiple MIDlets, <em class="cEmphasis">MIDletName</em> can specify a particular MIDlet in the suite to run.
+</p>
+<a name="wp1009430"> </a><p class="pBody">
+<code class="cCode">-storageNames</code>
+</p>
+<a name="wp1009432"> </a><p class="pIndented1">
+Prints to standard output the storage names of the installed MIDlet suites. Storage names of MIDlets are implementation dependent.
+</p>
+<a name="wp1009434"> </a><p class="pIndented1">
+<b class="cBold">Note:</b> Using the <code class="cCode">-storageNames</code> switch does not display the device skin.
+</p>
+<a name="wp1009436"> </a><p class="pBody">
+<code class="cCode">-transient</code> [ <code class="cCode">-force</code> ] <code class="cCode">[</code> <code class="cCode">-domain</code> <em class="cEmphasis">domain </em><code class="cCode">]</code> [ <code class="cCode">-removeRMS</code> ] <br />&#160;&#160;&#160;&#160;<em class="cEmphasis">descriptorURL </em><code class="cCode">[</code> <em class="cEmphasis">MIDletName </em><code class="cCode">]</code>
+</p>
+<a name="wp1009438"> </a><p class="pIndented1">
+Downloads, installs, runs, and removes the MIDlet suite represented by the JAD file at the <em class="cEmphasis">descriptorURL</em> location. This command installs an unsigned MIDlet suite into <em class="cEmphasis">domain</em>. If <em class="cEmphasis">domain</em> is not provided for an unsigned MIDlet suite, the default, <code class="cCode">untrusted</code>, is used.
+</p>
+<a name="wp1012094"> </a><p class="pIndented1">
+If the JAD file at <em class="cEmphasis">descriptorURL </em>describes a MIDlet suite that contains multiple MIDlets, <em class="cEmphasis">MIDletName</em> can specify a particular MIDlet in the suite to run.
+</p>
+<a name="wp1012086"> </a><p class="pIndented1">
+Using <code class="cCode">-removeRMS</code> removes any persistent data written by any previous versions of the MIDlet suite. This option only has an affect if the installation is overwriting an existing installation of the MIDlet suite.
+</p>
+<a name="wp1012090"> </a><p class="pIndented1">
+Using <code class="cCode">-force</code> has the MIDP Reference Implementation runtime ignore any overwrite errors that occur during the installation.
+</p>
+<a name="wp1009442"> </a><p class="pBody">
+<code class="cCode">-version</code>
+</p>
+<a name="wp1012151"> </a><p class="pIndented1">
+Returns the version of the MIDP Specification with which this release is compliant, the version of the MIDP implementation, and the version of the configuration (CLDC) with this release.
+</p>
+<a name="wp1012152"> </a><p class="pIndented1">
+<b class="cBold">Note:</b> Using the <code class="cCode">-version</code> switch does not display the device skin.
+</p>
+<a name="wp1009452"> </a><h3 class="pHeading2">
+Examples
+</h3>
+<a name="wp1012619"> </a><h5 class="pHeading4">
+Installing a MIDlet Suite
+</h5>
+<a name="wp1012630"> </a><p class="pBody">
+The following example installs the Games MIDlet suite from the URL <a href="http://localhost:8080/midlets/games.jad" target="_blank">
+<span class="cWebJump">http://localhost:8080/midlets/games.jad</span></a>:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp -install http://localhost:8080/midlets/games.jad</span><a name="wp1012651"> </a>
+Storage name: #Sun%0020#Microsystems%002c%0020#Inc%002e_#Sun#Samples%0020%00d%0020#Games_<a name="wp1012652"> </a>
+</pre></div>
+<a name="wp1013559"> </a><p class="pBody">
+The following example installs the same unsigned MIDlet suite, but assigns it to the trusted domain:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp -install -domain trusted http://localhost:8080/midlets/games.jad</span><a name="wp1013569"> </a>
+Storage name: #Sun%0020#Microsystems%002c%0020#Inc%002e_#Sun#Samples%0020%00d%0020#Games_<a name="wp1013570"> </a>
+</pre></div>
+<a name="wp1012571"> </a><h5 class="pHeading4">
+Listing Installed MIDlet Suites
+</h5>
+<a name="wp1012575"> </a><p class="pBody">
+The following example lists the MIDlet suites installed on the device emulator. It shows the command being run on an emulator that has one MIDlet suite installed.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+C:\midp2.0fcs&gt;<span class="cUserType">bin\midp -list</span><a name="wp1013513"> </a>
+[1]<a name="wp1013530"> </a>
+  Name: HttpView<a name="wp1013531"> </a>
+  Vendor: Sun Microsystems, Inc.<a name="wp1013532"> </a>
+  Version: 2.0<a name="wp1013533"> </a>
+  Authorized by: CN=thehost;OU=JCT;O=dummy CA;L=Santa Clara;ST=CA;C=US<a name="wp1013534"> </a>
+  Description: This midlet is ....<a name="wp1013535"> </a>
+  Storage name: #Sun%0020#Microsystems%002c%0020#Inc%002e_#Http#View_<a name="wp1013536"> </a>
+  Size: 17K<a name="wp1013537"> </a>
+  Installed From: http://localhost:8080/midlets/pushdemo.jad<a name="wp1013538"> </a>
+  MIDlets:<a name="wp1013539"> </a>
+    HttpView<a name="wp1013540"> </a>
+    HttpTest<a name="wp1013524"> </a>
+</pre></div>
+<a name="wp1013525"> </a><h5 class="pHeading4">
+Running an Installed MIDlet Suite
+</h5>
+<a name="wp1012678"> </a><p class="pBody">
+The following example runs the MIDlet suite listed in the previous example. It provides the number associated with the MIDlet.
+</p>
+<a name="wp1012690"> </a><p class="pBody">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp -run 1</span>
+</p>
+<a name="wp1004085"> </a><h3 class="pHeading2">
+See Also
+</h3>
+<a name="wp1011729"> </a><p class="pBody">
+<a  href="appx-preverify.html#wp1000008"><span style="color: #3366CC">Appendix&#160;D,  &quot;The </span><span style="color: #3366CC">preverify</span><span style="color: #3366CC"> Tool</span></a>&#8221;
+</p>
+<a name="wp1005422"> </a><p class="pBody">
+<a  href="manage-midlets.html#wp1016916"><span style="color: #3366CC">Chapter&#160;2, &quot;Using the </span><span style="color: #3366CC">midp</span><span style="color: #3366CC"> Executable</span></a>&#8221;
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="appx-mekeytool.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="appx-preverify.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="useIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Using MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

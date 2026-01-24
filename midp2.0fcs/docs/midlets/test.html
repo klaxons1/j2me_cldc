@@ -1,0 +1,168 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/29/02 14:46:48" />
+    <title>Debugging</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="publish.html" />
+    <link rel="Next" href="appx-helloworld.html" />
+    <link rel="Index" href="midletsIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="publish.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="appx-helloworld.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="midletsIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp9095"> </a><h2 class="pChapNum">
+Chapter &#160; 6
+</h2>
+<a name="wp9178"> </a><h2 class="pNewHTMLPage">
+Debugging
+</h2>
+<hr class="pHr"/>
+<a name="wp997056"> </a><p class="pBody">
+MIDP Reference Implementation provides Java&#8482; platform source-level debugging through the CLDC debugging architecture. See your CLDC documentation for a thorough description of the debugging architecture.
+</p>
+<a name="wp997812"> </a><p class="pBody">
+This chapter briefly describes the steps that you would take to use the architecture and report any problems. It contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp997646"> </a><div class="pBullet1"><li><a  href="test.html#wp997647"><span style="color: #3366CC">Debugging a MIDlet</span></a></li></div>
+<a name="wp997798"> </a><div class="pBullet1Last"><li><a  href="test.html#wp998973"><span style="color: #3366CC">Reporting Problems</span></a></li></div>
+</ul>
+<a name="wp997647"> </a><h2 class="pHeading1">
+Debugging a MIDlet
+</h2>
+<a name="wp997060"> </a><p class="pBody">
+Before you can debug a MIDlet, you must have versions of the MIDP executable and the MIDlet that have debugging symbols in their class files. To see whether you have an acceptable version of the <code class="cCode">midp</code> executable, run the <code class="cCode">midp</code> command with the <code class="cCode">-help</code> option. If the executable has Java programming language debugging capabilities, you will see the <code class="cCode">-debugger</code> option listed. For example:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+C:\midp2.0fcs&gt;<span class="cUserType"> bin\midp -help</span><a name="wp998881"> </a>
+Usage: midp [&lt;options&gt;]<a name="wp998883"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Run the Graphical MIDlet Suite Manager.<a name="wp998884"> </a>
+&#160;&#160;...<a name="wp998885"> </a>
+&#160;&#160;or  midp [&lt;options&gt;] -debugger ...<a name="wp998876"> </a>
+</pre></div>
+<a name="wp998871"> </a><p class="pBody">
+If the version of the <code class="cCode">midp</code> executable that you are using does not support Java programming language debugging, see <em class="cEmphasis">Porting MIDP</em> for instructions on building one.
+</p>
+<a name="wp998917"> </a><p class="pBody">
+To create a version of the MIDlet that contains debugging symbols, use the <code class="cCode">-g</code> option to the <code class="cCode">javac</code> command. See your Java platform documentation for more information.
+</p>
+<a name="wp998838"> </a><p class="pBody">
+To debug a MIDlet:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp998056"> </a><li>Open a command prompt or terminal window.</li>
+<a name="wp998057"> </a><li>Change your current directory to <em class="cEmphasis">midpInstallDir</em>.</li>
+<a name="wp998064"> </a><p class="pBody">
+For example, if the MIDP Reference Implementation were installed in the directory <code class="cCode">c:\midp2.0fcs</code> you could run the command:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\&gt; <span class="cUserType">cd midp2.0fcs</span><a name="wp998068"> </a>
+</pre></div>
+<a name="wp997077"> </a><li>Start the MIDP Reference Implementation executable in debug mode.</li>
+<a name="wp997353"> </a><p class="pBody">
+Use the <code class="cCode">midp</code> command with the switches <code class="cCode">-debugger</code> and <code class="cCode">-port</code>. The port number should be <code class="cCode">2800</code>, the port number on which the KVM debug proxy expects the debugger to be running. See the KVM documentation for more information on the debug proxy, and <em class="cEmphasis">Using MIDP</em> for more information on using the MIDP Reference Implementation executable.
+</p>
+<a name="wp998088"> </a><p class="pBody">
+For example:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs<code class="cCode">\</code>&gt;<span class="cUserType"> bin\midp -debugger -port 2800 -classpath classes example.pushpuzzle.PushPuzzle</span><a name="wp997081"> </a>
+</pre></div>
+<a name="wp997416"> </a><li>Start the KVM debug proxy.</li>
+<a name="wp998985"> </a><p class="pBody">
+See the KVM documentation for information on correct syntax, arguments, and options. For example, the following command has the KVM debug proxy connect to the <code class="cCode">midp</code> executable that you started in the previous step and then listen at port 5000 for software compliant with the Java&#8482; Platform Debugger Architecture:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs<code class="cCode">\</code>&gt;<span class="cUserType"> java -jar c:/kvm/bin/kdp.jar kdp.KVMDebugProxy -l 5000 -p -r localhost 2800 -cp pathsIncludingMIDletClassFiles</span><a name="wp997091"> </a>
+</pre></div>
+<a name="wp997096"> </a><li>Connect to the KVM debug proxy from any debugger compliant with the Java Platform Debugger Architecture.</li>
+<a name="wp998971"> </a><p class="pBody">
+Compliant debuggers include jdb, Sun&#8482; ONE Studio (formerly known as Forte&#8482; for Java), JBuilder, Code Warrior, Visual Cafe, and others. See your debugger&#8217;s documentation for information on attaching to a running VM on the localhost at port 5000. 
+</p>
+</ol>
+</div>
+<a name="wp998973"> </a><h2 class="pHeading1">
+Reporting Problems
+</h2>
+<a name="wp997103"> </a><p class="pBody">
+Send any comments, questions or general feedback to <code class="cCode">midp-comments@sun.com</code>. If you think you have found a bug, first check the bug parade to see whether the problem has already been reported. The bug parade is at this URL:
+</p>
+<a name="wp998440"> </a><p class="pBody">
+<a href="http://developer.java.sun.com/developer/bugParade/index.jshtml" target="_blank">
+<span class="cWebJump">http://developer.java.sun.com/developer/bugParade/index.jshtml</span></a>
+</p>
+<a name="wp998236"> </a><p class="pBody">
+The category for this product is Mobile Information Device Profile (MIDP) Reference Implementation.
+</p>
+<a name="wp998283"> </a><p class="pBody">
+If no one else has reported the bug, report it so that it can be reproduced, analyzed, and fixed. To do this, gather the following information:
+</p>
+<ul class="pBullet1"><a name="wp998284"> </a><div class="pBullet1"><li>All platform and variant information, if not built on the standard platform</li></div>
+<a name="wp998285"> </a><div class="pBullet1Plus"><li>Description of the bug</li></div>
+<a name="wp998286"> </a><div class="pBullet1Plus"><li>Any error messages, exceptions, stack traces, or other data that you obtained</li></div>
+<a name="wp998287"> </a><div class="pBullet1Last"><li>If possible, a script or code fragment that demonstrates the problem</li></div>
+</ul>
+<a name="wp998219"> </a><p class="pBody">
+Enter the information in a bug report at this URL:
+</p>
+<a name="wp998444"> </a><p class="pBody">
+<a href="http://java.sun.com/cgi-bin/bugreport.cgi/" target="_blank">
+<span class="cWebJump">http://java.sun.com/cgi-bin/bugreport.cgi/</span></a>
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="publish.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="appx-helloworld.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="midletsIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Creating MIDlet Suites <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

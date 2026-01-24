@@ -1,0 +1,369 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 16:27:01" />
+    <title>Thread-Safety in LCDUI</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="storage.html" />
+    <link rel="Next" href="gui.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="storage.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="gui.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="portIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp513486"> </a><h2 class="pChapNum">
+Chapter &#160; 5
+</h2>
+<a name="wp513488"> </a><h2 class="pNewHTMLPage">
+Thread-Safety in LCDUI
+</h2>
+<hr class="pHr"/>
+<a name="wp526635"> </a><p class="pBody">
+This chapter describes the coding conventions that ensure thread-safety for <em class="cEmphasis">LCDUI</em>, the user interface of the MIDP Reference Implementation. The LCDUI classes are in the <code class="cCode">javax.microedition.lcdui</code> package. Thread-safety means that access to shared data is <em class="cEmphasis">safe</em> (data never becomes corrupted, even in the presence of concurrent access) and that the system is <em class="cEmphasis">live</em> (threads do not deadlock). It is best to understand this chapter before beginning a port of the graphical user interface.
+</p>
+<a name="wp526140"> </a><p class="pBody">
+This chapter contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp526141"> </a><div class="pBullet1"><li><a  href="thread-safety.html#wp501393"><span style="color: #3366CC">Requirements</span></a></li></div>
+<a name="wp526149"> </a><div class="pBullet1Plus"><li><a  href="thread-safety.html#wp501433"><span style="color: #3366CC">Design Approach</span></a></li></div>
+<a name="wp526153"> </a><div class="pBullet1Plus"><li><a  href="thread-safety.html#wp501473"><span style="color: #3366CC">Coding Conventions</span></a></li></div>
+<a name="wp526158"> </a><div class="pBullet1Last"><li><a  href="thread-safety.html#wp527198"><span style="color: #3366CC">The </span><span style="color: #3366CC">serviceRepaints</span><span style="color: #3366CC"> Method</span></a></li></div>
+</ul>
+<a name="wp501393"> </a><h2 class="pHeading1">
+5.1	Requirements
+</h2>
+<a name="wp512907"> </a><p class="pBody">
+All ports of the MIDP Reference Implementation must obey the following thread-safety requirements:
+</p>
+<ol class="pList1"><a name="wp502777"> </a><div class="pList1"><li>All calls into LCDUI, from any thread, from any class outside LCDUI, must leave LCDUI in a valid and self-consistent state.</li></div>
+<a name="wp526178"> </a><div class="pList1Plus"><li>The <em class="cEmphasis">event delivery</em> calls made by LCDUI into the application must be serialized, as required by the <em class="cEmphasis">MIDP 2.0 Specification</em>. This set of calls is defined in class documentation for <code class="cCode">javax.microedition.lcdui.Canvas</code>. (See <a  href="events.html#wp442099"><span style="color: #3366CC">Chapter&#160;3, &quot;The Event Model</span></a>&#8221; for more information on the events delivered by LCDUI.)</li></div>
+<a name="wp526183"> </a><div class="pList1Last"><li>Applications must be allowed to define and implement their own locking policy for their data structures, without any restrictions imposed by LCDUI, and be assured that they will run correctly (that is, deadlock-free and safe) when they interact with LCDUI. The application&#39;s locking policy should be free to use locks even on LCDUI objects. Applications should be able to create subclasses of LCDUI classes without violating any safety guarantees.</li></div>
+</ol>
+<a name="wp501433"> </a><h2 class="pHeading1">
+5.2	Design Approach
+</h2>
+<a name="wp501435"> </a><p class="pBody">
+The MIDP Reference Implementation treats all LCDUI data (static variables of all classes and instance variables of all objects) as if it were a single object. It is shared data because this data is accessible to multiple threads. A single, global lock object <code class="cCode">LCDUILock</code> is defined to protect concurrent access to all shared data.
+</p>
+<a name="wp526527"> </a><p class="pBody">
+Because all LCDUI data is treated as a single, shared object, there should not be multiple threads running simultaneously inside of LCDUI. To serialize, the general approach of the MIDP Reference Implementation is to apply locking around the perimeter of LCDUI. All methods that are called from the outside are responsible for ensuring that locking is done properly before making calls into other parts of LCDUI. Method calls into LCDUI enter through the following general routes:
+</p>
+<ul class="pBullet1"><a name="wp501439"> </a><div class="pBullet1"><li>Application calls into the public API</li></div>
+<a name="wp501441"> </a><div class="pBullet1Plus"><li>Events being delivered from the KVM</li></div>
+<a name="wp501443"> </a><div class="pBullet1Last"><li>MIDlet state changes from the scheduler</li></div>
+</ul>
+<a name="wp501445"> </a><p class="pBody">
+In general, methods internal to LCDUI need not be concerned with locking, and they may assume that their callers have handled locking correctly. In certain cases, internal methods are called without holding the lock, because of complications with the locking protocols. These cases are marked in the source code with a <code class="cCode">SYNC</code> <code class="cCode">NOTE</code> comment.
+</p>
+<a name="wp501447"> </a><p class="pBody">
+This design implies that LCDUI internal code should not call the same methods that are called from outside, otherwise lock nesting will result. While lock nesting is not a fatal problem, if left uncontrolled it can lead to performance problems. Care has been taken to refactor the code so as to avoid lock nesting. This refactoring has led to an idiom where a method intended to be called from outside (such as a public API method) simply takes the lock and then calls an internal method. Internal LCDUI code calls the internal method directly. By convention, these internal methods are named after their public counterparts, with <code class="cCode">Impl</code> appended.
+</p>
+<a name="wp501449"> </a><p class="pBody">
+An exception to the global lock rule is for the <code class="cCode">Graphics</code> object, where the API is structured so that painting to the screen is implicitly serialized. <code class="cCode">Graphics</code> objects for offscreen <code class="cCode">Image</code> objects do not make any access to LCDUI data, and so they use their own locking convention. See <a  href="thread-safety.html#wp527380"><span style="color: #3366CC">&quot;Graphics Conventions&quot; </span></a> for a description of this convention.
+</p>
+<a name="wp501451"> </a><p class="pBody">
+In order to preserve event serialization semantics (Requirement 2), another lock <code class="cCode">calloutLock</code> is used when making calls subject to this requirement. In many cases it is unclear whether a particular method call will stay within LCDUI code or will find its way into application code. This is because much of the LCDUI implementation uses the same APIs that are exposed to applications. Thus, the system will hold <code class="cCode">calloutLock</code> while calling any method that might end up in application code. For cases where the thread stays within LCDUI, taking <code class="cCode">calloutLock</code> is unnecessary. It might be possible to optimize the system by avoiding taking the <code class="cCode">calloutLock</code> in such cases, but it&#8217;s likely that the cost of testing for this case will largely offset the savings from avoiding the lock.
+</p>
+<a name="wp511796"> </a><p class="pBody">
+Deadlock is prevented by establishing a total ordering of all locks in the system. The ordering of locks is as follows, from highest to lowest priority:
+</p>
+<ol class="pList1"><a name="wp511797"> </a><div class="pList1"><li>The <code class="cCode">calloutLock</code> object</li></div>
+<a name="wp511803"> </a><div class="pList1Plus"><li>All application-defined locks</li></div>
+<a name="wp512927"> </a><div class="pList1Last"><li>The <code class="cCode">LCDUILock</code> object</li></div>
+</ol>
+<a name="wp511805"> </a><p class="pBody">
+The general rule is that code holding a lock must not acquire any lock that has a higher priority. However, code holding a lock may acquire any lock with lower priority. From LCDUI&#8217;s point of view, all application locks have the same priority. LCDUI code must assume that any call into the application will take application locks, and any call coming from the application holds application locks.
+</p>
+<a name="wp526320"> </a><p class="pBody">
+This ordering is a consequence of the thread-safety requirements. Application code that is called by LCDUI must be allowed to take any lock, and application code calling into LCDUI must be allowed to hold any lock (Requirement 3). Since holding <code class="cCode">LCDUILock</code> is required for access to LCDUI data in methods called from the application (Requirement 1), <code class="cCode">LCDUILock</code> must have a lower priority than all application locks. Since <code class="cCode">calloutLock</code> must be held in order to serialize calls into the application (Requirement 2), <code class="cCode">calloutLock</code> must have a higher priority than all application locks.
+</p>
+<a name="wp501473"> </a><h2 class="pHeading1">
+5.3	Coding Conventions
+</h2>
+<a name="wp526208"> </a><p class="pBody">
+This section covers thread-safety coding conventions for LCDUI. It has the topics:
+</p>
+<ul class="pBullet1"><a name="wp526209"> </a><div class="pBullet1"><li><a  href="thread-safety.html#wp526214"><span style="color: #3366CC">General Conventions</span></a></li></div>
+<a name="wp526213"> </a><div class="pBullet1Plus"><li><a  href="thread-safety.html#wp512459"><span style="color: #3366CC">Public Method Conventions</span></a></li></div>
+<a name="wp526226"> </a><div class="pBullet1Plus"><li><a  href="thread-safety.html#wp501545"><span style="color: #3366CC">Constructor Conventions</span></a></li></div>
+<a name="wp526231"> </a><div class="pBullet1Plus"><li><a  href="thread-safety.html#wp513078"><span style="color: #3366CC">Event-Handling Method Conventions</span></a></li></div>
+<a name="wp526236"> </a><div class="pBullet1Plus"><li><a  href="thread-safety.html#wp501593"><span style="color: #3366CC">Application Callout Conventions</span></a></li></div>
+<a name="wp526241"> </a><div class="pBullet1Last"><li><a  href="thread-safety.html#wp527380"><span style="color: #3366CC">Graphics Conventions</span></a></li></div>
+</ul>
+<a name="wp526214"> </a><h3 class="pHeading2">
+5.3.1	General Conventions
+</h3>
+<a name="wp512456"> </a><p class="pBody">
+The general thread-safety conventions for LCDUI are as follows:
+</p>
+<ul class="pBullet1"><a name="wp512466"> </a><div class="pBullet1"><li>Any method that is called from outside LCDUI, such as public API methods, must take <code class="cCode">LCDUILock</code> while making any access to LCDUI shared data (class or instance variables)</li></div>
+<a name="wp512478"> </a><div class="pBullet1Plus"><li>Internal LCDUI methods may assume that LCDUILock is held when they are called, and they may thus read or write shared data without acquiring any locks</li></div>
+<a name="wp512511"> </a><div class="pBullet1Plus"><li>Code that is called as if it were an application, even internal code, must take <code class="cCode">LCDUILock</code> prior to manipulating any LCDUI data</li></div>
+<a name="wp512525"> </a><div class="pBullet1Plus"><li>Constructors are generally left unlocked, unless they manipulate shared data, in which case they must hold <code class="cCode">LCDUILock</code></li></div>
+<a name="wp512485"> </a><div class="pBullet1Plus"><li>Code that holds <code class="cCode">calloutLock</code> may take <code class="cCode">LCDUILock</code></li></div>
+<a name="wp512490"> </a><div class="pBullet1Plus"><li>Code that holds <code class="cCode">LCDUILock</code> must release it before taking <code class="cCode">calloutLock</code></li></div>
+<a name="wp512495"> </a><div class="pBullet1Plus"><li>Code that calls into the application must hold <code class="cCode">calloutLock</code> around this call</li></div>
+<a name="wp512831"> </a><div class="pBullet1Plus"><li>Code called from the application must not take <code class="cCode">calloutLock</code></li></div>
+<a name="wp512467"> </a><div class="pBullet1Plus"><li>Code that holds <code class="cCode">LCDUILock</code> must not call into the application</li></div>
+<a name="wp512505"> </a><div class="pBullet1Last"><li>Exceptions to these rules are documented with a <code class="cCode">SYNC</code> <code class="cCode">NOTE</code> comment</li></div>
+</ul>
+<a name="wp512459"> </a><h3 class="pHeading2">
+5.3.2	Public Method Conventions
+</h3>
+<a name="wp501481"> </a><p class="pBody">
+Within each call in the public API, there is an appropriate synchronized block. For example, in <code class="cCode">Gauge.java</code>:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public void setMaxValue(int maxValue) {<a name="wp505275"> </a>
+&#160;&#160;&#160;&#160;synchronized (Display.LCDUILock) {<a name="wp526658"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;setMaxValueImpl(maxValue);<a name="wp526659"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp526708"> </a>
+}<a name="wp526709"> </a>
+</pre></div>
+<a name="wp527122"> </a><p class="pBody">
+Methods that require the <code class="cCode">Display.LCDUILock</code> cannot merely use the <code class="cCode">synchronized</code> method modifier because this would indicate that synchronization is to be performed on the object itself, not on the <code class="cCode">LCDUILock</code> object. The rule is that <code class="cCode">LCDUILock</code> must be held whenever there is access to any shared data, that is, data that is potentially accessible to multiple threads. This includes class and instance variables belonging to this class or to any other LCDUI class. Local variables and method parameters are private to each thread and are not shared data. Access to them does not require locking.
+</p>
+<a name="wp501503"> </a><p class="pBody">
+Note that the synchronization block begins after argument checking. This is safe, because the argument checking does not involve any access to shared data. This is a tiny optimization. It would also have been correct to have the synchronization block around the entire body of the method.
+</p>
+<a name="wp526768"> </a><p class="pBody">
+Certain simple methods may not need synchronization at all. These cases are documented with a explanatory SYNC NOTE comment. For example, in <code class="cCode">Gauge.java</code>:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public int getValue() {<a name="wp526769"> </a>
+&#160;&#160;&#160;&#160;// SYNC NOTE: return of atomic value, no locking necessary<a name="wp526771"> </a>
+&#160;&#160;&#160;&#160;return value;<a name="wp526757"> </a>
+}<a name="wp526750"> </a>
+</pre></div>
+<a name="wp526751"> </a><p class="pBody">
+In this case, the value being returned is an <code class="cCode">int</code>, which the Java&#8482; Language Specification requires to be manipulated atomically. (That is, a simultaneous reads and writes to this value will never result in a mixture of old and new bits. If the value were a <code class="cCode">long</code>, this property wouldn&#8217;t hold.) The value returned will either be the old value or the new value; which it will be is unpredictable. Adding locking doesn&#8217;t change the situation, and so locking is omitted from these cases for purposes of efficiency. There are a handful of &#8220;getter&#8221; methods such as this that can avoid synchronization.
+</p>
+<a name="wp501517"> </a><p class="pBody">
+Strictly speaking, this code should be synchronized because of memory ordering issues. In practice, memory ordering issues arise only on multiprocessor systems, and it is very unlikely that this code will be executed on such systems. The MIDP Reference Implementation, therefore, made a design decision to avoid locking overhead in cases such as these by relying on the virtual machine (VM) to provide sequentially consistent memory semantics.
+</p>
+<a name="wp501519"> </a><p class="pBody">
+Locking must occur around <em class="cEmphasis">assignment</em> of atomic values. Consider the following hypothetical example:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public void setIndex(int newIndex) {<a name="wp505953"> </a>
+&#160;&#160;&#160;&#160;synchronized (lock) {<a name="wp518407"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;index = newIndex; // index is an instance variable<a name="wp518420"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp518428"> </a>
+}<a name="wp518433"> </a>
+</pre></div>
+<a name="wp501531"> </a><p class="pBody">
+One might be tempted to omit this locking, because the assignment is atomic, and locking would not seem to add anything. However, holding the lock is necessary to ensure that if another thread reads this variable several times while holding the lock, these reads will return consistent values.
+</p>
+<a name="wp501545"> </a><h3 class="pHeading2">
+5.3.3	Constructor Conventions
+</h3>
+<a name="wp527293"> </a><p class="pBody">
+Constructors typically do not need any synchronization if all they do is initialize the newly created object. However, individual cases will need to be inspected carefully in order to determine whether they might affect other data structures. For example, in Form.java:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+public Form(...) {<a name="wp527295"> </a>
+&#160;&#160;&#160;&#160;super(title);                         // (a)<a name="wp527296"> </a>
+<a name="wp518439"> </a>
+&#160;&#160;&#160;&#160;synchronized (Display.LCDUILock) {    // (b)<a name="wp518444"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;// long, complex initialization<a name="wp518452"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp518456"> </a>
+}<a name="wp518457"> </a>
+</pre></div>
+<a name="wp512991"> </a><p class="pBody">
+At <code class="cCode">(a)</code>, the call to <code class="cCode">super</code> ends up creating a new <code class="cCode">Layout</code> object. Without tracing the entire call tree, it is difficult to determine whether the call to the superclass constructor has any access to shared data. It is therefore reasonable to want to put locking around this call. Unfortunately, a constructor&#8217;s call to <code class="cCode">super</code> must appear as its very first statement and cannot appear within a <code class="cCode">synchronized</code> block. Therefore, the superclass constructor must be inspected carefully to ensure that there is no unsynchronized access to shared data.
+</p>
+<a name="wp513048"> </a><p class="pBody">
+The synchronization block beginning at <code class="cCode">(b)</code> surrounds a complex initialization routine. Once again, without inspecting the entire call tree, it is difficult to tell whether this routine makes any access to shared data. Thus code like this has been placed within a synchronization block so that access to shared data is safe. Even if the code in its current state makes no access to shared data, a future modification to the code might add such an access. Leaving this code unlocked is therefore quite fragile.
+</p>
+<a name="wp513052"> </a><p class="pBody">
+Even if the body of this constructor and the body of the superclass constructor are synchronized, there is still a potential safety problem. Suppose the superclass constructor were to store a reference to the object being constructed into a shared data structure. There is a window of time between the release of the lock held by the superclass constructor and the reacquisition of the lock by the body of this constructor. During this window, other threads will have access to a reference to this object. If another thread were to call a method on this object, that method would be operating on the object in a partially constructed state, which might lead to misbehavior or errors. Therefore, constructors must be extremely careful not to store references to the newly constructed object into shared data, even if the store is done within a synchronization block.
+</p>
+<a name="wp513078"> </a><h3 class="pHeading2">
+5.3.4	Event-Handling Method Conventions
+</h3>
+<a name="wp513171"> </a><p class="pBody">
+Event handling methods and MIDlet state change methods are considered to originate outside LCDUI and thus must also hold <code class="cCode">LCDUILock</code> during access to shared data. The <code class="cCode">EventHandler</code> thread makes calls on the <code class="cCode">DisplayAccessor</code> object in order to deliver events to LCDUI. From the <code class="cCode">DisplayAccessor</code> object, the call tree fans out to individual <code class="cCode">Displayable</code> objects. Every method of <code class="cCode">Displayable</code> that is called from within the <code class="cCode">DisplayAccessor</code> must be inspected in order to determine whether it should be locked. In practice, this means that LCDUI classes that are subclasses of <code class="cCode">Displayable</code> must add synchronization within their <code class="cCode">showNotify</code>, <code class="cCode">hideNotify</code>, <code class="cCode">keyPressed</code>, <code class="cCode">paint</code>, and other event delivery methods. Note that subclasses of the <code class="cCode">Item</code> class have these methods but that they are not locked. This is because the <code class="cCode">Form</code> object receives the event call, takes the lock, and then calls the corresponding method on the appropriate <code class="cCode">Item</code> object.
+</p>
+<a name="wp501593"> </a><h3 class="pHeading2">
+5.3.5	Application Callout Conventions
+</h3>
+<a name="wp526342"> </a><p class="pBody">
+In some cases, the processing of an event will end up calling out to the application. (These are callbacks from the point of view of the application, but this section takes the point of view of the system and calls them callouts.) The <code class="cCode">LCDUILock</code> must not be held during any callout, because doing so may give rise to deadlock. However, if the current <code class="cCode">Displayable</code> is not a <code class="cCode">Canvas</code> object, then it will be a high-level UI component that is part of LCDUI. Each component will be responsible for reacquiring the <code class="cCode">LCDUILock</code> for itself as described above.
+</p>
+<a name="wp526346"> </a><p class="pBody">
+In order to serialize callouts (Requirement 2), the code must hold <code class="cCode">calloutLock</code> across any call that might end up in the application. These calls include the following:
+</p>
+<ul class="pBullet1"><a name="wp526354"> </a><div class="pBullet1"><li><code class="cCode">Canvas.hideNotify</code></li></div>
+<a name="wp526429"> </a><div class="pBullet1Plus"><li><code class="cCode">Canvas.keyPressed</code></li></div>
+<a name="wp526434"> </a><div class="pBullet1Plus"><li><code class="cCode">Canvas.keyRepeated</code></li></div>
+<a name="wp526435"> </a><div class="pBullet1Plus"><li><code class="cCode">Canvas.keyReleased</code></li></div>
+<a name="wp526436"> </a><div class="pBullet1Plus"><li><code class="cCode">Canvas.paint</code></li></div>
+<a name="wp526439"> </a><div class="pBullet1Plus"><li><code class="cCode">Canvas.pointerDragged</code></li></div>
+<a name="wp526440"> </a><div class="pBullet1Plus"><li><code class="cCode">Canvas.pointerPressed</code></li></div>
+<a name="wp526441"> </a><div class="pBullet1Plus"><li><code class="cCode">Canvas.pointerReleased</code></li></div>
+<a name="wp526442"> </a><div class="pBullet1Plus"><li><code class="cCode">Canvas.showNotify</code></li></div>
+<a name="wp526443"> </a><div class="pBullet1Plus"><li><code class="cCode">Canvas.sizeChanged</code></li></div>
+<a name="wp526444"> </a><div class="pBullet1Plus"><li><code class="cCode">CommandListener.commandAction</code></li></div>
+<a name="wp526445"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.getMinContentHeight</code></li></div>
+<a name="wp526446"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.getMinContentWidth</code></li></div>
+<a name="wp526447"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.getPrefContentHeight</code></li></div>
+<a name="wp526448"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.getPrefContentWidth</code></li></div>
+<a name="wp526449"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.hideNotify</code></li></div>
+<a name="wp526450"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.keyPressed</code></li></div>
+<a name="wp526451"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.keyRepeated</code></li></div>
+<a name="wp526452"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.keyReleased</code></li></div>
+<a name="wp526453"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.paint</code></li></div>
+<a name="wp526454"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.pointerDragged</code></li></div>
+<a name="wp526455"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.pointerPressed</code></li></div>
+<a name="wp526456"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.pointerReleased</code></li></div>
+<a name="wp526457"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.showNotify</code></li></div>
+<a name="wp526465"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.sizeChanged</code></li></div>
+<a name="wp526466"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.traverse</code></li></div>
+<a name="wp526470"> </a><div class="pBullet1Plus"><li><code class="cCode">CustomItem.traverseOut</code></li></div>
+<a name="wp526471"> </a><div class="pBullet1Plus"><li><code class="cCode">Displayable.sizeChanged</code></li></div>
+<a name="wp526472"> </a><div class="pBullet1Plus"><li><code class="cCode">ItemCommandListener.commandAction</code></li></div>
+<a name="wp526473"> </a><div class="pBullet1Plus"><li><code class="cCode">ItemStateListener.itemStateChanged</code></li></div>
+<a name="wp526474"> </a><div class="pBullet1Last"><li><code class="cCode">Runnable.run</code> resulting from a call to <code class="cCode">Display.callSerially</code></li></div>
+</ul>
+<a name="wp512577"> </a><p class="pBody">
+Because <code class="cCode">calloutLock</code> has a higher priority than <code class="cCode">LCDUILock</code>, the code must release <code class="cCode">LCDUILock</code> prior to taking calloutLock and calling into the application. An example of this occurs in <code class="cCode">CustomItem.java</code> where the application&#8217;s <code class="cCode">ItemStateListener</code> is called:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+void callKeyPressed(int keyCode) {<a name="wp526806"> </a>
+&#160;&#160;&#160;&#160;ItemCommandListener cl = null;<a name="wp526808"> </a>
+&#160;&#160;&#160;&#160;Command defaultCmd = null;<a name="wp526809"> </a>
+<a name="wp526810"> </a>
+&#160;&#160;&#160;&#160;synchronized (Display.LCDUILock) {<a name="wp526811"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;cl = commandListener;<a name="wp526812"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;defaultCmd = defaultCommand;<a name="wp526813"> </a>
+&#160;&#160;&#160;&#160;} // synchronized<a name="wp526814"> </a>
+<a name="wp526816"> </a>
+&#160;&#160;&#160;&#160;// SYNC NOTE: The call to the listener must occur outside<a name="wp526817"> </a>
+&#160;&#160;&#160;&#160;// of the lock<a name="wp526818"> </a>
+&#160;&#160;&#160;&#160;try {<a name="wp526820"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;// SYNC NOTE: We lock on calloutLock around any calls<a name="wp526821"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;// into application code<a name="wp526923"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;synchronized (Display.calloutLock) {<a name="wp526924"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if ((cl != null) ... ) {<a name="wp526825"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;cl.commandAction(defaultCmd, this);<a name="wp526828"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;} else {<a name="wp526829"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;this.keyPressed(keyCode);<a name="wp526830"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}<a name="wp526831"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}<a name="wp526832"> </a>
+&#160;&#160;&#160;&#160;} catch (Throwable thr) {<a name="wp526833"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Display.handleThrowable(thr);<a name="wp526834"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp526835"> </a>
+}<a name="wp526837"> </a>
+</pre></div>
+<a name="wp501635"> </a><p class="pBody">
+(Some error checking has been omitted for brevity.)
+</p>
+<a name="wp501637"> </a><p class="pBody">
+This code uses the <em class="cEmphasis">open call</em> technique of loading information into local variables while the lock is held, and ensuring that unlocked code uses only these local variables. This is necessary in case the value of the <code class="cCode">itemStateListener</code> instance variable or the <code class="cCode">items</code> array is changed between the set and the actual call.
+</p>
+<a name="wp501639"> </a><p class="pBody">
+A consequence of this structure is that the call to the application must occur at the same level in the calling structure as the locking of <code class="cCode">LCDUILock</code>, because <code class="cCode">LCDUILock</code> must be released before <code class="cCode">calloutLock</code> is taken and the call made into the application. This in turn implies that the information about the decision of whether to make the <code class="cCode">itemStateChanged</code> call must be returned from the <code class="cCode">Item</code> that made the decision. The call cannot be made directly from the code in the <code class="cCode">Item</code> that handles the event. 
+</p>
+<a name="wp527380"> </a><h3 class="pHeading2">
+5.3.6	Graphics Conventions
+</h3>
+<a name="wp527381"> </a><p class="pBody">
+Since the calls to a <code class="cCode">Canvas</code> object&#8217;s <code class="cCode">paint</code> method are serialized, the <code class="cCode">Graphics</code> object passed to it need not be synchronized at all. This relies on the underlying graphics library to be thread-safe. It also assumes that native methods implicitly provide exclusion, as is the case in KVM.
+</p>
+<a name="wp501659"> </a><p class="pBody">
+However, a <code class="cCode">Graphics</code> object whose destination is an <code class="cCode">Image</code> will need to be synchronized, since multiple threads may attempt to use the <code class="cCode">Graphics</code> object to paint simultaneously. The locking occurs on the <code class="cCode">Graphics</code> object itself, not on <code class="cCode">LCDUILock</code>, because the effect of any graphics call affects only the state of that <code class="cCode">Graphics</code> object. This locking is applied in <code class="cCode">ImageGraphics</code>, a private implementation subclass of <code class="cCode">Graphics</code>, leaving the main <code class="cCode">Graphics</code> class without locking:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+class Graphics {<a name="wp505983"> </a>
+&#160;&#160;&#160;&#160;public void clipRect(int x, int y, int width, int height) {<a name="wp518656"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;...<a name="wp518664"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp518668"> </a>
+&#160;&#160;&#160;&#160;...<a name="wp518674"> </a>
+<a name="wp527027"> </a>
+class ImageGraphics extends Graphics {<a name="wp518677"> </a>
+&#160;&#160;&#160;&#160;public void clipRect(int x, int y, int w, int h) {<a name="wp518681"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;synchronized (this) {<a name="wp518690"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;super.clipRect(x, y, w, h);<a name="wp518702"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}<a name="wp518710"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp518714"> </a>
+&#160;&#160;&#160;&#160;...<a name="wp518717"> </a>
+}<a name="wp518718"> </a>
+</pre></div>
+<a name="wp501697"> </a><p class="pBody">
+Locking is necessary for certain methods, such as <code class="cCode">clipRect</code>, because it manipulates the <code class="cCode">Graphics</code> object&#8217;s state using code written in the Java programming language. However, the <code class="cCode">drawLine</code> method is simply a direct call to a native method, which the MIDP Reference Implementation assumes runs single-threaded, and so no locking is necessary. The subclass can add no value by taking a lock around the native call, so it simply inherits the native implementation.
+</p>
+<a name="wp527196"> </a><p class="pBody">
+Note that it is not necessary to lock the destination image of any graphics call nor the source image of the <code class="cCode">drawImage</code> call. The assumption is that the only operations that have access to actual image data are native, and so no exclusion is necessary. Graphics operations from different threads might be interleaved, but locking within the <code class="cCode">Graphics</code> class will not prevent that from occurring; that is the application&#8217;s responsibility. 
+</p>
+<a name="wp527198"> </a><h2 class="pHeading1">
+5.4	The serviceRepaints Method
+</h2>
+<a name="wp512705"> </a><p class="pBody">
+The <em class="cEmphasis">MIDP 2.0 Specification</em> requires that, in general, callouts be serialized. That is, a callout may not begin until the previous callout has returned. (This rule is covered by Requirement 2.) However, the specification for <code class="cCode">serviceRepaints</code> states that it must not return until the paint method is called and has returned. This is true even if <code class="cCode">serviceRepaints</code> is called from within an application callout. This is the only case where two callouts are allowed to be in progress simultaneously.
+</p>
+<a name="wp512709"> </a><p class="pBody">
+This arrangement gives rise to the possibility of deadlock. Suppose that the event thread has taken <code class="cCode">calloutLock</code> and is calling an application&#8217;s event method, which attempts to acquire one of the application&#8217;s locks. Suppose further that an application thread already holds this application lock and now calls <code class="cCode">serviceRepaints</code> in order to force a pending repaint to be processed. The <code class="cCode">serviceRepaints</code> code attempts to acquire <code class="cCode">calloutLock</code> in order to call <code class="cCode">paint</code>, and the system is now deadlocked.
+</p>
+<a name="wp512710"> </a><p class="pBody">
+The <em class="cEmphasis">MIDP 2.0 Specification</em> prevents deadlock in this case by imposing a special rule, which is that applications are prohibited from holding any of their own locks during a call to <code class="cCode">serviceRepaints</code>. This rule is reflected in the lock ordering policy described in <a  href="thread-safety.html#wp501433"><span style="color: #3366CC">&quot;Design Approach&quot; </span></a>. Since <code class="cCode">serviceRepaints</code> may call <code class="cCode">paint</code>, which requires holding <code class="cCode">calloutLock</code>, the rule about holding no locks still applies. This is the only case where the lock ordering rules are exposed to the application. The application is allowed to hold its locks during a call to any other LCDUI method, in accordance with Requirement 3. The <code class="cCode">serviceRepaints</code> method is the sole exception to this rule.
+</p>
+<a name="wp512714"> </a><p class="pBody">
+A multi-threaded application will generally need to hold locks on its own data structures in order to protect them from concurrent access. The problem is that the application is <em class="cEmphasis">prohibited</em> from holding these locks when it calls <code class="cCode">serviceRepaints</code>. This makes <code class="cCode">serviceRepaints</code> hard to use correctly. In practice, application code must use the open call technique in order to use <code class="cCode">serviceRepaints</code> safely. 
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="storage.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="gui.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Porting MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

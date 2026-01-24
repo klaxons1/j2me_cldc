@@ -1,0 +1,26 @@
+/*
+ * @(#)topbar.xpm	1.5 02/07/24 @(#)
+ *
+ * Copyright (c) 1999-2002 Sun Microsystems, Inc.  All rights reserved.
+ * PROPRIETARY/CONFIDENTIAL
+ * Use is subject to license terms.
+ */
+
+/* XPM */
+char * topbar_xpm[] = {
+"180 11 4 1",
+" 	c #B6B6B6B6AAAA",
+".	c #000000000000",
+"X	c #6D6D6D6D5555",
+"o	c #FFFFFFFFFFFF",
+"                                                                                                                                                                                    ",
+"  .......                                                                                                                                                                           ",
+"  .  .  .              ..                                                                                                                                           ............    ",
+"   . . .            .. ..                                                                                                                                           .XXXXXXXXooo.   ",
+"    ...          .. .. ..                                                                                                                                           .XXXXXXXXooo..  ",
+"     .        .. .. .. ..                                                                                                                                           .XXXXXXXXooo..  ",
+"     .     .. .. .. .. ..                                                                                                                                           .XXXXXXXXooo..  ",
+"     .     .. .. .. .. ..                                                                                                                                           .XXXXXXXXooo.   ",
+"     .     .. .. .. .. ..                                                                                                                                           ............    ",
+"                                                                                                                                                                                    ",
+"                                                                                                                                                                                    "};

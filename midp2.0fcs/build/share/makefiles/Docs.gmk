@@ -1,0 +1,256 @@
+#
+# @(#)Docs.gmk	1.34 02/09/17 @(#)
+#
+# Copyright (c) 1999-2002 Sun Microsystems, Inc.  All rights reserved.
+# PROPRIETARY/CONFIDENTIAL
+# Use is subject to license terms.
+#
+#########
+#
+# Makefile for javadoc-generated documentation. To be included into
+# the top level makefile.
+#
+
+-include $(MIDP_DIR)/build/share/makefiles/$(VM)/Docs.gmk
+
+SSL_PACKAGE=$(shell \
+  if [ -x $(MIDP_DIR)/src/share/classes/com/sun/midp/ssl ]; then\
+      echo com.sun.midp.ssl; \
+  fi)
+
+# Variables used by releasedocs target
+#
+
+DOCSDIR       = $(BUILD_DIR)/doc
+
+MIFDOCLET_DIR = /java/pubs/mifdoclet/latest
+MIFDOCLET_PATH = $(MIFDOCLET_DIR)/mifdoclet.jar
+
+GROUPNAME = MID Profile
+
+JAVADOCTITLE  = "$(GROUPNAME)"
+JAVADOCWINDOWTITLE  = "$(GROUPNAME)"
+JAVADOCHEADER = '<strong>MID Profile</strong>'
+JAVADOCBOTTOM = '<font size="-1"><a href="mailto:midp-feedback@risc.sps.mot.com">Submit a comment or suggestion</a> Version 2.0 of MID Profile Specification<br>Java is a trademark or registered trademark of Sun Microsystems,  Inc. in the US and other countries. Copyright (c) 1993-2002 Sun Microsystems, Inc. 901 San Antonio Road,Palo Alto, California, 94303, U.S.A.  All Rights Reserved.</font>'
+DOC_MIF     	= $(DOCSDIR)/mif
+DOC_MIF_ALL    	= $(DOCSDIR)/mif_all
+DOC_DIR     	= $(DOCSDIR)/html
+DOC_DIR_NOTIMES = $(DOCSDIR)/html_notimes
+DOC_DIR_MID     = $(DOC_DIR)_mid
+DOC_TOOLS_DIR   = $(DOCSDIR)/html_tools
+DOC_ALL_DIR     = $(DOCSDIR)/html_all
+DOC_EXAMPLE_DIR = $(DOCSDIR)/example_html
+
+GROUP_DOC = \
+	-group "User Interface Package" 'javax.microedition.lcdui*' \
+        -group "Persistence Package" 'javax.microedition.rms' \
+        -group "Application Lifecycle Package" 'javax.microedition.midlet' \
+        -group "Networking Package" 'javax.microedition.io' \
+        -group "Audio Package" 'javax.microedition.media*' \
+        -group "Public Key Package" 'javax.microedition.pki*' \
+        -group "Core Packages" 'java.*' 
+
+GROUP_TOOLS = -group "Tools Packages" 'com.sun.midp.*'
+
+GROUP_ALL_DOC = \
+        -group "MIDP Interfaces" \
+	"javax.microedition.io:javax.microedition.rms:javax.microedition.lcdui:javax.microedition.lcdui.game:javax.microedition.midlet:javax.microedition.media:javax.microedition.media.control:javax.microedition.pki:com.sun.midp.io.j2me.http:com.sun.midp.io.j2me.https:com.sun.midp.io:com.sun.midp.midlet:com.sun.midp.lcdui:com.sun.midp.lcdui.i18n:com.sun.midp.main:com.sun.midp.midletsuite:com.sun.midp.dev:com.sun.midp.perfmon:com.sun.midp.security:com.sun.midp.io.j2me.storage:com.sun.mmedia" \
+        -group "CLDC"  \
+	"java.lang:java.util:java.io:com.sun.cldc.i18n.j2me:com.sun.cldc.i18n.uclc:com.sun.cldc.i18n:com.sun.cldc.io:com.sun.cldc.io.j2me.events:com.sun.cldc.io.j2me.socket:com.sun.cldc.io.j2me.datagram:com.sun.cldc.io.j2me.serversocket:com.sun.cldc.io.j2me.comm:com.sun.cldc.util.j2me" \
+        -group "Internal Cryptography Packages" \
+        "$(SSL_PACKAGE):com.sun.midp.publickeystore"
+
+HEADERS_FOOTERS = \
+        -doctitle $(JAVADOCTITLE) \
+        -windowtitle $(JAVADOCWINDOWTITLE) \
+        -header $(JAVADOCHEADER) \
+        -bottom $(JAVADOCBOTTOM) 
+
+JAVADOC_FLAGS = \
+	-d $(DOC_DIR) \
+	-bootclasspath "" \
+	-classpath "" \
+	-use \
+        -J-mx180m  \
+	-sourcepath $(MIDP_DIR)/src/share/classes$(PATHSEP)$(MIDP_DIR)/src/solaris/classes$(PATHSEP)$(VM_API_DIR) \
+	$(HEADERS_FOOTERS) \
+	$(GROUP_DOC)
+
+JAVADOC_MID_FLAGS = \
+	-d $(DOC_DIR_MID) \
+	-bootclasspath "" \
+	-classpath "" \
+	-use \
+        -J-mx180m  \
+	-sourcepath $(MIDP_DIR)/src/share/classes$(PATHSEP)$(MIDP_DIR)/src/solaris/classes$(PATHSEP)$(VM_API_DIR) \
+	$(HEADERS_FOOTERS) \
+	$(GROUP_DOC)
+
+JAVADOC_ALL_FLAGS = \
+	-d $(DOC_ALL_DIR) \
+	-bootclasspath "" \
+	-classpath "" \
+	-private -use \
+        -J-mx180m  \
+	-sourcepath $(MIDP_DIR)/src$(PATHSEP)$(MIDP_DIR)/src/share/classes$(PATHSEP)$(MIDP_DIR)/src/solaris/classes$(PATHSEP)$(VM_API_DIR) \
+	$(HEADERS_FOOTERS)  \
+	$(GROUP_ALL_DOC)
+
+JAVADOC_EXAMPLE_FLAGS = \
+	-d $(DOC_EXAMPLE_DIR) \
+	-bootclasspath "" \
+	-classpath "" \
+	-use \
+        -J-mx180m  \
+	-sourcepath $(MIDP_DIR)/src$(PATHSEP)$(MIDP_DIR)/src/share/classes$(PATHSEP)$(MIDP_DIR)/src/solaris/classes$(PATHSEP)$(VM_API_DIR) \
+	$(HEADERS_FOOTERS) \
+	$(GROUP_DOC)
+
+JAVADOC_MIF_FLAGS = \
+	-doclet com.sun.tools.doclets.mif.MIFDoclet \
+	-docletpath  $(MIFDOCLET_PATH) \
+	-d $(DOC_MIF) \
+	-bootclasspath "" \
+	-classpath "" \
+        -J-mx180m  \
+	-sourcepath $(PLATFORM_SRC_DIR)/classes$(PATHSEP)$(SHARE_SRC_DIR)/classes$(PATHSEP)$(VM_API_DIR) \
+	-split package \
+	-public \
+	-batch fmbatch \
+	-print pdf \
+	-booktitle $(JAVADOCTITLE) \
+	-booksubtitle "for Java\xaa 2 Micro Edition" \
+	-bookversion "Version 2.0" \
+	-bookauthor "Java Consumer Software Engineering" \
+	-bookpublisher "Java Community Process" \
+	-bookcopyright "Copyright \xa9 2002 Sun Microsystems, Inc." \
+	-membersummary compact \
+	$(GROUP_DOC)
+
+JAVADOC_MIF_ALL_FLAGS = \
+	-doclet com.sun.tools.doclets.mif.MIFDoclet \
+	-docletpath  $(MIFDOCLET_PATH) \
+	-d $(DOC_MIF_ALL) \
+	-bootclasspath "" \
+	-classpath "" \
+        -J-mx180m  \
+	-private \
+	-sourcepath $(MIDP_DIR)/src$(PATHSEP)$(MIDP_DIR)/src/share/classes$(PATHSEP)$(MIDP_DIR)/src/solaris/classes$(PATHSEP)$(VM_API_DIR) \
+	-split package \
+	-batch fmbatch \
+	-print pdf \
+	-booktitle $(JAVADOCTITLE) \
+	-booksubtitle "for Java\xaa 2 Micro Edition" \
+	-bookversion "Version 2.0" \
+	-bookauthor "Java Consumer Software Engineering" \
+	-bookpublisher "Java Community Process" \
+	-bookcopyright "Copyright \xa9 2002 Sun Microsystems, Inc." \
+	-membersummary compact \
+	$(GROUP_ALL_DOC)
+
+JAVAC_FLAGS =\
+	-g:none -d $(LIB_DIR) -bootclasspath ""  -classpath $(CLASSBIN)
+
+JAVADOC_TOOLS_FLAGS = \
+	-d $(DOC_TOOLS_DIR) \
+	-private -use \
+        -J-mx180m  \
+	-sourcepath $(MIDP_DIR)/tools$(PATHSEP)$(MIDP_DIR)/src/share/classes \
+	$(HEADERS_FOOTERS) \
+        $(GROUP_TOOLS)
+
+KVM_PKGS = java.io:java.lang:java.util:javax.microedition.io:javax.microedition.midlet:javax.microedition.lcdui:javax.microedition.lcdui.game:javax.microedition.rms:javax.microedition.pki:javax.microedition.media:javax.microedition.media.control
+PACKAGES = $(subst :, ,$(KVM_PKGS))
+
+MIDP_PKGS = javax.microedition.midlet:javax.microedition.io:java.io:java.lang:java.util:javax.microedition.lcdui:javax.microedition.lcdui.game:javax.microedition.rms:javax.microedition.pki:javax.microedition.media:javax.microedition.media.control
+PACKAGES_MID = $(subst :, ,$(MIDP_PKGS))
+
+EXAMPLE_PKGS = example.auction:example.chooser:example.http:example.manyballs:example.pong:example.wormgame:example.pushpuzzle:example.tilepuzzle:example.starcruiser:example.spaceinv:example.stock
+EXAMPLE_PACKAGES = $(subst :, ,$(EXAMPLE_PKGS))
+
+TOOLS_PACKAGES = com.sun.midp.mekeytool com.sun.midp.jadtool
+
+ALL_PACKAGES = \
+	com.sun.midp.main \
+	com.sun.midp.io \
+	com.sun.midp.io.j2me.comm \
+	com.sun.midp.io.j2me.datagram \
+	com.sun.midp.io.j2me.socket \
+	com.sun.midp.io.j2me.serversocket \
+	com.sun.midp.io.j2me.http \
+	com.sun.midp.io.j2me.https \
+	com.sun.midp.io.j2me.push \
+	com.sun.midp.io.j2me.ssl \
+	com.sun.midp.io.j2me.storage \
+	com.sun.midp.midlet \
+	com.sun.midp.midletsuite \
+	com.sun.midp.publickeystore \
+	com.sun.midp.lcdui \
+	com.sun.midp.lcdui.i18n \
+	$(SSL_PACKAGE) \
+	com.sun.cldc.i18n.j2me \
+	com.sun.cldc.i18n.uclc \
+	com.sun.cldc.i18n \
+	com.sun.cldc.io \
+	com.sun.cldc.util.j2me \
+	com.sun.midp.dev \
+	com.sun.midp.perfmon \
+	com.sun.midp.security \
+	com.sun.mmedia \
+	java.lang  \
+	java.util \
+	java.io \
+	javax.microedition.io \
+	javax.microedition.rms \
+	javax.microedition.lcdui \
+	javax.microedition.lcdui.game \
+	javax.microedition.pki \
+	javax.microedition.midlet \
+	javax.microedition.media \
+	javax.microedition.media.control
+
+docs_html : 
+	-@mkdir -p $(DOC_DIR)
+	-@$(JAVADOC) $(JAVADOC_FLAGS) $(PACKAGES)
+
+docs_tools :
+	-@mkdir -p $(DOC_TOOLS_DIR)
+	-@env CLASSPATH=$(CLASSBIN) \
+		$(JAVADOC) $(JAVADOC_TOOLS_FLAGS) $(TOOLS_PACKAGES)
+
+docs_example : 
+	-@mkdir -p $(DOC_EXAMPLE_DIR)
+	-@env CLASSPATH=$(CLASSBIN) \
+	       $(JAVADOC) $(JAVADOC_EXAMPLE_FLAGS) $(EXAMPLE_PACKAGES)
+
+# Generate the HTML documentation with timestamps removed, to facilitate
+# comparison with the formal specification.
+docs_html_notimes: docs_html
+	-@mkdir -p $(DOC_DIR_NOTIMES)
+	-@$(RMDOCTIMES_CMD) $(DOC_DIR) $(DOC_DIR_NOTIMES)
+
+docs_mid: 
+	-@mkdir -p $(DOC_DIR_MID)
+	-@$(JAVADOC) $(JAVADOC_MID_FLAGS)  $(PACKAGES_MID) 
+
+docs_mif :
+	-@mkdir -p $(DOC_MIF)
+	-env PATH=/usr/dist/pkgs/framemaker,v5.5.6/bin:$(PATH) \
+		$(JAVADOC) $(JAVADOC_MIF_FLAGS)  $(PACKAGES_MID)
+
+docs_mif_all :
+	-@mkdir -p $(DOC_MIF)
+	-env PATH=/usr/dist/pkgs/framemaker,v5.5.6/bin:$(PATH) \
+		$(JAVADOC) $(JAVADOC_MIF_ALL_FLAGS)   $(ALL_PACKAGES)
+
+docs_all : 
+	-@mkdir -p $(DOC_ALL_DIR)
+	-@env CLASSPATH=$(CLASSBIN) \
+		$(JAVADOC) $(JAVADOC_ALL_FLAGS)  $(ALL_PACKAGES)
+
+clean ::
+	-@rm -fr $(DOCSDIR)
+#
+# Avoid accidents.
+#
+.PHONY:  docs_html docs_html_notimes docs_mid docs_mif docs_all 

@@ -1,0 +1,464 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 16:26:56" />
+    <title>Contents</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="" />
+    <link rel="Next" href="copyright.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table id="SummaryNotReq1" width="100%">
+      <tr> 
+	<td class="sun-darkblue">
+              <p>&#160;</p>
+	      <h1>Porting MIDP</h1>
+	      <h2>MIDP Reference Implementation<br />
+	        Version 2.0 FCS</h2>
+	      <h4>November, 2002</h4>
+	</td>
+      </tr>
+      <tr>
+	<td class="sun-lightblue">&#160;</td>
+      </tr>
+        <td class="go-right">
+	  <img id="LongDescNotReq1" src="images/tocx.gif" alt="Contents" />
+          <img id="LongDescNotReq2" src="images/prevx.gif" alt="Previous" />
+          <a accesskey="n" href="copyright.html">
+            <img id="LongDescNotReq3" src="images/next.gif" alt="Next"
+              border="0" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" alt="Index"
+	      border="0" /></a>
+        </td>
+    </table>
+
+
+<a name="wp108319"> </a><h2 class="pNewHTMLPage">
+Contents
+</h2>
+<hr class="pHr"/>
+<a name="wp1022052"> </a><p class="pTOC2">
+<a href="preface.html#wp431762"> Preface</a>
+</p>
+<a name="wp1022054"> </a><p class="pTOC2">
+<a href="intro.html#wp432513"> 1. Introduction</a>
+</p>
+<a name="wp1022056"> </a><p class="pTOC3">
+<a href="intro.html#wp437912">1.1 Product Architecture </a>
+</p>
+<a name="wp1022058"> </a><p class="pTOC3">
+<a href="intro.html#wp433430">1.2 Porting Requirements </a>
+</p>
+<a name="wp1022060"> </a><p class="pTOC4">
+<a href="intro.html#wp445123">1.2.1 Hardware Requirements </a>
+</p>
+<a name="wp1022062"> </a><p class="pTOC4">
+<a href="intro.html#wp447113">1.2.2 Software Requirements </a>
+</p>
+<a name="wp1022064"> </a><p class="pTOC4">
+<a href="intro.html#wp438091">1.2.3 Compiler Requirements </a>
+</p>
+<a name="wp1022066"> </a><p class="pTOC4">
+<a href="intro.html#wp445102">1.2.4 Requirements of the Completed Port </a>
+</p>
+<a name="wp1022068"> </a><p class="pTOC2">
+<a href="first-steps.html#wp436139"> 2. Beginning a MIDP Port</a>
+</p>
+<a name="wp1022070"> </a><p class="pTOC3">
+<a href="first-steps.html#wp442237">2.1 Preparing to Port MIDP </a>
+</p>
+<a name="wp1022072"> </a><p class="pTOC3">
+<a href="first-steps.html#wp441742">2.2 Porting Device-Specific Configuration Code </a>
+</p>
+<a name="wp1022074"> </a><p class="pTOC3">
+<a href="first-steps.html#wp444162">2.3 Trying It Out </a>
+</p>
+<a name="wp1022076"> </a><p class="pTOC2">
+<a href="events.html#wp442099"> 3. The Event Model</a>
+</p>
+<a name="wp1022078"> </a><p class="pTOC3">
+<a href="events.html#wp449087">3.1 Event Model Overview </a>
+</p>
+<a name="wp1022080"> </a><p class="pTOC3">
+<a href="events.html#wp449090">3.2 Events From the Virtual Machine </a>
+</p>
+<a name="wp1022082"> </a><p class="pTOC3">
+<a href="events.html#wp449091">3.3 Events From MIDP </a>
+</p>
+<a name="wp1022084"> </a><p class="pTOC3">
+<a href="events.html#wp451249">3.4 Native Functions </a>
+</p>
+<a name="wp1022086"> </a><p class="pTOC2">
+<a href="storage.html#wp431760"> 4. Persistent Storage</a>
+</p>
+<a name="wp1022088"> </a><p class="pTOC3">
+<a href="storage.html#wp433919">4.1 Porting the Native Layer </a>
+</p>
+<a name="wp1022090"> </a><p class="pTOC3">
+<a href="storage.html#wp440587">4.2 Customizing the Java Layer </a>
+</p>
+<a name="wp1022092"> </a><p class="pTOC2">
+<a href="thread-safety.html#wp513488"> 5. Thread-Safety in LCDUI</a>
+</p>
+<a name="wp1022094"> </a><p class="pTOC3">
+<a href="thread-safety.html#wp501393">5.1 Requirements </a>
+</p>
+<a name="wp1022096"> </a><p class="pTOC3">
+<a href="thread-safety.html#wp501433">5.2 Design Approach </a>
+</p>
+<a name="wp1022098"> </a><p class="pTOC3">
+<a href="thread-safety.html#wp501473">5.3 Coding Conventions </a>
+</p>
+<a name="wp1022100"> </a><p class="pTOC4">
+<a href="thread-safety.html#wp526214">5.3.1 General Conventions </a>
+</p>
+<a name="wp1022102"> </a><p class="pTOC4">
+<a href="thread-safety.html#wp512459">5.3.2 Public Method Conventions </a>
+</p>
+<a name="wp1022104"> </a><p class="pTOC4">
+<a href="thread-safety.html#wp501545">5.3.3 Constructor Conventions </a>
+</p>
+<a name="wp1022106"> </a><p class="pTOC4">
+<a href="thread-safety.html#wp513078">5.3.4 Event-Handling Method Conventions </a>
+</p>
+<a name="wp1022108"> </a><p class="pTOC4">
+<a href="thread-safety.html#wp501593">5.3.5 Application Callout Conventions </a>
+</p>
+<a name="wp1022110"> </a><p class="pTOC4">
+<a href="thread-safety.html#wp527380">5.3.6 Graphics Conventions </a>
+</p>
+<a name="wp1022112"> </a><p class="pTOC3">
+<a href="thread-safety.html#wp527198">5.4 The serviceRepaints Method </a>
+</p>
+<a name="wp1022114"> </a><p class="pTOC2">
+<a href="gui.html#wp431760"> 6. LCDUI Graphical User Interface</a>
+</p>
+<a name="wp1022116"> </a><p class="pTOC3">
+<a href="gui.html#wp451917">6.1 Overview </a>
+</p>
+<a name="wp1022118"> </a><p class="pTOC3">
+<a href="gui.html#wp441226">6.2 Issues in Porting Low Level API Functionality </a>
+</p>
+<a name="wp1022120"> </a><p class="pTOC4">
+<a href="gui.html#wp441306">6.2.1 Drawing Graphics Primitives </a>
+</p>
+<a name="wp1022122"> </a><p class="pTOC4">
+<a href="gui.html#wp441916">6.2.2 Porting PNG Transparency </a>
+</p>
+<a name="wp1022124"> </a><p class="pTOC3">
+<a href="gui.html#wp452410">6.3 Using Native Widgets for MIDP Screens </a>
+</p>
+<a name="wp1022126"> </a><p class="pTOC4">
+<a href="gui.html#wp446323">6.3.1 General Instructions </a>
+</p>
+<a name="wp1022128"> </a><p class="pTOC4">
+<a href="gui.html#wp447593">6.3.2 Example: Replacing Part of DateField </a>
+</p>
+<a name="wp1022130"> </a><p class="pTOC4">
+<a href="gui.html#wp446329">6.3.3 Pop-Up Choice Groups </a>
+</p>
+<a name="wp1022132"> </a><p class="pTOC3">
+<a href="gui.html#wp452207">6.4 Porting the Game Package </a>
+</p>
+<a name="wp1022134"> </a><p class="pTOC2">
+<a href="security.html#wp442099"> 7. Security</a>
+</p>
+<a name="wp1022136"> </a><p class="pTOC3">
+<a href="security.html#wp444047">7.1 Overview </a>
+</p>
+<a name="wp1022138"> </a><p class="pTOC3">
+<a href="security.html#wp443147">7.2 Permissions </a>
+</p>
+<a name="wp1022140"> </a><p class="pTOC3">
+<a href="security.html#wp444386">7.3 Key Storage </a>
+</p>
+<a name="wp1022142"> </a><p class="pTOC2">
+<a href="network.html#wp445115"> 8. Networking</a>
+</p>
+<a name="wp1022144"> </a><p class="pTOC3">
+<a href="network.html#wp449742">8.1 Porting the Native Layer </a>
+</p>
+<a name="wp1022146"> </a><p class="pTOC3">
+<a href="network.html#wp445195">8.2 Customizing the Java Layer </a>
+</p>
+<a name="wp1022148"> </a><p class="pTOC4">
+<a href="network.html#wp449840">8.2.1 Generic Connections </a>
+</p>
+<a name="wp1022150"> </a><p class="pTOC4">
+<a href="network.html#wp449198">8.2.2 Comm </a>
+</p>
+<a name="wp1022152"> </a><p class="pTOC4">
+<a href="network.html#wp445211">8.2.3 IP Support </a>
+</p>
+<a name="wp1022154"> </a><p class="pTOC4">
+<a href="network.html#wp445239">8.2.4 Secure Connections </a>
+</p>
+<a name="wp1022156"> </a><p class="pTOC4">
+<a href="network.html#wp450006">8.2.5 HTTP 1.1 </a>
+</p>
+<a name="wp1022158"> </a><p class="pTOC4">
+<a href="network.html#wp445455">8.2.6 HTTPS </a>
+</p>
+<a name="wp1022160"> </a><p class="pTOC4">
+<a href="network.html#wp445611">8.2.7 Internal Utilities </a>
+</p>
+<a name="wp1022162"> </a><p class="pTOC2">
+<a href="ams.html#wp433637"> 9. The Application Management System</a>
+</p>
+<a name="wp1022164"> </a><p class="pTOC3">
+<a href="ams.html#wp442035">9.1 Porting main.c </a>
+</p>
+<a name="wp1022166"> </a><p class="pTOC3">
+<a href="ams.html#wp442739">9.2 Customizing AMS </a>
+</p>
+<a name="wp1022168"> </a><p class="pTOC2">
+<a href="push.html#wp442099"> 10. Push Functionality</a>
+</p>
+<a name="wp1022170"> </a><p class="pTOC3">
+<a href="push.html#wp448486">10.1 Design Considerations </a>
+</p>
+<a name="wp1022172"> </a><p class="pTOC4">
+<a href="push.html#wp448526">10.1.1 Protocols </a>
+</p>
+<a name="wp1022174"> </a><p class="pTOC4">
+<a href="push.html#wp448626">10.1.2 Listening for Incoming Data </a>
+</p>
+<a name="wp1022176"> </a><p class="pTOC4">
+<a href="push.html#wp448506">10.1.3 Message Buffering </a>
+</p>
+<a name="wp1022178"> </a><p class="pTOC4">
+<a href="push.html#wp448891">10.1.4 User Interaction </a>
+</p>
+<a name="wp1022180"> </a><p class="pTOC4">
+<a href="push.html#wp448852">10.1.5 MIDlet Concurrency </a>
+</p>
+<a name="wp1022182"> </a><p class="pTOC3">
+<a href="push.html#wp450115">10.2 Porting the Native Layer </a>
+</p>
+<a name="wp1022184"> </a><p class="pTOC3">
+<a href="push.html#wp449187">10.3 Customizing the Java Layer </a>
+</p>
+<a name="wp1022186"> </a><p class="pTOC2">
+<a href="sound.html#wp442099"> 11. Porting the Audio Building Block</a>
+</p>
+<a name="wp1022188"> </a><p class="pTOC3">
+<a href="sound.html#wp444663">11.1 Overview </a>
+</p>
+<a name="wp1022190"> </a><p class="pTOC4">
+<a href="sound.html#wp453492">11.1.1 Architecture </a>
+</p>
+<a name="wp1022192"> </a><p class="pTOC4">
+<a href="sound.html#wp449508">11.1.2 Implementing the Player Interface </a>
+</p>
+<a name="wp1022194"> </a><p class="pTOC3">
+<a href="sound.html#wp443084">11.2 Porting Synthetic Tones </a>
+</p>
+<a name="wp1022196"> </a><p class="pTOC4">
+<a href="sound.html#wp443184">11.2.1 Architectural Considerations </a>
+</p>
+<a name="wp1022198"> </a><p class="pTOC4">
+<a href="sound.html#wp443402">11.2.2 Generating Single Tones </a>
+</p>
+<a name="wp1022200"> </a><p class="pTOC4">
+<a href="sound.html#wp443405">11.2.3 Generating Tone Sequences </a>
+</p>
+<a name="wp1022202"> </a><p class="pTOC3">
+<a href="sound.html#wp443525">11.3 Porting Sampled Audio </a>
+</p>
+<a name="wp1022204"> </a><p class="pTOC4">
+<a href="sound.html#wp443630">11.3.1 Architectural Considerations </a>
+</p>
+<a name="wp1022206"> </a><p class="pTOC4">
+<a href="sound.html#wp450685">11.3.2 Implementing the Playback of Sampled Audio </a>
+</p>
+<a name="wp1022208"> </a><p class="pTOC2">
+<a href="build.html#wp434082"> 12. Building Your Port</a>
+</p>
+<a name="wp1022210"> </a><p class="pTOC3">
+<a href="build.html#wp449136">12.1 The Build Process </a>
+</p>
+<a name="wp1022212"> </a><p class="pTOC4">
+<a href="build.html#wp449448">12.1.1 Makefiles </a>
+</p>
+<a name="wp1022214"> </a><p class="pTOC4">
+<a href="build.html#wp449337">12.1.2 Build Instructions </a>
+</p>
+<a name="wp1022216"> </a><p class="pTOC4">
+<a href="build.html#wp451810">12.1.3 Example Commands </a>
+</p>
+<a name="wp1022218"> </a><p class="pTOC4">
+<a href="build.html#wp449355">12.1.4 Build Steps for the Target all </a>
+</p>
+<a name="wp1022220"> </a><p class="pTOC3">
+<a href="build.html#wp449263">12.2 Adding Files to the Build </a>
+</p>
+<a name="wp1022222"> </a><p class="pTOC4">
+<a href="build.html#wp445204">12.2.1 Adding Java Programming Language Files </a>
+</p>
+<a name="wp1022224"> </a><p class="pTOC4">
+<a href="build.html#wp445216">12.2.2 Adding C Files </a>
+</p>
+<a name="wp1022226"> </a><p class="pTOC3">
+<a href="build.html#wp448648">12.3 Removing Unused Code </a>
+</p>
+<a name="wp1022228"> </a><p class="pTOC2">
+<a href="appx-targets.html#wp1000008"> A. Build Targets</a>
+</p>
+<a name="wp1022230"> </a><p class="pTOC2">
+<a href="appx-config-opts.html#wp9506"> B. Configuration Options</a>
+</p>
+<a name="wp1022232"> </a><p class="pTOC2">
+<a href="appx-ssl.html#wp1035145"> C. Reference Documentation for com.sun.midp.ssl</a>
+</p>
+<a name="wp1022234"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp263034"> com.sun.midp.ssl </a>
+</p>
+<a name="wp1022236"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp263079"> CertStore </a>
+</p>
+<a name="wp1022238"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp1038840"> Methods </a>
+</p>
+<a name="wp1022240"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp263124"> CryptoException </a>
+</p>
+<a name="wp1022242"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp263160"> Fields </a>
+</p>
+<a name="wp1022244"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp263234"> Constructors </a>
+</p>
+<a name="wp1022246"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp263252"> Methods </a>
+</p>
+<a name="wp1022248"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp263304"> Key </a>
+</p>
+<a name="wp1022250"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp263335"> Methods </a>
+</p>
+<a name="wp1022252"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp263425"> KeyBuilder </a>
+</p>
+<a name="wp1022254"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp263455"> Fields </a>
+</p>
+<a name="wp1022256"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp263493"> Constructors </a>
+</p>
+<a name="wp1022258"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp263505"> Methods </a>
+</p>
+<a name="wp1022260"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp263547"> MessageDigest </a>
+</p>
+<a name="wp1022262"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp263571"> Fields </a>
+</p>
+<a name="wp1022264"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp263609"> Methods </a>
+</p>
+<a name="wp1022266"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp263763"> PrivateKey </a>
+</p>
+<a name="wp1022268"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp263798"> PublicKey </a>
+</p>
+<a name="wp1022270"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp263833"> RandomData </a>
+</p>
+<a name="wp1022272"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp263857"> Fields </a>
+</p>
+<a name="wp1022274"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp263883"> Methods </a>
+</p>
+<a name="wp1022276"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp263963"> RSAPrivateKey </a>
+</p>
+<a name="wp1022278"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp263989"> Methods </a>
+</p>
+<a name="wp1022280"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp264141"> RSAPublicKey </a>
+</p>
+<a name="wp1022282"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp264167"> Methods </a>
+</p>
+<a name="wp1022284"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp264319"> SecretKey </a>
+</p>
+<a name="wp1022286"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp264351"> Methods </a>
+</p>
+<a name="wp1022288"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp264539"> Signature </a>
+</p>
+<a name="wp1022290"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp264563"> Fields </a>
+</p>
+<a name="wp1022292"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp264613"> Methods </a>
+</p>
+<a name="wp1022294"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp264847"> SSLStreamConnection </a>
+</p>
+<a name="wp1022296"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp264911"> Constructors </a>
+</p>
+<a name="wp1022298"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp264939"> Methods </a>
+</p>
+<a name="wp1022300"> </a><p class="pTOC3">
+<a href="appx-ssl.html#wp265165"> X509Certificate </a>
+</p>
+<a name="wp1022302"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp265195"> Fields </a>
+</p>
+<a name="wp1022304"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp265473"> Constructors </a>
+</p>
+<a name="wp1022306"> </a><p class="pTOC4">
+<a href="appx-ssl.html#wp265513"> Methods </a>
+</p>
+<a name="wp1022308"> </a><p class="pTOC2">
+<a href="portIX.html#wp2642"> Index</a>
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+	  <img id="LongDescNotReq6" src="images/tocx.gif" alt="Contents" />
+          <img id="LongDescNotReq7" src="images/prevx.gif" alt="Previous" />
+ 	  <a href="copyright.html">
+	    <img id="LongDescNotReq8" src="images/next.gif" alt="Next"
+	      border="0" /></a>
+	  <a href="portIX.html">
+	    <img id="LongDescNotReq9" src="images/index.gif" alt="Index"
+	      border="0" /></a>
+        </td>
+      </tr>
+      <tr>
+	<td>
+	  <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>
+        </td>
+      </tr>
+    </table>
+
+  </body>
+</html>

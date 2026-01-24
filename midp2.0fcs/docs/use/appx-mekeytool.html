@@ -1,0 +1,190 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 11:35:13" />
+    <title>The MEKeyTool Utility</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="appx-jadtool.html" />
+    <link rel="Next" href="appx-midp.html" />
+    <link rel="Index" href="useIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="appx-jadtool.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="appx-midp.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="useIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp1004019"> </a><h2 class="pAppxNum">
+Appendix &#160; B
+</h2>
+<a name="wp1004021"> </a><h2 class="pNewHTMLPage">
+The MEKeyTool Utility
+</h2>
+<hr class="pHr"/>
+<a name="wp1004022"> </a><p class="pBody">
+<code class="cCode">MEKeyTool</code> &#8212; manage a file (an <em class="cEmphasis">ME keystore</em>) that contains the public keys of trusted certificate authorities (CAs).
+</p>
+<a name="wp1000017"> </a><h3 class="pHeading2">
+Synopsis
+</h3>
+<div class="pPreformatted"><pre class="pPreformatted">
+java -jar MEKeyTool.jar<a name="wp1000018"> </a>
+&#160;&#160;-delete [ -MEkeystore <em class="cEmphasis">MEKeystore</em> ] ( -owner <em class="cEmphasis">ownerName</em> | -number <em class="cEmphasis">keyNumber</em> )<a name="wp1004067"> </a>
+&#160;&#160;[-help]<a name="wp1004068"> </a>
+&#160;&#160;-import [ -MEkeystore <em class="cEmphasis">MEKeystore</em> ] -alias <em class="cEmphasis">keyAlias</em> [ -keystore <em class="cEmphasis">JCAKeystore</em> ] [ -storepass <em class="cEmphasis">storePassword</em> ] [ -domain <em class="cEmphasis">domain</em> ]<a name="wp1004069"> </a>
+&#160;&#160;-list [ -MEkeystore <em class="cEmphasis">MEKeystore</em> ] <a name="wp1004055"> </a>
+</pre></div>
+<a name="wp1000087"> </a><h3 class="pHeading2">
+Description
+</h3>
+<a name="wp1000088"> </a><p class="pBody">
+The <code class="cCode">meKeyTool</code> utility manages one or more ME keystores, which are files that hold the public keys of trusted certificate authorities (CAs). It can be used to create a new ME keystore, or to add to, delete from, or list the contents of an existing keystore.
+</p>
+<a name="wp1000091"> </a><p class="pBody">
+The <code class="cCode">MEKeyTool</code> gets the public keys to add to an ME keystore from a Java&#8482; Cryptography Architecture (JCA) keystore. Such a keystore is part of the Java 2 Platform, Standard Edition (J2SE&#8482;); see the J2SE platform documentation for more information.
+</p>
+<a name="wp1004948"> </a><p class="pBody">
+Note that the ME keystore and the JCA keystore have different formats. The <code class="cCode">MEKeyTool</code> cannot be used to manage a JCA keystore. If the <code class="cCode">MEKeyTool</code> utility is used with a JCA keystore (for example, to try to list its keys), you will receive an error message that the keystore is corrupted. The JCA keystore is not corrupted; it can still be managed with J2SE platform tools. The keystore is just not in a format the MEKeyTool can read.
+</p>
+<a name="wp1000129"> </a><p class="pBody">
+If it is necessary to replace a key in an ME keystore, the key must be removed and the new key entered. There is not a single command to do a replacement, and the tool does not permit adding a different version of an existing key.
+</p>
+<a name="wp1000092"> </a><p class="pBody">
+Although the <code class="cCode">MEKeyTool</code> manages ME keystores of any name, the MIDP Reference Implementation executable expects its ME keystore to be the file<em class="cEmphasis"> midpInstallDir</em><code class="cCode">\appdb\_main.ks</code>, where <em class="cEmphasis">midpInstallDir</em> is the location of the MIDP installation. If there are multiple keystores, make sure the one to be used by MIDP has the name <code class="cCode">_main.ks</code> in the <em class="cEmphasis">midpInstallDir</em><code class="cCode">\appdb</code> directory before running the MIDP executable.
+</p>
+<a name="wp1000019"> </a><h3 class="pHeading2">
+Options
+</h3>
+<a name="wp1000163"> </a><p class="pBody">
+The following options are supported:
+</p>
+<a name="wp1004780"> </a><p class="pBody">
+<em class="cEmphasis">none</em>
+</p>
+<a name="wp1004781"> </a><p class="pIndented1">
+Running the tool without options returns the same information as the <code class="cCode">-help</code> option.
+</p>
+<a name="wp1004394"> </a><p class="pBody">
+<code class="cCode">-delete</code> <code class="cCode">[</code> <code class="cCode">-MEkeystore</code> <em class="cEmphasis">MEKeystore</em> <code class="cCode">]<br />&#160;&#160;(</code> <code class="cCode">-owner</code> <em class="cEmphasis">ownerName</em> <code class="cCode">|</code> <code class="cCode">-number</code> <em class="cEmphasis">keyNumber</em> <code class="cCode">)</code>
+</p>
+<a name="wp1004395"> </a><p class="pIndented1">
+Deletes the key with <em class="cEmphasis">ownerName</em> or <em class="cEmphasis">keyNumber</em> from <em class="cEmphasis">MEKeystore</em>. If <em class="cEmphasis">MEKeystore </em>is not provided, its default, <code class="cCode">appdb/_main.ks</code>, is used.
+</p>
+<a name="wp1004243"> </a><p class="pIndented1">
+You can provide either <em class="cEmphasis">ownerName</em> or <em class="cEmphasis">keyNumber</em>, but not both. You can find the valid values for them by running the <code class="cCode">MEKeyTool</code> utility with the <code class="cCode">-list</code> command.
+</p>
+<a name="wp1000025"> </a><p class="pBody">
+<code class="cCode">-help</code> 
+</p>
+<a name="wp1000026"> </a><p class="pIndented1">
+Prints a usage summary. 
+</p>
+<a name="wp1004354"> </a><p class="pBody">
+<code class="cCode">-import</code> <code class="cCode">[</code> <code class="cCode">-MEkeystore</code> <em class="cEmphasis">MEKeystore</em> <code class="cCode">]</code> <code class="cCode">-alias</code> <em class="cEmphasis">keyAlias</em> <br /><code class="cCode">&#160;&#160;[</code> <code class="cCode">-keystore</code> <em class="cEmphasis">JCAKeystore</em> ] <code class="cCode">[</code> <code class="cCode">-storepass</code> <em class="cEmphasis">storePassword</em> <code class="cCode">]</code> <code class="cCode">[</code> <code class="cCode">-domain</code> <em class="cEmphasis">domain</em> <code class="cCode">]</code> 
+</p>
+<a name="wp1004355"> </a><p class="pIndented1">
+Imports a public key from <em class="cEmphasis">JCAKeystore</em> into <em class="cEmphasis">MEKeystore</em>, and associates the public key with <em class="cEmphasis">domain</em>. If <em class="cEmphasis">JCAKeystore</em> is not provided, its default, <em class="cEmphasis">userHome</em><code class="cCode">\.keystore</code>, is used (where <em class="cEmphasis">userHome</em> is the user&#8217;s home directory). If <em class="cEmphasis">MEKeystore</em> is not provided, its default, <code class="cCode">appdb/_main.ks</code>, is used. If <em class="cEmphasis">domain</em> is not provided, its default, <code class="cCode">untrusted</code>, is used.
+</p>
+<a name="wp1004406"> </a><p class="pIndented1">
+If <em class="cEmphasis">JCAKeystore</em> requires a password, you must provide <em class="cEmphasis">storePassword</em>.
+</p>
+<a name="wp1004421"> </a><p class="pBody">
+<code class="cCode">-list</code> <code class="cCode">[</code> <code class="cCode">-MEkeystore</code> <em class="cEmphasis">MEKeystore</em> <code class="cCode">]</code> 
+</p>
+<a name="wp1000030"> </a><p class="pIndented1">
+Lists the number, owner, and validity period, and domain of each key in <em class="cEmphasis">MEKeystore</em>. If <em class="cEmphasis">MEKeystore</em> is not provided, the default, <code class="cCode">appdb/_main.ks</code>, is used.
+</p>
+<a name="wp1000034"> </a><h3 class="pHeading2">
+Examples
+</h3>
+<a name="wp1003643"> </a><h5 class="pHeading4">
+Listing Keys
+</h5>
+<a name="wp1003651"> </a><p class="pBody">
+To see the keys in an ME keystore, use the <code class="cCode">-list</code> option. Provide the name of the ME keystore if it is not <em class="cEmphasis">midpInstallDir</em><code class="cCode">\appdir\_main.ks</code>, where <em class="cEmphasis">midpInstallDir</em> is the location of the MIDP installation.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">java -jar bin/MEKeyTool.jar -list -MEkeystore c:/myKeys/test_keys.ks</span><a name="wp1003646"> </a>
+Key 1<a name="wp1004798"> </a>
+  Owner: O=Sun Microsystems;C=myserver<a name="wp1004799"> </a>
+  Valid from Sat Aug 03 00:43:51 PDT 2002 to Tue Jul 31 00:43:51 PDT 2012<a name="wp1004800"> </a>
+  Security Domain: trusted<a name="wp1004791"> </a>
+</pre></div>
+<a name="wp1003644"> </a><h5 class="pHeading4">
+Adding a Key
+</h5>
+<a name="wp1003684"> </a><p class="pBody">
+Adding a key to an ME keystore requires that the key be in a JCA keystore. Provide the password to the JCA keystore if it requires one, and the alias for the key. Also provide the name of the ME keystore if it is not <em class="cEmphasis">midpInstallDir</em><code class="cCode">\appdir\_main.ks</code>, where <em class="cEmphasis">midpInstallDir</em> is the location of the MIDP installation, and the domain if it should be something other than untrusted.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">java -jar bin/MEKeyTool.jar -import -alias dummyca -keystore bin/j2se_test_keystore.bin -storepass keystorepwd -MEkeystore c:/myKeys/test_keys.ks -domain trusted</span><a name="wp1003620"> </a>
+</pre></div>
+<a name="wp1003689"> </a><h5 class="pHeading4">
+Deleting a Key
+</h5>
+<a name="wp1003703"> </a><p class="pBody">
+Deleting a key from an ME keystore requires a key&#8217;s number in the ME keystore or its owner, both of which can be obtained by listing the contents of the ME keystore. When deleting a key, provide the name of the ME keystore if it is not <em class="cEmphasis">midpInstallDir</em><code class="cCode">\appdir\_main.ks</code>, where <em class="cEmphasis">midpInstallDir</em> is the location of the MIDP installation. For example, to delete key number one:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">java -jar bin/MEKeyTool.jar -delete -number 1 -MEkeystore c:/myKeys/test_keys.ks</span><a name="wp1003696"> </a>
+</pre></div>
+<a name="wp1003963"> </a><h3 class="pHeading2">
+See Also
+</h3>
+<a name="wp1003967"> </a><p class="pBody">
+<a  href="ca-keys.html#wp9178"><span style="color: #3366CC">Chapter&#160;4, &#8220;Managing Public Keys of Certificate Authorities</span></a>&#8221;
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="appx-jadtool.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="appx-midp.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="useIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Using MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

@@ -1,0 +1,626 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+
+<html>
+
+
+
+<head>
+
+<title>Example Overview - MIDP Reference Implementation - Version 2.0 FCS </title>
+
+<link rel="stylesheet" href="../share/document.css" type="text/css">
+
+</head>
+
+
+
+<body>
+
+  <table class="full-width"
+
+         summary="This table is for formatting purposes only.">
+
+    <tr> 
+
+      <td class=sun-darkblue> 
+
+        <h1>Example Overview</h1>
+
+        
+
+      <h2>MIDP Reference Implementation<br>
+
+        Version 2.0 FCS</h2>
+
+        
+
+      <h4>November, 2002</h4>
+
+      </td>
+
+    </tr>
+
+    <tr> 
+
+      <td class=sun-lightblue>&nbsp;</td>
+
+    </tr>
+
+  </table>
+
+
+
+  <p>&nbsp;</p> 
+
+  
+
+<p>This release includes a number of example MIDlet suites. They are in the <i>midpInstallDir</i><tt>\example</tt> 
+
+  directory, where <i>midpInstallDir</i> is the directory that holds your MIDP 
+
+  installation. Some of the examples contain several MIDlets, while others contain 
+
+  a single MIDlet.</p>
+
+  
+
+<p>You can use the example MIDlet suites for demonstration purposes or for simple 
+
+  functional regression testing. They are not appropriate for instructional purposes 
+
+  or as coverage tests for the MIDP specification.</p>
+
+  
+
+  <p>The following table describes the MIDlet suites:</p>
+
+
+
+  <p>&nbsp;</p>
+
+
+
+  
+
+<table rules=groups frame=below>
+
+  <THEAD> 
+
+  <tr> 
+
+    <th class="sun-lightblue" scope="col">MIDlet&nbsp;Suite&nbsp;Name <br>
+
+      (JAD&nbsp;file&nbsp;name)</th>
+
+    <th class="sun-lightblue" scope="col">MIDlet Name</th>
+
+    <th class="sun-lightblue" scope="col">Screen Shot</th>
+
+    <th class="sun-lightblue" scope="col">Description</th>
+
+  </tr>
+
+  </THEAD> <TBODY> 
+
+  <tr> 
+
+    <td> 
+
+      <p>Ticket&nbsp;Auction<br>
+
+        (<code>auction.jad</code>)</p>
+
+    </td>
+
+    <td>TicketLand</td>
+
+    <td><img src="images/ticket.gif"
+
+	        alt="screen shot of the TicketAuction MIDlet"></td>
+
+    <td>Look up the ticket auctions for a band, set an alert, or making a bid 
+
+      in this mockup of a ticket auction service. <br>
+
+      &nbsp;<br>
+
+      This example has been updated for MIDP 2.0 and shows new high-level user-interface 
+
+      components. <br>
+
+      &nbsp;<br>
+
+    </td>
+
+  </tr>
+
+  </TBODY> <TBODY> 
+
+  <tr> 
+
+    <td class=sun-verylightblue>AudioSamples<br>
+      (<code>audiodemo.jad</code>) </td>
+
+    <td class=sun-verylightblue> 
+
+      <ul>
+
+        <li>AudioPlayer 
+
+        <li>BBall 
+
+        <li>MixTest 
+
+      </ul>
+
+    </td>
+
+    <td class=sun-verylightblue><img src="images/audio.gif"
+
+	        alt="screen shot of an Audio MIDlet"></td>
+
+    <td class=sun-verylightblue>
+
+      <p>Listen to sounds using Mobile Media API's audio building block.</p>
+
+      <p>This example is new for MIDP 2.0.&nbsp;<br>
+
+      </p>
+
+    </td>
+
+  </tr>
+
+  </TBODY> <TBODY> 
+
+  <tr> 
+
+    <td rowspan=4><nobr>SunSamples&nbsp;-&nbsp;Demos</nobr><br>
+      (<code>demos.jad</code>)</td>
+
+    <td>Colors</td>
+
+    <td><img src="images/color.gif"
+
+	    alt="screen shot of the Colors MIDlet"></td>
+
+    <td><p>Select red green and blue values to create a color. Set <tt>SCREEN_DEPTH</tt> 
+
+      to 8 before starting the color chooser demo.</p>
+
+      <p>This MIDlet is the same as the one in the MIDP 1.0.3 Reference Implementation.</td>
+
+  </tr>
+
+  <tr> 
+
+    <td>HTTP</td>
+
+    <td><img src="images/httptest.gif"
+
+        alt="screen shot of the HTTPTest MIDlet"></td>
+
+    <td>
+
+      <p>View the contents of a site using the HTTP protocol. Use the arrow buttons 
+
+        to choose a site to view, then press the select button. Press the right 
+
+        soft button on the phone to see headers, requests and errors. </p>
+
+      <p>This MIDlet is the same as the one in the MIDP 1.0.3 Reference Implementation.<br>
+
+        &nbsp;<br>
+
+      </p>
+
+    </td>
+
+  </tr>
+
+  <tr> 
+
+    <td>Properties</td>
+
+    <td><img src="images/properties.gif"
+
+        alt="screen shot of the Properties MIDlet"></td>
+
+    <td>
+
+      <p>See information about the device, such as the device's free and total 
+
+        memory.</p>
+
+      <p>This MIDlet is the same as the one in the MIDP 1.0.3 Reference Implementation.</p>
+
+    </td>
+
+  </tr>
+
+  <tr> 
+
+    <td>Chooser</td>
+
+    <td><img src="images/chooser.gif"
+
+	       alt="screen shot of the Chooser MIDlet"></td>
+
+    <td>
+
+      <p>Choose the background color, text color, and font properties of the sample 
+
+        text, and see the results of your choices on the screen.</p>
+
+      <p>This MIDlet is new for MIDP 2.0.</p>
+
+    </td>
+
+  </tr>
+
+  </TBODY> <TBODY> 
+
+  <tr> 
+
+    <td class="sun-verylightblue">FontTestlet<br>
+      (<code>fonts.jad</code>)</td>
+
+    <td class="sun-verylightblue">FontTestlet</td>
+
+    <td class="sun-verylightblue"><img src="images/fonts.gif"
+
+	       alt="screen shot of the FontTestlet MIDlet"></td>
+
+    <td class="sun-verylightblue">
+
+      <p>Display the fonts available on the device.</p>
+
+      <p>This MIDlet is the same as the one in the MIDP 1.0.3 Reference Implementation.</p>
+
+    </td>
+
+  </tr>
+
+  </TBODY> <TBODY> 
+
+  <tr> 
+
+    <td rowspan="2">SunSamples&nbsp-&nbsp;Games<br>
+      (<code>games.jad</code>)</td>
+
+    <td>WormGame</td>
+
+    <td><img src="images/wormgame.gif"
+
+         alt="screen shot of the WormGame MIDlet"></td>
+
+    <td> 
+
+      <p>Get your worm to eat as many blocks as possible without hitting the outside 
+
+        walls or running into its own tail. Use the arrow keys to maneuver.</p>
+
+      <p> MIDlet is the same as the one in the MIDP 1.0.3 Reference Implementation.</p>
+
+    </td>
+
+  </tr>
+
+  <tr> 
+
+    <td>TilePuzzle</td>
+
+    <td><img src="images/tilepuzzle.gif"
+
+       alt="screen shot of the TilePuzzle MIDlet"></td>
+
+    <td> 
+
+      <p>Reshuffle the letters to make the words shown on the initial screen. 
+
+        Choose Menu to see options including starting the game or changing game 
+
+        properties.</p>
+
+      <p>This MIDlet is the same as the one in the MIDP 1.0.3 Reference Implementation.<br>
+
+      </p>
+
+    </td>
+
+  </tr>
+
+  </TBODY> <TBODY> 
+
+  <tr> 
+
+    <td class="sun-verylightblue">Hanoi<br>
+
+      (<code>hanoi.jad</code>)</td>
+
+    <td class="sun-verylightblue">Hanoi</td>
+
+    <td class="sun-verylightblue"> <img src="images/hanoi.gif"
+
+           alt="screen shot of the Hanoi MIDlet"></td>
+
+    <td class="sun-verylightblue"> 
+
+      <p>Watch the MIDlet solve the classic Towers of Hanoi puzzle. Choose Solve 
+
+        to start.</p>
+
+      <p>This MIDlet is new for MIDP 2.0.</p>
+
+    </td>
+
+  </tr>
+
+  </TBODY> <TBODY> 
+
+  <tr> 
+
+    <td>ManyBalls<br>
+      (<code>manyballs.jad</code>)</td>
+
+    <td>ManyBalls</td>
+
+    <td> <img src="images/manyballs.gif"
+
+           alt="screen shot of the ManyBalls MIDlet"></td>
+
+    <td> 
+
+      <p>Watch balls move on the screen. Press left/right to change the number 
+
+        of balls and up/down to change the speed. </p>
+
+      <p>This example shows what can be accomplished in a multithreaded execution 
+
+        environment. It is the same as the ManyBalls MIDlet in the MIDP 1.0.3 
+
+        Reference Implementation.<br>
+
+        &nbsp;<br>
+
+      </p>
+
+    </td>
+
+  </tr>
+
+  <tr> 
+
+    <td class="sun-verylightblue">Newshound<br>
+      (<code>newshound.jad</code>)</td>
+
+    <td class="sun-verylightblue">NewsHound</td>
+
+    <td class="sun-verylightblue"><img src="images/newshound.gif"
+
+         alt="screen shot of the NewsHound MIDlet"></td>
+
+    <td class="sun-verylightblue"> 
+      <p>See the latest news reports. This example uses the MIDP 2.0 push functionality 
+        to get the latest updates.</p>
+      <p>This MIDlet is new for MIDP 2.0</p>
+      <p><b>Note:</b> This MIDlet suite cannot be installed at the same time as 
+        HttpView. They both use the same push resources (the same port), and the 
+        device cannot have two MIDlet suites that use the same port for push on 
+        the device at the same time.</p>
+      <a name="run_push"></a><p>To run Newshound:</p>
+      <ol>
+        <li>Install Newshound. Give it &quot;Maybe. Ask me each time.&quot; permission 
+          to interrupt another application and to receive information.</li>
+        <li>Install at least one other MIDlet suite.</li>
+        <li>Start a MIDlet other than Newshound. (If Newshound is running, the 
+          push technology isn't checking the port. Nothing will happen.) </li>
+        <li>In a terminal window, telnet to the machine running the emulator, 
+          port 40079. That is, enter a command of the form: 
+          <pre>telnet <i>emulatorsMachine</i> 40079</pre>
+        <li>Type a string into the window in which you entered the telnet command, 
+          then hit the return key. (On Windows 2000, you will not see the string 
+          you type.)</li>
+        <li>Give Newshound &quot;This time. Ask me next time.&quot; permission 
+          to interrupt and receive information. 
+          <p>The string you typed in Step 5 will be the last item in the News 
+            Headlines screen.</p>
+        </li>
+      </ol>
+	  
+	  
+	  </td>
+
+  </tr>
+
+  </TBODY> <TBODY> 
+
+  <tr> 
+
+    <td>PhotoAlbum<br>
+      (<code>photoalbum.jad</code>)</td>
+
+    <td>PhotoAlbum</td>
+
+    <td><img src="images/photoalbum.gif"
+
+         alt="screen shot of the PhotoAlbum MIDlet"></td>
+
+    <td>
+
+      <p>Display a variety of images and animations.</p>
+
+      <p>This MIDlet is the same as the one in the MIDP 1.0.3 Reference Implementation</p>
+
+    </td>
+
+  </tr>
+
+  </TBODY> <TBODY> 
+
+  <tr> 
+
+    <td rowspan="2" class="sun-verylightblue">HttpView<br>
+      (<code>pushdemo.jad</code>)</td>
+
+    <td class="sun-verylightblue"> 
+
+      HttpView
+
+    </td>
+
+    <td class="sun-verylightblue"><img src="images/httpview.gif"
+
+         alt="screen shot displaying a list of URLs that can send data later"></td>
+
+    <td class="sun-verylightblue">
+
+      <p>Receive data from a URL you choose from the list, or from pushed data.</p>
+
+      <p>This MIDlet is new for MIDP 2.0.</p>
+
+      <p><b>Note:</b> This MIDlet suite cannot be installed at the same time as 
+        Newshound. They both use the same push resources (the same port), and 
+        the device cannot have two MIDlet suites that use the same port for push 
+        on the device at the same time.</p>
+      <p>To have this MIDlet receive pushed data, follow the <a href="#run_push">steps given for running Newshound</a>.</p>
+      </td>
+
+  </tr>
+
+  <tr>
+
+    <td class="sun-verylightblue">HttpTest</td>
+
+    <td class="sun-verylightblue"><img src="images/push.gif"
+
+         alt="screen shot showing a prompt for a URL that will later send data"></td>
+
+    <td class="sun-verylightblue">
+
+      <p>Receive data from a URL you specify.</p>
+
+      <p>This MIDlet is the same as the HTTP MIDlet in the SunSamples&nbsp;-&nbsp;Demos 
+
+        MIDlet suite.</p>
+
+    </td>
+
+  </tr>
+
+  </TBODY> <TBODY> 
+
+  <tr> 
+
+    <td>PushPuzzle<br>
+      (<code>pushpuzzle.jad</code>)</td>
+
+    <td>PushPuzzle</td>
+
+    <td><img src="images/pushpuzzle.gif"
+
+           alt="screen shot of the PushPuzzle MIDlet"></td>
+
+    <td>
+
+      <p>Move the solid boxes into the hollow "storage" boxes. To change the game 
+
+        options, choose Menu. <br>
+
+        &nbsp; <br>
+
+        This example has been updated for MIDP 2.0. It now uses the Game Canvas.</p>
+
+      <p>As it did in MIDP 1.0, this MIDlet still uses the record store to remember 
+
+        the user's current level and high score, game actions for moving the object 
+
+        that pushes the boxes, and touch screen if it is available.</p>
+
+      <p>&nbsp;</p>
+
+    </td>
+
+  </tr>
+
+  </TBODY> <TBODY> 
+
+  <tr> 
+
+    <td class="sun-verylightblue">Stock<br>
+      (<code>stock.jad</code>)</td>
+
+    <td class="sun-verylightblue">Stock</td>
+
+    <td class="sun-verylightblue"> <img src="images/stocks.gif"
+
+	     alt="screen shot of the Stock MIDlet"></td>
+
+    <td class="sun-verylightblue">Get stock quotes from a publicly available website, 
+
+      and set alerts. <br>
+
+      &nbsp; <br>
+
+      This example shows how to send and receive the appropriate HTTP headers. 
+
+      It also shows the use of timers, persistent storage and user interface dialogs. 
+
+      It is the same as the Stock MIDlet in the MIDP 1.0.3 Reference Implementation. 
+
+      <p><b>Note:</b> If you have to go through a firewall to reach the Internet, 
+
+        uncomment the line <nobr><tt>#com.sun.midp.io.http.proxy:webcache:8080</tt></nobr> 
+
+        in <i>midpInstallDir</i><tt>/build/share/lib/internal.config</tt> and 
+
+        change <tt>webcache:8080</tt> to your proxy and port. Do this <strong>before</strong> 
+
+        building and running the demo. (The configuration files in <i>midpInstallDir</i><tt>/build/share/lib/</tt> 
+
+        replace their counterparts in <i>midpInstallDir</i><tt>/build/</tt><i>platform</i><tt>/lib/</tt> 
+
+        each time MIDP or its examples are built.)
+
+    </td>
+
+  </tr>
+
+  </TBODY> <TFOOT> 
+
+  <tr> 
+
+    <td colspan=4> 
+
+      <hr class=pTableHr />
+
+    </td>
+
+  </tr>
+
+  </TFOOT> 
+
+</table>
+
+  
+
+  <p>&nbsp;</p>
+
+  
+
+  <hr class="pHr" />
+
+
+
+  <p class=copyright><a href="../share/copyright.html">Copyright</a>
+
+    &#169; 2002 Sun Microsystems, Inc.  All rights reserved.  
+
+  </p>
+
+
+
+</body>
+
+</html>
+

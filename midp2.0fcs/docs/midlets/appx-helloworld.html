@@ -1,0 +1,160 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/29/02 14:46:49" />
+    <title>Code for the Hello MIDlet</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="test.html" />
+    <link rel="Next" href="midletsIX.html" />
+    <link rel="Index" href="midletsIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="test.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="midletsIX.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="midletsIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp997082"> </a><h2 class="pAppxNum">
+Appendix &#160; A
+</h2>
+<a name="wp997084"> </a><h2 class="pNewHTMLPage">
+Code for the Hello MIDlet
+</h2>
+<hr class="pHr"/>
+<a name="wp997306"> </a><p class="pBody">
+The following is the source code for the Hello MIDlet:
+</p>
+<a name="wp998124"> </a><div class="pCodeCaption">
+CODE&#160;EXAMPLE&#160;6 	Full Hello MIDlet Source Code
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+/*<a name="wp998185"> </a>
+&#160;* @(#)HelloMIDlet.java 1.12 02/09/25 @(#)<a name="wp998186"> </a>
+&#160;*<a name="wp998293"> </a>
+&#160;* Copyright (c) 2000-2002 Sun Microsystems, Inc.  All rights reserved.<a name="wp998294"> </a>
+&#160;* PROPRIETARY/CONFIDENTIAL<a name="wp998295"> </a>
+&#160;* Use is subject to license terms.<a name="wp998190"> </a>
+&#160;*/<a name="wp998191"> </a>
+<a name="wp998192"> </a>
+import javax.microedition.midlet.*;<a name="wp998193"> </a>
+import javax.microedition.lcdui.*;<a name="wp998194"> </a>
+<a name="wp998195"> </a>
+/**<a name="wp998196"> </a>
+&#160;* An example MIDlet with simple &quot;Hello&quot; text and an exit command.<a name="wp998197"> </a>
+&#160;*/<a name="wp998198"> </a>
+<span class="cUserType">public class HelloMIDlet extends MIDlet implements CommandListener</span> {<a name="wp998199"> </a>
+<a name="wp998200"> </a>
+&#160;&#160;&#160;&#160;// Fields for the screens, commands, and display of this MIDlet<a name="wp998201"> </a>
+&#160;&#160;&#160;&#160;private Command exitCommand;<a name="wp998202"> </a>
+&#160;&#160;&#160;&#160;private TextBox textBox;<a name="wp998203"> </a>
+&#160;&#160;&#160;&#160;private Display display;<a name="wp998204"> </a>
+<a name="wp998205"> </a>
+&#160;&#160;&#160;&#160;/**<a name="wp998206"> </a>
+&#160;&#160;&#160;&#160;&#160;* Constructs the HelloMIDlet, its screen, and its command. It<a name="wp998207"> </a>
+&#160;&#160;&#160;&#160;&#160;* associates the screen and command, and caches MIDlets display.<a name="wp998935"> </a>
+&#160;&#160;&#160;&#160;&#160;*/<a name="wp998210"> </a>
+&#160;&#160;&#160;&#160;<span class="cUserType">public HelloMIDlet() {</span><a name="wp998211"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;// Create the abstract command<a name="wp998212"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;exitCommand = new Command(&quot;Exit&quot;, Command.EXIT, 1);<a name="wp998213"> </a>
+<a name="wp998214"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;// Create the screen and give it a command and a listener<a name="wp998215"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;textBox = new TextBox(&quot;Hello MIDlet&quot;, &quot;Test string&quot;, 256,<a name="wp998216"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;TextField.ANY | TextField.UNEDITABLE);<a name="wp998813"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;textBox.addCommand(exitCommand);<a name="wp998218"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;textBox.setCommandListener(this);<a name="wp998219"> </a>
+<a name="wp998220"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;// Set the MIDlet&#39;s display to its initial screen<a name="wp998221"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;display = Display.getDisplay(this);<a name="wp998222"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;display.setCurrent(textBox);<a name="wp998223"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp998224"> </a>
+<a name="wp998225"> </a>
+&#160;&#160;&#160;&#160;/**<a name="wp998226"> </a>
+&#160;&#160;&#160;&#160;&#160;* Starts the MIDlet; this method does nothing because<a name="wp998227"> </a>
+&#160;&#160;&#160;&#160;&#160;* the MIDlet does not require any shared resources.<a name="wp998228"> </a>
+&#160;&#160;&#160;&#160;&#160;*/<a name="wp998229"> </a>
+&#160;&#160;&#160;&#160;<span class="cUserType">public void startApp() {</span><a name="wp998230"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp998231"> </a>
+<a name="wp998232"> </a>
+&#160;&#160;&#160;&#160;/**<a name="wp998233"> </a>
+&#160;&#160;&#160;&#160;&#160;* Pauses the MIDlet; this method does nothing because there <a name="wp998234"> </a>
+&#160;&#160;&#160;&#160;&#160;* are no background activities or shared resources to close.<a name="wp998235"> </a>
+&#160;&#160;&#160;&#160;&#160;*/<a name="wp998237"> </a>
+<span class="cUserType">&#160;&#160;&#160;&#160;public void pauseApp() {</span><a name="wp998238"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp998239"> </a>
+<a name="wp998241"> </a>
+&#160;&#160;&#160;&#160;/**<a name="wp998242"> </a>
+&#160;&#160;&#160;&#160;&#160;* Destroys the MIDlet; this method does nothing because<a name="wp998243"> </a>
+&#160;&#160;&#160;&#160;&#160;* there is nothing to cleanup that is not handled by the<a name="wp998244"> </a>
+&#160;&#160;&#160;&#160;&#160;* garbage collector.<a name="wp998245"> </a>
+&#160;&#160;&#160;&#160;&#160;*/<a name="wp998246"> </a>
+<span class="cUserType">&#160;&#160;&#160;&#160;&#160;public void destroyApp(boolean unconditional) {</span><a name="wp998247"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp998248"> </a>
+<a name="wp998249"> </a>
+&#160;&#160;&#160;&#160;/*<a name="wp998250"> </a>
+&#160;&#160;&#160;&#160;&#160;* Responds to the user&#8217;s selection of abstract commands.<a name="wp998251"> </a>
+&#160;&#160;&#160;&#160;&#160;* This MIDlet has only an exit command. This method<a name="wp998252"> </a>
+&#160;&#160;&#160;&#160;&#160;* responds to it by cleaning up and notifying the system<a name="wp998253"> </a>
+&#160;&#160;&#160;&#160;&#160;* that the MIDlet has been destroyed.<a name="wp998254"> </a>
+&#160;&#160;&#160;&#160;&#160;*/<a name="wp998255"> </a>
+<span class="cUserType">&#160;&#160;&#160;&#160;public void commandAction(Command command, Displayable screen) {</span><a name="wp998256"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if (command == exitCommand) {<a name="wp998257"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;destroyApp(false);<a name="wp998258"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;notifyDestroyed();<a name="wp998259"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}<a name="wp998260"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp998261"> </a>
+}<a name="wp998262"> </a>
+</pre></div>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="test.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="midletsIX.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="midletsIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Creating MIDlet Suites <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

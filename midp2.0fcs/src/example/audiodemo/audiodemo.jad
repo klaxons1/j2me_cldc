@@ -1,0 +1,19 @@
+MIDlet-Name: AudioSamples
+MIDlet-Version: 2.0
+MIDlet-Vendor: Sun Microsystems, Inc.
+MIDlet-Description: Sample suite for jsr 135.
+MicroEdition-Profile: MIDP-2.0
+MicroEdition-Configuration: CLDC-1.0
+MIDlet-1: AudioPlayer, /icons/App.png, example.audiodemo.AudioPlayer
+MIDlet-2: BBall, /icons/App.png, example.audiodemo.BBall
+MIDlet-3: MixTest, /icons/App.png, example.audiodemo.MixTest
+PlayerTitle-1: Simple Tone
+PlayerURL-1: simple tone
+PlayerTitle-2: Bark [rms]
+PlayerURL-2: rms:/audio/bark.wav
+PlayerTitle-3: Ring Tone [jar]
+PlayerURL-3: resource:/audio/beethoven.dat
+PlayerTitle-4: JavaOne Theme [http]
+PlayerURL-4: http://java.sun.com/products/java-media/mma/media/test-wav.wav
+BBallURL: http://java.sun.com/products/java-media/mma/media/test-wav.wav
+MixTestURL: http://java.sun.com/products/java-media/mma/media/test-wav.wav

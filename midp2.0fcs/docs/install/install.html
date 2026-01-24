@@ -1,0 +1,143 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-no-index" />
+    <meta name="LASTUPDATED" content="10/28/02 09:25:54" />
+    <title>Installing MIDP</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="preface.html" />
+    <link rel="Next" href="" />
+    <link rel="Index" href="install.html" />
+  </head>
+
+  <body>
+
+    <table id="SummaryNotReq1" width="100%">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="preface.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+	<img id="LongDescNotReq3" src="images/nextx.gif" border="0"
+              alt="Next" />
+        </td>
+      </tr>
+    </table>
+
+<a name="wp827031"> </a><h2 class="pChapNum">
+Chapter &#160; 1
+</h2>
+<a name="wp831697"> </a><h2 class="pNewHTMLPage">
+Installing MIDP
+</h2>
+<hr class="pHr"/>
+<a name="wp831700"> </a><p class="pBody">
+This chapter describes how to install the MIDP Reference Implementation, Version 2.0 FCS, onto your desktop system. It assumes that your system meets the hardware and software requirements detailed in the <em class="cEmphasis">Release Notes</em>.
+</p>
+<hr width="100%" class="pHr"/><a name="wp832535"> </a><div class="pNote">
+<b>Note &#8211;</b>  Only one person can use the MIDP Reference Implementation&#8217;s <code class="cCode">midp</code> executable at a time. If others try to use the executable at the same time, they will get file sharing violations.&#160;<br />&#160;<br />If multiple people will be using <code class="cCode">midp</code> executable concurrently, they should each install the MIDP Reference Implementation.
+</div><hr width="100%" class="pHr"/><a name="wp831705"> </a><p class="pBody">
+To install the MIDP Reference Implementation:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp831654"> </a><li>Decide where you will install the MIDP Reference Implementation on your system.</li>
+<a name="wp831655"> </a><p class="pBody">
+For example, you might decide that you will install it into a subdirectory of <code class="cCode">C:\</code>.
+</p>
+<a name="wp832492"> </a><p class="pBody">
+If multiple people are installing the MIDP Reference Implementation, each person must choose a different directory.
+</p>
+<a name="wp831663"> </a><li>If you have not installed CLDC, Version 1.0.4, install it into the directory that you chose in <a  href="install.html#wp831654"><span style="color: #3366CC">Step&#160;1</span></a>.</li>
+<a name="wp831667"> </a><p class="pBody">
+See the instructions that came with CLDC, Version 1.0.4.
+</p>
+<a name="wp831668"> </a><p class="pBody">
+If it is already installed, go to the next step.
+</p>
+<a name="wp829086"> </a><li>Unzip the MIDP Reference Implementation distribution into the directory that you chose in <a  href="install.html#wp831654"><span style="color: #3366CC">Step&#160;1</span></a>.</li>
+<a name="wp831819"> </a><p class="pBody">
+Unzipping the distribution will create a subdirectory, <code class="cCode">midp2.0fcs</code>, that contains the subdirectories listed in the <em class="cEmphasis">Release Notes</em>.
+</p>
+<a name="wp829184"> </a><p class="pBody">
+The MIDP Reference Implementation documentation refers to the full path name of the directory that holds your MIDP Reference Implementation installation (such as <code class="cCode">c:\</code>midp2.0fcs) as <em class="cEmphasis">midpInstallDir</em>.
+</p>
+<a name="wp832615"> </a><li>Set your environment variables to support building and using the MIDP Reference Implementation.</li>
+<a name="wp832617"> </a><p class="pBody">
+See the section that corresponds to your system type:
+</p>
+<ul class="pBullet1"><a name="wp832621"> </a><div class="pBullet1"><li><a  href="install.html#wp832627"><span style="color: #3366CC">Setting Environment Variables for Microsoft Windows 2000</span></a></li></div>
+<a name="wp832624"> </a><div class="pBullet1Last"><li><a  href="install.html#wp832829"><span style="color: #3366CC">Setting Environment Variables for the Solaris&#8482; Operating Environment and the Linux Operating System</span></a></li></div>
+</ul>
+</ol>
+</div>
+<a name="wp832627"> </a><h5 class="pHeading4">
+Setting Environment Variables for Microsoft Windows 2000
+</h5>
+<a name="wp832628"> </a><p class="pBody">
+To set the environment variables for Microsoft Windows 2000:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp831629"> </a><li>In the Environment Variables pane (under the Advanced tab) of the System Properties dialog box, edit the <code class="cCode">PATH</code> system variable, if necessary. Ensure that it includes the directories of:</li>
+<ul class="pBullet1"><a name="wp832065"> </a><div class="pBullet1"><li>The tools you will use to build the MIDP Reference Implementation. These tools will probably include the JDK&#8482; release and Cygwin, as well as your other programming tools.</li></div>
+<hr width="100%" class="pHr"/><a name="wp832311"> </a><div class="pNote">
+<b>Note &#8211;</b>  The directory of the Cygwin executables must be before the directory of the Windows executables.
+</div><hr width="100%" class="pHr"/><a name="wp832066"> </a><div class="pBullet1Last"><li>Any libraries (DLLs) of native methods for your device, if you are porting the MIDP Reference Implementation.</li></div>
+</ul>
+<a name="wp830018"> </a><li>If necessary, also in the Environment Variables pane, the following environment variables:</li>
+<ul class="pBullet1"><a name="wp832088"> </a><div class="pBullet1"><li><code class="cCode">ALT_BOOTDIR</code> &#8211; Have it point to the directory that contains your JDK release, if it is not in the <code class="cCode">C:\jdk1.3.1</code> directory.</li></div>
+<a name="wp832827"> </a><div class="pBullet1Last"><li><code class="cCode">KVM_DIR</code> &#8211; Have it point to the directory that contains your CLDC, Version 1.0.4 installation if the release is not in the <em class="cEmphasis">midpInstallDir</em><code class="cCode">\..\kvm</code> directory.</li></div>
+</ul>
+</ol>
+</div>
+<a name="wp832829"> </a><h5 class="pHeading4">
+Setting Environment Variables for the Solaris&#8482; Operating Environment and the Linux Operating System
+</h5>
+<a name="wp832658"> </a><p class="pBody">
+To set the environment variables for the Solaris&#8482; Operating Environment or Linux operating system:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp832659"> </a><li>If necessary, edit the <code class="cCode">PATH</code> environment variable to include the directories of the tools you will use to build the MIDP Reference Implementation. They will probably include the JDK release, ZIP tools, and GCC, as well as your other programming tools.</li>
+<hr width="100%" class="pHr"/><a name="wp832715"> </a><div class="pNote">
+<b>Note &#8211;</b>  On the Solaris OE, the directory <code class="cCode">/usr/bin</code> must appear before <code class="cCode">/usr/ucb</code>.
+</div><hr width="100%" class="pHr"/><a name="wp832664"> </a><li>If necessary, also edit the following environment variables:</li>
+<ul class="pBullet1"><a name="wp832665"> </a><div class="pBullet1"><li><code class="cCode">ALT_BOOTDIR</code> &#8211; Have it point to the directory that contains your JDK release if it is not in either <code class="cCode">/usr/local/java/jdk1.3/x86</code> or &#160;<br /><code class="cCode">/usr/local/java/jdk1.3/solaris</code> (depending on your system architecture).</li></div>
+<a name="wp832669"> </a><div class="pBullet1Last"><li><code class="cCode">KVM_DIR</code> &#8211; Have it point to the directory that contains your CLDC, Version 1.0.4 installation if the release is not in the <em class="cEmphasis">midpInstallDir</em><code class="cCode">/../kvm</code> directory.</li></div>
+</ul>
+</ol>
+</div>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table id="SummaryNotReq2" width="100%">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="preface.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <img id="LongDescNotReq3" src="images/nextx.gif" border="0"
+              alt="Next" />
+        </td>
+        <td class="go-right">
+          <span class="copyright">Installing MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>
+  </body>
+</html>

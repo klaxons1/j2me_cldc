@@ -1,0 +1,323 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/29/02 14:46:25" />
+    <title>Introduction</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="preface.html" />
+    <link rel="Next" href="create.html" />
+    <link rel="Index" href="midletsIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="preface.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="create.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="midletsIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp9095"> </a><h2 class="pChapNum">
+Chapter &#160; 1
+</h2>
+<a name="wp9178"> </a><h2 class="pNewHTMLPage">
+Introduction
+</h2>
+<hr class="pHr"/>
+<a name="wp997268"> </a><p class="pBody">
+An application that runs in a MIDP environment is called a <em class="cEmphasis">MIDlet</em>. This chapter introduces MIDP Reference Implementation and MIDlets. It has the sections:
+</p>
+<ul class="pBullet1"><a name="wp997272"> </a><div class="pBullet1"><li><a  href="intro.html#wp997276"><span style="color: #3366CC">Architecture</span></a></li></div>
+<a name="wp997308"> </a><div class="pBullet1Plus"><li><a  href="intro.html#wp997281"><span style="color: #3366CC">MIDlet Environment</span></a></li></div>
+<a name="wp997770"> </a><div class="pBullet1Plus"><li><a  href="intro.html#wp997508"><span style="color: #3366CC">MIDlet Life Cycle</span></a></li></div>
+<a name="wp999358"> </a><div class="pBullet1Plus"><li><a  href="intro.html#wp999332"><span style="color: #3366CC">Getting and Running MIDlets</span></a></li></div>
+<a name="wp1000129"> </a><div class="pBullet1Last"><li><a  href="intro.html#wp1000122"><span style="color: #3366CC">Permissions</span></a></li></div>
+</ul>
+<a name="wp997276"> </a><h2 class="pHeading1">
+Architecture
+</h2>
+<a name="wp1000489"> </a><p class="pBody">
+MIDP (Mobile Information Device Profile) is part of the Java&#8482; 2 Platform, Micro Edition (J2ME&#8482;). MIDP defines the Java application environment for mobile information devices (MIDs), such as mobile phones and personal digital assistants (PDAs). It is built on top of the Connected Limited Device Configuration (CLDC) and conforms to the specification from the Mobile Information Device Profile 2.0 [JSR-000118]. See <a href="http://jcp.org/jsr/detail/118.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/118.jsp</span></a> for the <em class="cEmphasis">MIDP 2.0 Specification</em>.
+</p>
+<a name="wp997457"> </a><p class="pBody">
+A application that is written in the Java programming language and runs in the MIDP environment is a MIDlet. Users do not download and launch MIDlets though. They download and launch <em class="cEmphasis">MIDlet suites</em>, one or more MIDlets packaged together for distribution, then run a MIDlet from the suite.
+</p>
+<a name="wp997493"> </a><p class="pBody">
+MIDlet suites are typically made up of MIDlets that perform a similar function (such as a group of MIDlets in a game-pack) or that work together (such as a MIDlet that provides restaurant reviews and one that makes restaurant reservations). MIDlets in the same suite can share resources, such as graphics and data. If a MIDlet stores information on a device, other MIDlets in its suite can access the information, and other MIDlets can be given permission to see it.
+</p>
+<a name="wp997214"> </a><p class="pBody">
+The following figure shows the J2ME platform architecture from the MIDP perspective:
+</p>
+<a name="wp997204"> </a><p class="pBody">
+<img src="images/intro2.gif" height="211" width="353" alt="MIDP stack" longdesc="images/intro2.txt" border="0" hspace="0" vspace="0"/><a href="images/intro2.txt" title="Description link for MIDP stack">[D]</a>    
+</p>
+<a name="wp997450"> </a><div class="pFigureCaption">
+FIGURE&#160;1&#160;&#160;&#8211;&#160;&#160;J2ME Platform Architecture for MIDP and MIDP Applications
+<br /><br />
+</div><a name="wp997281"> </a><h2 class="pHeading1">
+MIDlet Environment
+</h2>
+<a name="wp997511"> </a><p class="pBody">
+This section covers the MIDP environment from the perspective of the MIDlet developer. From this perspective, the MIDlet environment is screen based. That is, after determining the tasks that users will perform with a MIDlet, a developer organizes the tasks into screens. Users navigate through the screens when they run the MIDlet.
+</p>
+<a name="wp997516"> </a><p class="pBody">
+For example, a game such as PushPuzzle might enable a user to make a move in the game, undo last move, restart the level, restart the entire game, set the level of play, view high scores, and get information about the game. These tasks could be be organized into:
+</p>
+<ul class="pBullet1"><a name="wp997580"> </a><div class="pBullet1"><li>A screen for playing the game (making and undoing moves, restarting)</li></div>
+<a name="wp997588"> </a><div class="pBullet1Plus"><li>A screen for setting the level of play</li></div>
+<a name="wp997591"> </a><div class="pBullet1Plus"><li>A screen for seeing high scores</li></div>
+<a name="wp997594"> </a><div class="pBullet1Last"><li>A screen for seeing an &#8220;About box&#8221; for the application.</li></div>
+</ul>
+<a name="wp997596"> </a><p class="pBody">
+Here are the screens of the PushPuzzle application:
+</p>
+<a name="wp997521"> </a><p class="pBody">
+<img src="images/intro3.gif" height="464" width="541" alt="The four PushPuzzle screen shots listed in the text." border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997801"> </a><div class="pFigureCaption">
+FIGURE&#160;2&#160;&#160;&#8211;&#160;&#160;Screens of the PushPuzzle Game
+<br /><br />
+</div><a name="wp997802"> </a><p class="pBody">
+MIDP has both <em class="cEmphasis">structured</em> and unstructured screens. Structured screens are more portable, but (with one exception, the <code class="cCode">CustomItem</code> class) do not give the application access to low-level input mechanisms or control of the screen. Unstructured screens provides access to low-level I/O, but can be less portable. The screens in <a  href="intro.html#wp997801">FIGURE&#160;2</a> show both types of screens: the game-playing screen is an unstructured screen; the rest are structured screens.
+</p>
+<a name="wp997779"> </a><p class="pBody">
+The unstructured screen is called a <em class="cEmphasis">canvas</em>. It gives you control of the screen, enabling you to draw images and simple graphics (such as rectangles and lines). It also gives you access to low-level input mechanisms, such as key presses or touch input if it is supported by the device. Again, a canvas is useful when you need control of the screen (such as for an action game) but is more difficult to make portable than a structured screen.
+</p>
+<a name="wp997642"> </a><p class="pBody">
+There are a few types of structured screens. Each type serves a particular purpose, such as gathering text input, alerting users to important events, or giving users lists of choices. When you use a structured screen you provide only the content, such as the elements in a list. The MIDP implementation handles the look of structured screens (such as layout, fonts, and colors), as well as their low-level interactions with the user (such as scrolling). The MIDP implementation also notifies your application when the user takes an action, such as choosing OK on the screen in <a  href="intro.html#wp997801">FIGURE&#160;2</a> titled Enter Level. Because MIDP implementations handle the user interfaces and IO, a MIDlet that uses structured screens can run on many devices and, without code updates, look and behave like a native application.
+</p>
+<a name="wp998151"> </a><p class="pBody">
+An action associated with a screen, such as OK on the screen titled Enter Level in <a  href="intro.html#wp997801">FIGURE&#160;2</a>, is called an <em class="cEmphasis">abstract command</em>. A screen can have any number of abstract commands; each screen should have at least one. Abstract commands enable you to define actions without specifying their user interface. MIDP implementations determine their presentation. This makes abstract commands portable, like structured screens. MIDlets that use them can look and behave appropriately on different devices without code changes.
+</p>
+<a name="wp998152"> </a><p class="pBody">
+When presenting abstract commands, MIDP implementations conform to the conventions of the device (within the constraints of the <em class="cEmphasis">MIDP 2.0 Specification</em>). Some implementations might use buttons, others menus, and so on. The MIDP Reference Implementation uses various buttons and, if there are more abstract commands after doing the standard mappings, creates a menu for them (a <em class="cEmphasis">system menu</em>). The following figure shows a screen that required a system menu, and the system menu that appears when the user chooses the Menu command.
+</p>
+<a name="wp997927"> </a><p class="pBody">
+<img src="images/intro4.gif" height="218" width="538" alt="The two PushPuzzle screens described in the text." border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997951"> </a><div class="pFigureCaption">
+FIGURE&#160;3&#160;&#160;&#8211;&#160;&#160;Screen and Associated System Menu of Abstract Commands
+<br /><br />
+</div><a name="wp998143"> </a><p class="pBody">
+In summary, the MIDP environment is screen-based. When you design and implement a MIDlet, you need to organize its tasks into a set of screens. The screens can be either structured screens (which are more portable) or unstructured screens (if you need low-level I/O control). Each screen should have one or more associated actions, called abstract commands, that enable a user to carry out their tasks when they run the MIDlet.
+</p>
+<a name="wp997508"> </a><h2 class="pHeading1">
+MIDlet Life Cycle
+</h2>
+<a name="wp998325"> </a><p class="pBody">
+The life cycle of a MIDlet consists of three states:
+</p>
+<ul class="pBullet1"><a name="wp998326"> </a><div class="pBullet1"><li>Paused &#8212; Not in use, but available to become active when requested </li></div>
+<a name="wp998333"> </a><p class="pIndented1">
+A newly instantiated MIDlet is in the Paused state. A paused MIDlet probably holds fewer resources than an active MIDlet.
+</p>
+<a name="wp998290"> </a><div class="pBullet1Plus"><li>Active &#8212; In use, interacting with the user through its screens</li></div>
+<a name="wp998340"> </a><div class="pBullet1Last"><li>Destroyed &#8212; Neither in use nor available</li></div>
+</ul>
+<a name="wp998422"> </a><p class="pIndented1">
+A destroyed MIDlet is eligible to be garbage collected.
+</p>
+<a name="wp998474"> </a><p class="pBody">
+A MIDlet can move between the paused and active states any number of times. It cannot move from the destroyed state.
+</p>
+<a name="wp998475"> </a><p class="pBody">
+The following figure shows the life-cycle of a MIDlet:
+</p>
+<a name="wp998514"> </a><p class="pBody">
+<img src="images/intro5.gif" height="255" width="479" alt="MIDlet life cycle" longdesc="images/intro5.txt" border="0" hspace="0" vspace="0"/><a href="images/intro5.txt" title="Description link for MIDlet life cycle">[D]</a>    
+</p>
+<a name="wp998398"> </a><div class="pFigureCaption">
+FIGURE&#160;4&#160;&#160;&#8211;&#160;&#160;Life Cycle of a MIDlet
+<br /><br />
+</div><a name="wp998519"> </a><p class="pBody">
+The next chapter, which tells you how to create a MIDlet, maps the MIDlet states onto the MIDlet&#8217;s methods. 
+</p>
+<a name="wp999332"> </a><h2 class="pHeading1">
+Getting and Running MIDlets
+</h2>
+<a name="wp999377"> </a><p class="pBody">
+Before a MIDlet can be run, it must be put onto the device. From an end-user&#8217;s perspective, that means downloading and installing a packaged MIDlet suite. (See <em class="cEmphasis">Using MIDP</em> for more information.) To enable users to get a MIDlet suite on the device, developers must package and publish the MIDlet. (These steps are covered in <a  href="package.html#wp999045"><span style="color: #3366CC">Chapter&#160;4, &quot;Packaging a MIDlet</span></a>,&#8221; and &#8220;<a  href="publish.html#wp9178"><span style="color: #3366CC">Chapter&#160;5, &quot;Publishing a MIDlet</span></a>.&#8221;)
+</p>
+<a name="wp999397"> </a><p class="pBody">
+<img src="images/introa.gif" height="156" width="479" alt="Image showing three steps: a packaged MIDlet, a published MIDlet, and a MIDlet on a device." border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp999497"> </a><div class="pFigureCaption">
+FIGURE&#160;5&#160;&#160;&#8211;&#160;&#160;Getting a MIDlet: Packaging to Installing
+<br /><br />
+</div><a name="wp1000097"> </a><p class="pBody">
+Whether the device accepts the MIDlet that the user is trying to download and install depends on the <em class="cEmphasis">security policy</em> of the device. A security policy defines which security-sensitive actions MIDlet suites might be permitted to perform. If the MIDlet suite must perform an action that the device cannot allow, the device will not download and install the suite.
+</p>
+<a name="wp999970"> </a><p class="pBody">
+Security policies, and the ability to restrict access to security-sensitive APIs, is new to the <em class="cEmphasis">MIDP 2.0 Specification</em>. The specification also includes the concept of a <em class="cEmphasis">trusted</em> MIDlet suite, which is a MIDlet suite that originates from a trusted source and has not been tampered with. Typically a trusted MIDlet suite can perform more actions than an untrusted one.
+</p>
+<a name="wp1000344"> </a><p class="pBody">
+The procedure for determining whether a MIDlet suite is trusted is device-dependent. The MIDP Reference Implementation checks the digital signature of the MIDlet suite. (See <em class="cEmphasis">Using MIDP</em> for more information.) Because checking a digital signature is one way of establishing trust, signing a suite when you package it will improve the chances that devices will trust your MIDlet suite. The security policies of individual devices, however, will determine whether particular users can download and effectively use your MIDlet suite.
+</p>
+<a name="wp1000122"> </a><h2 class="pHeading1">
+Permissions
+</h2>
+<a name="wp1000140"> </a><p class="pBody">
+When a device defines its security policy, it uses <em class="cEmphasis">permissions. </em>A permission is a string that represents a security-sensitive class, package, or functionality. A security policy associates permissions with an interaction mode (such as Allowed). When you write a MIDlet, you need to be aware of which APIs are security sensitive; <a  href="create.html#wp1001516"><span style="color: #3366CC">&quot;APIs and Security&quot; </span></a> lists them. When you package your MIDlet into a MIDlet suite, you need to list the permissions that your MIDlet would like to have and the permissions that it requires; <a  href="package.html#wp997993"><span style="color: #3366CC">&quot;Creating a JAR File&quot; </span></a> tells you how. This section explains how permissions are named.
+</p>
+<a name="wp1000194"> </a><p class="pBody">
+The name of a permission indicates what it is protecting. If a permission is protecting a package or class, it has the package or class name. For example, a permission that protects the entire input/output package would be named <code class="cCode">javax.microedition.io</code>, while a permission that protects the <code class="cCode">PushRegistry</code> class would be called <code class="cCode">javax.microedition.io.PushRegistry.</code> If a permission is protecting some functionality that a package or class provides, it has the package or class name as a prefix, followed by a name for the functionality. For example, a permission that protects the HTTP functionality made available through the <code class="cCode">Connector</code> class would be called <code class="cCode">javax.microedition.io.Connector.http</code>.
+</p>
+<a name="wp1000424"> </a><p class="pBody">
+The <em class="cEmphasis">MIDP 2.0 Specification</em> defines the following permission names:</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq1000378">
+  <caption><a name="wp1000381"> </a><div class="pTableCaption">
+TABLE&#160;1&#160;&#160;&#8211;&#160;&#160;Permission Names Defined in the MIDP 2.0 Specification
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp1000385"> </a><div style="text-align: left" class="pTableHead">
+Functionality
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp1000387"> </a><div style="text-align: left" class="pTableHead">
+Permission Name
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><a name="wp1000389"> </a><div class="pTableText">
+HTTP protocol
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.http<a name="wp1000391"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1000393"> </a><div class="pTableText">
+HTTPS protocol
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.https<a name="wp1000395"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1000397"> </a><div class="pTableText">
+Datagram protocol
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.datagram<a name="wp1000399"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1000401"> </a><div class="pTableText">
+Datagram server protocol<br />(without host)
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.datagramreceiver<a name="wp1000403"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1000405"> </a><div class="pTableText">
+Socket protocol
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.socket<a name="wp1000407"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1000409"> </a><div class="pTableText">
+Server socket protocol (without host)
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.serversocket<a name="wp1000411"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1000413"> </a><div class="pTableText">
+SSL protocol
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.ssl<a name="wp1000415"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1000417"> </a><div class="pTableText">
+Comm protocol
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.comm<a name="wp1000419"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1000421"> </a><div class="pTableText">
+Use the registry that holds information on MIDlets that use <em class="cEmphasis">push</em> functionality (that is, MIDlets that will be launched to handle incoming messages)
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.PushRegistry<a name="wp1000423"> </a>
+</pre></div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="preface.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="create.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="midletsIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Creating MIDlet Suites <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

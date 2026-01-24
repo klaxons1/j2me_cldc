@@ -1,0 +1,305 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 11:35:07" />
+    <title>Using the midp Executable</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="run-midlets.html" />
+    <link rel="Next" href="security.html" />
+    <link rel="Index" href="useIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="run-midlets.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="security.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="useIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp1016914"> </a><h2 class="pChapNum">
+Chapter &#160; 2
+</h2>
+<a name="wp1016916"> </a><h2 class="pNewHTMLPage">
+Using the midp Executable
+</h2>
+<hr class="pHr"/>
+<a name="wp997054"> </a><p class="pBody">
+The <code class="cCode">midp</code> command runs a device emulator on your desktop system. You can control many of its runtime characteristics, such as the number of colors that it uses, to better simulate how MIDP will behave when it runs on a device.
+</p>
+<a name="wp1011764"> </a><p class="pBody">
+This chapter shows you how to use the <code class="cCode">midp</code> command in the sections:
+</p>
+<ul class="pBullet1"><a name="wp1011639"> </a><div class="pBullet1"><li><a  href="manage-midlets.html#wp1012052"><span style="color: #3366CC">General Instructions</span></a></li></div>
+<a name="wp1017892"> </a><div class="pBullet1Plus"><li><a  href="manage-midlets.html#wp1011313"><span style="color: #3366CC">Improving Device Simulation</span></a></li></div>
+<a name="wp1011663"> </a><div class="pBullet1Plus"><li><a  href="manage-midlets.html#wp1019259"><span style="color: #3366CC">Installing a MIDlet Suite</span></a></li></div>
+<a name="wp1011613"> </a><div class="pBullet1Plus"><li><a  href="manage-midlets.html#wp1011330"><span style="color: #3366CC">Listing Installed MIDlet Suites</span></a></li></div>
+<a name="wp1011618"> </a><div class="pBullet1Last"><li><a  href="manage-midlets.html#wp1011335"><span style="color: #3366CC">Removing an Installed MIDlet Suite</span></a></li></div>
+</ul>
+<a name="wp1016081"> </a><p class="pBody">
+See <a  href="appx-midp.html#wp1000011"><span style="color: #3366CC">Appendix&#160;C,  &quot;The </span><span style="color: #3366CC">midp</span><span style="color: #3366CC"> Command</span></a>&#8221; for detailed information in a manpage format.
+</p>
+<a name="wp1012052"> </a><h2 class="pHeading1">
+General Instructions
+</h2>
+<a name="wp1012097"> </a><p class="pBody">
+The <code class="cCode">midp</code> command is in the <em class="cEmphasis">midpInstallDir</em><code class="cCode">\bin</code> directory. To use the command:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp1012080"> </a><li>Open a command prompt or terminal window.</li>
+<a name="wp1012081"> </a><li>Change your current directory to <em class="cEmphasis">midpInstallDir</em>.</li>
+<a name="wp1012088"> </a><p class="pBody">
+For example, if MIDP Reference Implementation was installed in the directory <code class="cCode">c:\</code><code class="cCode">midp2.0fcs</code>:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\&gt; <span class="cUserType">cd midp2.0fcs</span><a name="wp1012092"> </a>
+</pre></div>
+<a name="wp1012117"> </a><li>Run the <code class="cCode">midp</code> command with any commands or options.</li>
+<a name="wp1012146"> </a><p class="pBody">
+The commands and options to the <code class="cCode">midp</code> command are described below. Using no commands or options starts the emulator and displays the default device skin. See <a  href="run-midlets.html#wp997169"><span style="color: #3366CC">Chapter&#160;1, &quot;Using the Graphical User Interface</span></a>&#8221; for more information. The <code class="cCode">-help</code> option provides usage information. For example, you could get help with the command:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">bin\midp -help</span><a name="wp1012150"> </a>
+</pre></div>
+<a name="wp1016394"> </a><p class="pBody">
+The next sections describe some common options.
+</p>
+</ol>
+</div>
+<a name="wp1011313"> </a><h2 class="pHeading1">
+Improving Device Simulation
+</h2>
+<a name="wp998121"> </a><p class="pBody">
+The MIDP Reference Implementation uses properties to help the MIDP runtime better simulate the capabilities of a device. For example, by default the MIDP runtime supports multiple color depths. Developers porting MIDP to a device that supports only gray scale can change the value of a property so that the emulator also uses gray scale.
+</p>
+<a name="wp1014859"> </a><p class="pBody">
+The MIDP configuration properties are stored in two configuration files:
+</p>
+<ul class="pBullet1"><a name="wp1014860"> </a><div class="pBullet1"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\share\lib\internal.config</code></li></div>
+<a name="wp1014861"> </a><div class="pBullet1Last"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\share\lib\system.config</code></li></div>
+</ul>
+<a name="wp1014862"> </a><p class="pBody">
+See <a  href="appx-midp.html#wp1000011"><span style="color: #3366CC">Appendix&#160;C,  &quot;The </span><span style="color: #3366CC">midp</span><span style="color: #3366CC"> Command</span></a>&#8221; for a complete list of the properties in each file. This section covers two topics:
+</p>
+<ul class="pBullet1"><a name="wp1019179"> </a><div class="pBullet1"><li><a  href="manage-midlets.html#wp1019171"><span style="color: #3366CC">Changing a Property Value</span></a></li></div>
+<a name="wp1019187"> </a><div class="pBullet1Last"><li><a  href="manage-midlets.html#wp1019175"><span style="color: #3366CC">Common Property Values to Update</span></a></li></div>
+</ul>
+<a name="wp1019171"> </a><h3 class="pHeading2">
+Changing a Property Value
+</h3>
+<a name="wp1014880"> </a><p class="pBody">
+To permanently change a property value, edit the appropriate file. The files have each property name-value pair on a single line. The name and value are separated by a colon, as shown below:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">propertyName</em> : <em class="cEmphasis">propertyValue</em><a name="wp1014881"> </a>
+</pre></div>
+<a name="wp1014882"> </a><p class="pBody">
+The whitespace around the colon is not significant.
+</p>
+<a name="wp1014827"> </a><p class="pBody">
+To temporarily change a property value, use the <code class="cCode">-D</code> command-line option when you run MIDP Reference Implementation. The option has the following syntax:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+-D<em class="cEmphasis">propertyName</em>=<em class="cEmphasis">propertyValue</em><a name="wp1014839"> </a>
+</pre></div>
+<a name="wp1014843"> </a><p class="pBody">
+For example, to have the emulator temporarily use four colors instead of the default 256 colors, you would change the value of the <code class="cCode">system.display.screen_depth</code> property to <code class="cCode">2</code>. You could enter the following command:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp -Dsystem.display.screen_depth=2</span><a name="wp1014928"> </a>
+</pre></div>
+<a name="wp1014949"> </a><p class="pBody">
+You can adjust any number of properties from the command line. For example, if you wanted to run installed MIDlet suite number one, simulating a device that had four colors and did not have double-buffering, you could enter the following command:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp -run 1 -Dsystem.display.screen_depth=2 -Dsystem.display.double_buffered=false</span><a name="wp1014953"> </a>
+</pre></div>
+<a name="wp1019175"> </a><h3 class="pHeading2">
+Common Property Values to Update
+</h3>
+<a name="wp1019195"> </a><p class="pBody">
+It is common to have to update the following property values:
+</p>
+<ul class="pBullet1"><a name="wp1019196"> </a><div class="pBullet1"><li><code class="cCode">com.sun.midp.io.http.proxy &#8211; </code>Set this property if you must go through a proxy server when you use HTTP to reach the internet. The MIDP implementation will delegate the device emulator&#8217;s HTTP requests to the proxy. The value of this property has the form <em class="cEmphasis">hostName</em><code class="cCode">:</code><em class="cEmphasis">portNumber</em>. For example:</li></div>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;&#160;&#160;c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp &#160;&#160;&#160;-Dcom.sun.midp.io.http.proxy=TheProxy:8080</span><a name="wp1017686"> </a>
+</pre></div>
+<a name="wp1019387"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.midlet.platformRequestCommand</code> &#8211; Set this property if you are running a MIDlet that calls the <code class="cCode">MIDlet</code> class&#8217;s <code class="cCode">platformRequest</code> method. Its value should be a command that takes a URL as an argument, such as a browser, or a script, and properly handles the URL. If the URL is for a JAD file, the command must install the named package; if the URL is of the form <code class="cCode">tel:</code><em class="cEmphasis">number</em>, as specified in RFC2806 (<a href="http://rfc.net/rfc2806.html" target="_blank">
+<span class="cWebJump">http://rfc.net/rfc2806.html</span></a>), the command must, if it is possible on the platform, make a voice call to <em class="cEmphasis">number</em>.</li></div>
+<a name="wp1019620"> </a><p class="pIndented1">
+The following code example shows this property being set to use the Mozilla browser on a machine that has installed the browser in its default location:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;&#160;&#160;  c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp &#160;&#160;&#160;-Dcom.sun.midp.midlet.platformRequestCommand=&quot;C:\Program&#160;&#160;&#160;Files\mozilla.org\Mozilla\mozilla.exe&quot;</span><a name="wp1019489"> </a>
+</pre></div>
+<a name="wp1019388"> </a><p class="pIndented1">
+If you set this property incorrectly, one of two errors will be displayed in the terminal window where you called the midp command:
+</p>
+<ul class="pBullet2"><a name="wp1019265"> </a><div class="pBullet2"><li><code class="cCode">PlatformRequest is not configured.</code> </li></div>
+<a name="wp1019274"> </a><p class="pIndented2">
+This happens when the property has no value.
+</p>
+<a name="wp1019262"> </a><div class="pBullet2Last"><li><code class="cCode">Spawning a handler process failed. Check the platformRequest configration.</code></li></div>
+<a name="wp1019523"> </a><p class="pIndented2">
+This happens if the property value is incorrect or if there has been a very rare and unexpected system error.
+</p>
+</ul>
+<a name="wp1019540"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.http.force_non_persistent</code> &#8211; Set this property to <code class="cCode">true</code> if you see problems with persistent connections when accessing your web server. These problems could include incorrectly indicating the server sent bad data, displaying only parts of documents and images, and other problems. (You could also try turning off persistent-request capabilities in your web server.) The following code example shows this property being set to <code class="cCode">true</code>:</li></div>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;&#160;&#160;c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp &#160;&#160;&#160;-Dcom.sun.midp.io.http.force_non_persistent=true</span><a name="wp1019597"> </a>
+</pre></div>
+<a name="wp1019632"> </a><div class="pBullet1Last"><li><code class="cCode">system.i18n.encoding</code> and <code class="cCode">system.i18n.lang</code> &#8211; Set these properties if your device will use something other than a Western European encoding (latin1) for the English language. The following code example shows these properties being set to support a Japanese encoding and language:</li></div>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;&#160;&#160;c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp -Dsystem.i18n.encoding=ISO2022_JP &#160;&#160;&#160;-Dsystem.i18n.lang=ja</span><a name="wp1019673"> </a>
+</pre></div></ul>
+
+<a name="wp1019259"> </a><h2 class="pHeading1">
+Installing a MIDlet Suite
+</h2>
+<a name="wp1015097"> </a><p class="pBody">
+A MIDlet suite that is both properly packaged and accessible to a web server can be installed on the emulator. It must be accessible to a web server so that the emulator can download it. The URL from which to download and install a MIDlet should be the location of the MIDlet suite&#8217;s JAD file. The JAD file contains the URL of the MIDlet suite&#8217;s JAR file; that file must also be accessible to the web server.
+</p>
+<a name="wp1015445"> </a><p class="pBody">
+For example, if the JAD file for the example TicketLand MIDlet suite were available at <code class="cCode">http://localhost:8080/j2me/midp/games.jad</code>, the following example shows a command that would install it:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp -install http://localhost:8080/j2me/midp/auction.jad</span><a name="wp1015114"> </a>
+Storage name: #Sun%0020#Microsystems%002c%0020#Inc%002e_#Ticket%0020#Auction_<a name="wp1018068"> </a>
+</pre></div>
+<a name="wp1016517"> </a><p class="pBody">
+If the MIDlet suite is unsigned it will, by default, be put in the untrusted domain. (See <a  href="security.html#wp1021817"><span style="color: #3366CC">&quot;Associating MIDlet Suites and Protection Domains&quot; </span></a> for more information.) You can change its domain by using the <code class="cCode">-domain</code> option. The following example shows the unsigned TicketLand MIDlet suite being installed in the trusted domain:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp -install -domain trusted http://localhost:8080/j2me/midp/auction.jad</span><a name="wp1017544"> </a>
+Storage name: #Sun%0020#Microsystems%002c%0020#Inc%002e_#Ticket%0020#Auction_<a name="wp1018077"> </a>
+</pre></div>
+<a name="wp1018401"> </a><p class="pBody">
+If you use the <code class="cCode">-install</code> option to install a MIDlet suite that you already have installed on the device, the emulator will replace the MIDlet suite&#8217;s code and resources, but by default it will not change or remove any persistent data that the MIDlet suite had stored.
+</p>
+<a name="wp1019715"> </a><p class="pBody">
+If you want to remove any persistent data written by previous versions of the MIDlet suite, use the <code class="cCode">-removeRMS</code> option. The following example shows the TicketLand MIDlet suite being installed, and persistent data from previous versions being removed:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp -install -domain trusted -removeRMS http://localhost:8080/j2me/midp/auction.jad</span><a name="wp1018415"> </a>
+Storage name: #Sun%0020#Microsystems%002c%0020#Inc%002e_#Ticket%0020#Auction_<a name="wp1018424"> </a>
+</pre></div>
+<a name="wp1018386"> </a><p class="pBody">
+Installing a MIDlet suite does not display the device skin or run the MIDlet after installing it. Installing a MIDlet suite downloads the JAR and JAD files and makes the MIDlet suite available to be run. (See <a  href="run-midlets.html#wp997169"><span style="color: #3366CC">Chapter&#160;1, &quot;Using the Graphical User Interface</span></a>&#8221; for more information.)
+</p>
+<a name="wp1011330"> </a><h2 class="pHeading1">
+Listing Installed MIDlet Suites
+</h2>
+<a name="wp1015323"> </a><p class="pBody">
+In order to remove or run a particular installed MIDlet suite, you need to know its number or storage name. Each MIDlet suite is assigned a number and a storage area when it is installed. The storage name of a MIDlet suite is the name of the suite&#8217;s storage area. To get this information about a MIDlet using the <code class="cCode">midp</code> command, use the <code class="cCode">-list</code> or <code class="cCode">-storageNames</code> option.
+</p>
+<a name="wp1015483"> </a><p class="pBody">
+For example, the following command lists the installed MIDlet suites by number:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp -list</span><a name="wp1015140"> </a>
+[1]<a name="wp1018100"> </a>
+&#160;&#160;Name: SunSamples - Games<a name="wp1018101"> </a>
+&#160;&#160;Vendor: Sun Microsystems, Inc.<a name="wp1018102"> </a>
+&#160;&#160;Version: 2.0<a name="wp1018103"> </a>
+&#160;&#160;Description: Sample suite of games for the MIDP.<a name="wp1018104"> </a>
+&#160;&#160;Storage name: #Sun%0020#Microsystems%002c%0020#Inc%002e_#Sun#Samples%0020%002d<a name="wp1018105"> </a>
+%0020#Games_<a name="wp1018150"> </a>
+&#160;&#160;Size: 27K<a name="wp1018151"> </a>
+&#160;&#160;Installed From: http://localhost:8080/midlets/games.jad<a name="wp1018152"> </a>
+&#160;&#160;MIDlets:<a name="wp1018153"> </a>
+&#160;&#160;&#160;&#160;TilePuzzle<a name="wp1018110"> </a>
+&#160;&#160;&#160;&#160;WormGame<a name="wp1018111"> </a>
+[2]<a name="wp1018112"> </a>
+&#160;&#160;Name: Ticket Auction<a name="wp1018113"> </a>
+&#160;&#160;Vendor: Sun Microsystems, Inc.<a name="wp1018114"> </a>
+&#160;&#160;Version: 2.0<a name="wp1018115"> </a>
+&#160;&#160;Description: Ticket Auction demo.<a name="wp1018116"> </a>
+&#160;&#160;Storage name: #Sun%0020#Microsystems%002c%0020#Inc%002e_#Ticket%0020#Auction_<a name="wp1018117"> </a>
+&#160;&#160;Size: 39K<a name="wp1018118"> </a>
+&#160;&#160;Installed From: http://localhost:8080/midlets/auction.jad<a name="wp1018119"> </a>
+&#160;&#160;MIDlets:<a name="wp1018120"> </a>
+&#160;&#160;&#160;&#160;TicketLand<a name="wp1018095"> </a>
+</pre></div>
+<a name="wp1015165"> </a><p class="pBody">
+The following example shows a command listing the installed MIDlet suites by storage name:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp -storageNames</span><a name="wp1015157"> </a>
+#Sun%0020#Microsystems%002c%0020#Inc%002e_#Sun#Samples%0020%002d%0020#Games_<a name="wp1018229"> </a>
+#Sun%0020#Microsystems%002c%0020#Inc%002e_#Ticket%0020#Auction_<a name="wp1018224"> </a>
+</pre></div>
+<a name="wp1015185"> </a><p class="pBody">
+Listing MIDlet suites does not display the device skin.
+</p>
+<a name="wp1011335"> </a><h2 class="pHeading1">
+Removing an Installed MIDlet Suite
+</h2>
+<a name="wp1015231"> </a><p class="pBody">
+When you uninstall a MIDlet suite, you delete any data that it had stored with the device emulator. When you next run the emulator, the removed MIDlet suite and its MIDlets will no longer appear on the application selector screen.
+</p>
+<a name="wp1015500"> </a><p class="pBody">
+You uninstall a MIDlet suite by number or storage name. See <a  href="manage-midlets.html#wp1011330"><span style="color: #3366CC">&quot;Listing Installed MIDlet Suites&quot; </span></a> for information on how to get these pieces of information. For example, if the example Demo MIDlet suite had a suite number of two, you would enter the following command to remove it:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp -remove 2</span><a name="wp1015238"> </a>
+</pre></div>
+<a name="wp1015274"> </a><p class="pBody">
+As another example, if the example Games MIDlet suite had a storage name of <code class="cCode">#Sun%0020#Microsystems%002c%0020#Inc%002e_#Sun#Samples%0020%002d%0020#Games_</code>, you would enter the following command to remove it:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp -remove #Sun%0020#Microsystems%002c%0020#Inc%002e_#Sun#Samples%0020%002d%0020#Games_</span><a name="wp1015285"> </a>
+</pre></div>
+<a name="wp1015308"> </a><p class="pBody">
+Removing a MIDlet suite does not display the device skin.
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="run-midlets.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="security.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="useIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Using MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

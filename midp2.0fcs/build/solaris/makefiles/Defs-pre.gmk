@@ -1,0 +1,92 @@
+#
+# @(#)Defs-pre.gmk	1.46 02/08/23 @(#)
+#
+# Copyright (c) 1999-2002 Sun Microsystems, Inc.  All rights reserved.
+# PROPRIETARY/CONFIDENTIAL
+# Use is subject to license terms.
+#
+#########
+#
+# PLATFORM specific defines. This file should not contain rules.
+#
+
+PATHSEP=:
+CC_OUTPUT     = -o 
+LINKER_OUTPUT = -o 
+OBJ_SUFFIX    = o
+
+ARCH       = $(shell uname -p)
+WHOAMI     = /usr/ucb/whoami
+ROMJAVA    = ROMjavaUnix
+
+EXTRA_INCLUDES += -I/usr/openwin/include
+
+ifeq ($(GCC), true)
+   CC = gcc
+   LD = gcc
+   EXTRA_CFLAGS +=  -Wunused \
+		-DHAVE_ALIGNED_LONGLONGS \
+		-DHAVE_ALIGNED_DOUBLES \
+	        -DARCH='"$(ARCH)"'
+   ifeq ($(DEBUG), true)
+      EXTRA_CFLAGS += -g
+   else
+      EXTRA_CFLAGS += -O2 -Wuninitialized
+   endif
+else
+   CC = cc
+   LD = cc
+   EXTRA_CFLAGS += -Xa -mt
+   ifeq ($(DEBUG), true)
+      EXTRA_CFLAGS += -g
+   else
+      EXTRA_CFLAGS += -xO2
+   endif
+endif
+
+ifneq ($(INCLUDE_I18N), false) 
+   MIDP_DEF_SRC += lcWin.c lcWinJa.c sjis.c eucjp.c
+endif
+
+KVM_EXCLUDE_CLASSES 	 := SCCS
+MIDP_EXCLUDE_CLASSES     := SCCS
+EXAMPLE_EXCLUDE_CLASSES  := SCCS
+TEST_EXCLUDE_CLASSES     := SCCS
+PLATFORM_EXCLUDE_CLASSES := SCCS
+
+
+EXTRA_CFLAGS += -D$(ARCH) -DSOLARIS2 -D_REENTRANT -DUNIX -DSOLARIS 
+
+PLATFORM_SRC_DIR = $(MIDP_DIR)/src/solaris
+PLATFORM_CLASS_DIR = $(MIDP_DIR)/src/solaris/classes
+PLATFORM_CONFIG_DIR   = $(MIDP_DIR)/build/solaris/config
+
+#
+# use the nanosleep in libposix4
+#
+LIBS = -L$(MIDP_DIR)/build/solaris/tools/$(ARCH) -lXpm \
+       -L/usr/openwin/lib  -lXt -lX11 -lm -lsocket -lnsl \
+	-lpthread -lposix4
+
+# Set default BOOTDIR; This can be overridden by setting the build-time
+# variable ALT_BOOTDIR
+#
+ifeq ($(ARCH), sparc)
+_BOOTDIR = /usr/local/java/jdk1.3/solaris
+endif
+ifeq ($(ARCH), i386)
+_BOOTDIR = /usr/local/java/jdk1.3/x86
+endif
+
+# Uncomment the following definition if you want to build both Solaris/x86
+#  and Solaris/SPARC binaries using the same directory structure.
+#
+#ARCH_DIR=/$(ARCH)
+
+# executable suffix
+#
+EXE = 
+
+# system tools
+#
+SYMLINK_CMD	= ln -s

@@ -1,0 +1,133 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/29/02 14:46:46" />
+    <title>Publishing a MIDlet</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="package.html" />
+    <link rel="Next" href="test.html" />
+    <link rel="Index" href="midletsIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="package.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="test.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="midletsIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp9095"> </a><h2 class="pChapNum">
+Chapter &#160; 5
+</h2>
+<a name="wp9178"> </a><h2 class="pNewHTMLPage">
+Publishing a MIDlet
+</h2>
+<hr class="pHr"/>
+<a name="wp997368"> </a><p class="pBody">
+Publishing a MIDlet suite makes it available on a web server for users to download. To do this:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp997297"> </a><li>Ensure that your web server is configured to deliver specific MIME types for the JAD and JAR files.</li>
+<a name="wp997116"> </a><p class="pBody">
+The MIME type for a JAD file is:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+text/vnd.sun.j2me.app-descriptor<a name="wp997139"> </a>
+</pre></div>
+<a name="wp997142"> </a><p class="pBody">
+The MIME type for a JAR file is:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+application/java-archive<a name="wp997143"> </a>
+</pre></div>
+<a name="wp997106"> </a><p class="pBody">
+See the documentation for your web server for configuration instructions.
+</p>
+<a name="wp997052"> </a><li>Put the JAD and JAR files in a directory that you web server can access.</li>
+<a name="wp997347"> </a><li>Create an HTML file that contains a link to your JAD file.</li>
+<a name="wp997924"> </a><p class="pBody">
+The HTML file gives users a way to find and download your MIDlet. Finding and downloading a MIDlet is called <em class="cEmphasis">over the air provisioning</em> (<em class="cEmphasis">OTA</em>).
+</p>
+<a name="wp997611"> </a><p class="pBody">
+The HTML file does not require any particular name or layout. When users run the <code class="cCode">midp</code> executable to find and download MIDlets, they can enter any URL and MIDP will display only the links to JAD files at that URL. It ignores the rest of the HTML page. 
+</p>
+<a name="wp997566"> </a><p class="pBody">
+For example, an HTML page that lists the Hello World MIDlet could be called &#160;<br /><code class="cCode">get-hello.html</code> and be as simple as this:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+&lt;html&gt;<a name="wp997351"> </a>
+&#160;&#160;&lt;head&gt;&lt;title&gt;The Hello MIDlet&lt;/title&gt;&lt;/head&gt;<a name="wp997452"> </a>
+&#160;&#160;&lt;body&gt;<a name="wp997352"> </a>
+&#160;&#160;&#160;&#160;&lt;a href=&quot;http://localhost:8080/midlets/HelloMIDlet.jad&quot;<a name="wp997353"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&gt;Hello MIDlet&lt;a&gt;<a name="wp997563"> </a>
+&#160;&#160;&lt;/body&gt;<a name="wp997355"> </a>
+&lt;/html&gt;<a name="wp997356"> </a>
+</pre></div>
+<a name="wp997572"> </a><p class="pBody">
+Note that, although no particular format for the HTML file is required, the whitespace in the file can affect the layout of the MIDlet suite name on the device. For example, if the HTML file with a link to the &#8220;Hello MIDlet&#8221; has a carriage return between the words Hello and MIDlet, the name looks like this on the device emulator:
+</p>
+<a name="wp997576"> </a><p class="pBody">
+<img src="images/ota-midlet-list-oddchar.gif" height="214" width="186" alt="Odd characters in MIDlet suite name" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997577"> </a><div class="pFigureCaption">
+FIGURE&#160;8&#160;&#160;&#8211;&#160;&#160;Whitespace in an HTML File Shown on a Device
+<br /><br />
+</div><a name="wp997333"> </a><li>Put the HTML file into a web server visible directory.</li>
+<a name="wp997515"> </a><li>Test the link from the HTML page to the JAD file, and from the JAD file to the JAR file.</li>
+<a name="wp997519"> </a><p class="pBody">
+One way to do this is to run the device emulator. See <em class="cEmphasis">Using MIDP</em> for instructions
+</p>
+
+</ol>
+</div>
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="package.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="test.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="midletsIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Creating MIDlet Suites <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

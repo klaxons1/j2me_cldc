@@ -1,0 +1,2042 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 16:27:12" />
+    <title>	</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="appx-targets.html" />
+    <link rel="Next" href="appx-ssl.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="appx-targets.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="appx-ssl.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="portIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp9504"> </a><h2 class="pAppxNum">
+Appendix &#160; B	
+</h2>
+<a name="wp9506"> </a><h2 class="pNewHTMLPage">
+Configuration Options
+</h2>
+<hr class="pHr"/>
+<a name="wp11032"> </a><p class="pBody">
+Configuration options provide a way to balance memory consumption and functionality by producing targets with different levels of functionality. You can change one or more configuration options, or accept the default configuration.
+</p>
+<a name="wp11098"> </a><p class="pBody">
+This appendix covers configuration options in the sections:
+</p>
+<ul class="pBullet1"><a name="wp12195"> </a><div class="pBullet1"><li><a  href="appx-config-opts.html#wp12244"><span style="color: #3366CC">Build Tools and Their Options</span></a></li></div>
+<a name="wp16842"> </a><div class="pBullet1Plus"><li><a  href="appx-config-opts.html#wp15905"><span style="color: #3366CC">File Lists and Locations</span></a></li></div>
+<a name="wp16846"> </a><div class="pBullet1Plus"><li><a  href="appx-config-opts.html#wp10923"><span style="color: #3366CC">Target Functionality</span></a></li></div>
+<a name="wp16847"> </a><div class="pBullet1Last"><li><a  href="appx-config-opts.html#wp14399"><span style="color: #3366CC">Debugging</span></a></li></div>
+</ul>
+<a name="wp16887"> </a><p class="pBody">
+The sections have tables of configuration options. The tables list the options in alphabetical order.
+</p>
+<a name="wp12244"> </a><h2 class="pHeading1">
+B.1	Build Tools and Their Options
+</h2>
+<a name="wp15482"> </a><p class="pBody">
+The following tables present configuration options that control the command names used by the build environment and their common command options. The tables do not contain lists of files and directory names that might be used by the commands (unless they are common and used by only one command). The configuration options that contain lists of files and directory names are in <a  href="appx-config-opts.html#wp15905"><span style="color: #3366CC">Section&#160;B.2 &quot;File Lists and Locations&quot; </span></a>. </p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq15483">
+  <caption><a name="wp15489"> </a><div style="color: #000000; font-size: 12pt; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 0pt; margin-left: 0pt; margin-right: 0pt; margin-top: 0pt; text-align: left; text-decoration: none; text-indent: 0pt; text-transform: none">
+TABLE&#160;10 	 C Compiler Command and Common Command Options &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp15497"> </a><div style="text-align: left" class="pTableHead">
+Option
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp15499"> </a><div style="text-align: left" class="pTableHead">
+Type
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp15501"> </a><div style="text-align: left" class="pTableHead">
+Default Value on Windows 2000
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp15503"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+CC<a name="wp15505"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp15507"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+cl<a name="wp15509"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15511"> </a><div class="pTableText">
+Compiler command
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+CC_OUTPUT<a name="wp15513"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp15515"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+-Fo<a name="wp15517"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15519"> </a><div class="pTableText">
+Argument used with the C compiler to generate the compiled (.o) file, so that it appears in the right directory
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+CMDLINE_CFLAGS<a name="wp15521"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp15523"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp15525"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15527"> </a><div class="pTableText">
+Compiler arguments that are defined on the makefile command-line
+</div>
+<a name="wp15528"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp15529"> </a><div class="pTableText">
+Note: Do not set or change this configuration option within the makefiles.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+EXTRA_CFLAGS<a name="wp15531"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp15533"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+-DWIN32 -nologo -D_MT -MT -O2 -DUSE_KVM=1 -DGENERIC_IO_WAIT_TIME=10 -DROMIZING=1 -DMAXIMUMHEAPSIZE=500000<a name="wp18174"> </a>
+-DENABLE_JAVA_DEBUGGER=0 -DINCLUDE_I18N -DUSE_DEBUG_COLLECTOR=0<a name="wp18176"> </a>
+-DENABLEPROFILING=0 -DRELEASE=\dist&quot; -DIMPL_VERSION=&quot;2.0&quot;<a name="wp18177"> </a>
+-DFULL_VERSION=&quot;:10.23.02-09:58&quot; -DPLATFORMNAME=&quot;j2me&quot;<a name="wp15535"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15537"> </a><div class="pTableText">
+Additional arguments for the C compiler
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+EXTRA_INCLUDES<a name="wp15539"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp15541"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+-I$(MIDP_DIR)/src/share/native/i18n -I$(MIDP_DIR)/src/&lt;platform&gt;/native/i18n -I$(MIDP_DIR)/src/&lt;platform&gt;/native -I$(MIDP_DIR)/src/&lt;platform&gt;/native/kvm -I$(MIDP_DIR)/src/share/native -I$(MIDP_DIR)/src/share/native/kvm -I$(MIDP_DIR)/src/share/native/crypto -I$(MIDP_DIR)/src/&lt;platform&gt;/native/xpm/include -I$(MIDP_DIR)/src/&lt;platform&gt;/native/png/include <a name="wp18192"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15545"> </a><div class="pTableText">
+Additional directories that the C compiler should search for header files
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+GCC<a name="wp15547"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp15549"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+false<a name="wp15551"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15553"> </a><div class="pTableText">
+Whether to use the gcc compiler to compile native methods<br /><br />If this value is false, the compiler specified by the CC option is used.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+MAXIMUMHEAPSIZE<a name="wp18564"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp18566"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+500000<a name="wp18568"> </a>
+</pre></div>
+</td>
+    <td><a name="wp18570"> </a><div class="pTableText">
+Amount of memory to be set aside for the heap, in bytes (such as 500000), kilobytes (such as 500k) or megabytes (such as 1M). 
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+OBJ_DIR<a name="wp16965"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16967"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+obj$(g)$(ARCH_DIR)<a name="wp16969"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16971"> </a><div class="pTableText">
+Directory to hold object files
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+OBJ_SUFFIX<a name="wp15555"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp15557"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+obj<a name="wp15559"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15561"> </a><div class="pTableText">
+Suffix of the object files generated by the C compiler
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+ &#160;&#160;</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq15774">
+  <caption><a name="wp15776"> </a><div class="pTableCaption">
+TABLE&#160;11&#160;&#160;&#8211;&#160;&#160;Debugging Command (Extract Offsets) and Common Command Options &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp15784"> </a><div style="text-align: left" class="pTableHead">
+Option
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp15786"> </a><div style="text-align: left" class="pTableHead">
+Type
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp18348"> </a><div style="text-align: left" class="pTableHead">
+Default Value on Windows 2000
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp15790"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+EXTRACT_OFFSETS_CMD<a name="wp15792"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp15794"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(BINDIR)/extractOffsets $(g)$(EXE)<a name="wp15796"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15798"> </a><div class="pTableText">
+Command that generates header files with offsets into the classes of the Java programming language
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+EXTRACT_OFFSETS_INCDIR<a name="wp15800"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp15802"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(BUILD_DIR)/include<a name="wp15804"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15806"> </a><div class="pTableText">
+Directory to search for header files used to build the extract offsets tool
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+EXTRACT_OBJ_DIR<a name="wp16977"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16979"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+extract_obj$(g)$(ARCH_DIR)<a name="wp16981"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16983"> </a><div class="pTableText">
+Directory to hold object files
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+g<a name="wp15808"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp15810"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp15812"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15814"> </a><div class="pTableText">
+Suffix of debug-enabled object directory
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+ &#160;&#160;</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq15823">
+  <caption><a name="wp15825"> </a><div class="pTableCaption">
+TABLE&#160;12&#160;&#160;&#8211;&#160;&#160;Commands and Common Command Options Related to the Java Programming Language &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp16019"> </a><div style="text-align: left" class="pTableHead">
+Option
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp16021"> </a><div style="text-align: left" class="pTableHead">
+Type
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp18338"> </a><div style="text-align: left" class="pTableHead">
+Default Value on Windows 2000
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp16025"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+JAR<a name="wp15958"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp15960"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(BOOTDIR)/bin/jar$(EXE)<a name="wp15962"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15964"> </a><div class="pTableText">
+Command that runs the jar utility
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+JAVA<a name="wp15966"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp15968"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(BOOTDIR)/bin/java$(EXE)<a name="wp15970"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15972"> </a><div class="pTableText">
+Command that runs the Java programming language interpreter
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+JAVAC<a name="wp15974"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp15976"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(BOOTDIR)/bin/javac$(EXE)<a name="wp15978"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15980"> </a><div class="pTableText">
+Command that runs the compiler for the Java programming language
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+JAVADOC<a name="wp15982"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp15984"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(BOOTDIR)/bin/javadoc$(EXE)<a name="wp15986"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15988"> </a><div class="pTableText">
+Command that runs the Javadoc&#8482; tool
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+JCC_CMD<a name="wp15990"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp15992"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(JCC_DIR)/JavaCodeCompact.class<a name="wp15994"> </a>
+</pre></div>
+</td>
+    <td><a name="wp15996"> </a><div class="pTableText">
+Command that runs a compression utility on compiled Java application files
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+JCC_DIR<a name="wp15998"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16000"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(BUILD_DIR)/jcc_classes<a name="wp16002"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16005"> </a><div class="pTableText">
+Directory that holds the output from running the JCC_CMD
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+PATHSEP<a name="wp16007"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16009"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+;<a name="wp16011"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16013"> </a><div class="pTableText">
+Path separator for the <br />-classpath argument
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+ &#160;</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq16045">
+  <caption><a name="wp16047"> </a><div class="pTableCaption">
+TABLE&#160;13&#160;&#160;&#8211;&#160;&#160;KVM and MIDP Related Commands and Common Command Options &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp16185"> </a><div style="text-align: left" class="pTableHead">
+Option
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp16187"> </a><div style="text-align: left" class="pTableHead">
+Type
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp18358"> </a><div style="text-align: left" class="pTableHead">
+Default Value on Windows 2000
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp16191"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+CA_KEYSTORE<a name="wp16193"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String <a name="wp16195"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(STORAGEDIR)/_main.ks<a name="wp16197"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16199"> </a><div class="pTableText">
+Keystore that MIDP uses when it does secure communications
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+EXE<a name="wp16201"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16203"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+.exe<a name="wp16205"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16207"> </a><div class="pTableText">
+Suffix to place at the end of executable programs
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+EX_SERVER_URL<a name="wp16209"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16211"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+http://localhost/<a name="wp16213"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16215"> </a><div class="pTableText">
+URL prefix to use for MIDlet-JAR-URL tag when creating the example MIDlets
+</div>
+<a name="wp17097"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp17098"> </a><div class="pTableText">
+The name of the JAR file will be appended to this string.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+KDP_CMD<a name="wp16217"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16219"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(BINDIR)/kdp.jar<a name="wp16221"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16223"> </a><div class="pTableText">
+Command for the KVM Debug Proxy
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+MIDP_CMD<a name="wp16225"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16227"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+midp<a name="wp16229"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16231"> </a><div class="pTableText">
+Command to start the MIDP executable
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+PREVERIFY_CMD<a name="wp16233"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16235"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(BINDIR)/preverify$(EXE)<a name="wp16237"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16239"> </a><div class="pTableText">
+Command to preverify class files
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+ROMJAVA<a name="wp16241"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16243"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+ROMjavaWin<a name="wp16245"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16247"> </a><div class="pTableText">
+Name of the file that holds the results of converting the class files in <code class="cCode">classes.zip</code> to an object-file format for linking with the KVM
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+VM<a name="wp16249"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16251"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+kvm<a name="wp16253"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16255"> </a><div class="pTableText">
+The virtual machine used with this release of MIDP
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+VM_INCLUDES<a name="wp16257"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16259"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+-I$(KVM_DIR)/cldc/1.0.4/kvm/VmCommon/h -I$(KVM_DIR)/cldc/1.0.4/kvm/VmExtra/h -I$(EXTRACT_OFFSETS_INCDIR) -I$(KVM_DIR)/cldc/1.0.4/kvm/VmWin/h <a name="wp18222"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16265"> </a><div class="pTableText">
+Directories to search for header files needed to build the virtual machine
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+VERIFYDIR<a name="wp16267"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String <a name="wp16269"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(BUILD_DIR)/tmpclasses<a name="wp16271"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16273"> </a><div class="pTableText">
+The temporary directory that holds the compiled files that will be processed by the preverifier
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+ &#160;</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq16278">
+  <caption><a name="wp16280"> </a><div class="pTableCaption">
+TABLE&#160;14&#160;&#160;&#8211;&#160;&#160;Linking Command and Command Options &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp16348"> </a><div style="text-align: left" class="pTableHead">
+Option
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp16350"> </a><div style="text-align: left" class="pTableHead">
+Type
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp18368"> </a><div style="text-align: left" class="pTableHead">
+Default Value on Windows 2000
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp16354"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+LD<a name="wp16320"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16322"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+link<a name="wp16324"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16326"> </a><div class="pTableText">
+Linker command
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+LIBS<a name="wp16328"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16330"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+user32.lib  gdi32.lib kernel32.lib winmm.lib wsock32.lib imm32.lib<a name="wp16332"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16334"> </a><div class="pTableText">
+Libraries to append at link stage
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+LINKER_OUTPUT<a name="wp16336"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16338"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+-out:<a name="wp16340"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16342"> </a><div class="pTableText">
+Argument used with the linker to generate an executable so that it appears in the right directory
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+ &#160;</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq16357">
+  <caption><a name="wp16359"> </a><div class="pTableCaption">
+TABLE&#160;15&#160;&#160;&#8211;&#160;&#160;Command to Create Zip Files &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp16390"> </a><div style="text-align: left" class="pTableHead">
+Option
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp16392"> </a><div style="text-align: left" class="pTableHead">
+Type
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp18378"> </a><div style="text-align: left" class="pTableHead">
+Default Value on Windows 2000
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp16396"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+ZIP<a name="wp16430"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16432"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+zip<a name="wp16434"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16436"> </a><div class="pTableText">
+Command used to create zip files
+</div>
+<a name="wp17110"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp17112"> </a><div class="pTableText">
+The command must be able to create ZIP files using the following command options:
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+-qr<a name="wp16439"> </a>
+</pre></div>
+<a name="wp16441"> </a><div class="pTableText">
+If your zip command uses different command options, you must edit the makefiles where the <code class="cCode">ZIP</code> option appears.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+UNZIP<a name="wp16446"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16448"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+unzip<a name="wp16450"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16452"> </a><div class="pTableText">
+Command used to extract files from ZIP files
+</div>
+<a name="wp17115"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp17116"> </a><div class="pTableText">
+The command must be able to unpack zip files using the following options:
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+-q -u<a name="wp16453"> </a>
+</pre></div>
+<a name="wp16454"> </a><div class="pTableText">
+If your zip command uses different command options, you must edit the makefiles where the <code class="cCode">UNZIP</code> option appears.
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+<a name="wp15905"> </a><h2 class="pHeading1">
+B.2	File Lists and Locations
+</h2>
+<a name="wp13154"> </a><p class="pBody">
+The following tables present configuration options that set directory names and lists of files:</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq12524">
+  <caption><a name="wp12530"> </a><div class="pTableText">
+TABLE&#160;16 	Lists of Files &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp12538"> </a><div style="text-align: left" class="pTableHead">
+Option
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp12540"> </a><div style="text-align: left" class="pTableHead">
+Type
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp18388"> </a><div style="text-align: left" class="pTableHead">
+Default Value on Windows 2000
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp12544"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+EXAMPLE_EXCLUDE_CLASSES<a name="wp12633"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12635"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+SCCS|HelloMIDlet|i18n<a name="wp12637"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12639"> </a><div class="pTableText">
+Any class files to exclude from examples
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+EXAMPLE_INCLUDE_CLASSES<a name="wp12641"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12643"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp12645"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12647"> </a><div class="pTableText">
+Any .class files to include from the examples
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+EXAMPLE_SOURCE_FILES<a name="wp12665"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12667"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12670"> </a><div class="pTableText">
+Any <code class="cCode">.java</code> files found in the <code class="cCode">$(MIDP_DIR)/src/example/</code> directory, excluding files that match any of the patterns listed in <code class="cCode">$(EXAMPLE_EXLUDE_<br />CLASSES)</code>.
+</div>
+</td>
+    <td><a name="wp12672"> </a><div class="pTableText">
+Example files to compile
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+EXTRA_CLASS_FILES<a name="wp12682"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12684"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp12686"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12688"> </a><div class="pTableText">
+Any .class files to include from some other tree
+</div>
+<a name="wp12689"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp12690"> </a><div class="pTableText">
+If you give this option a value, you must also define the proper target(s) to build the classes in this list.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+SSL_SOURCE_FILES<a name="wp12798"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12800"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12802"> </a><div class="pTableText">
+any <code class="cCode">.java</code> files found in the <code class="cCode">$(MIDP_DIR)/src/share/classes/com/sun/midp/ssl</code> directory, if the directory exists
+</div>
+</td>
+    <td><a name="wp12804"> </a><div class="pTableText">
+The <code class="cCode">.java</code> &#160;files that define the secure socket layer code.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+KVM_EXCLUDE_CLASSES<a name="wp12818"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12820"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+SCCS|j2se|io/palm|io/j2me|io/connections|io/ConnectionBase.java|io/NetworkConnectionBase.java|io/DateParser.java|java/lang/System.java|java/lang/Runtime.java|java/lang/Class.java<a name="wp18323"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12824"> </a><div class="pTableText">
+Any class files to exclude from the KVM tree
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+KVM_DEF_SRC<a name="wp12826"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12828"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+cache.c class.c fields.c frame.c garbage.c global.c interpret.c loader.c native.c pool.c thread.c nativeCore.c loaderFile.c runtime_md.c events.c hashtable.c profiling.c StartJVM.c verifier.c verifierUtil.c log.c stackmap.c execute.c inflate.c jar.c kni.c async.c<a name="wp17399"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12832"> </a><div class="pTableText">
+Default source files that make up the virtual machine
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+KVM_EXCLUDE_SRC<a name="wp12834"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12836"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+SCCS<a name="wp12838"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12840"> </a><div class="pTableText">
+Any .c files to exclude from KVM tree
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+KVM_INCLUDE_CLASSES<a name="wp12842"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12844"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp12846"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12848"> </a><div class="pTableText">
+Any .class&#160; files to include from KVM tree
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+KVM_INCLUDE_SRC<a name="wp12850"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12852"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp12854"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12856"> </a><div class="pTableText">
+Any .c&#160; files to include from the KVM tree
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+MIDP_DEF_SRC<a name="wp17317"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp17319"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+property.c configuration.c imageDecode.c pngDecode.c defaultLCDUI.c menus.c popup.c nativeGUI.c images.c text.c graphics.c commandState.c exitInternal.c main.c midpStartup.c SystemOutputStream.c ResourceInputStream.c JarReader.c storage.c RandomAccessStream.c storageFile.c socketProtocol.c socketProtocol_md.c datagramProtocol.c datagramProtocol_md.c commProtocol.c commProtocol_md.c phonesim.c staticGraphics.c midpEvents.c pushregistry.c midlet.c midlet_md.c audiornd.c mmatone.c mmaevt.c waveout.c vibrate.c pvibrate.c<a name="wp17334"> </a>
+</pre></div>
+</td>
+    <td><a name="wp17323"> </a><div class="pTableText">
+Default MIDP source files
+</div>
+<a name="wp17383"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp17384"> </a><div class="pTableText">
+Some options, such as <code class="cCode">ENABLE_SCREEN_CAPTURE</code>, add to this list.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+MIDP_EXCLUDE_CLASSES<a name="wp12906"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12908"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+SCCS|perfmon|KSImpl.java|j2se<a name="wp12910"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12912"> </a><div class="pTableText">
+Any class files to exclude from the MIDP tree
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+MIDP_EXCLUDE_SRC<a name="wp12914"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12916"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp12918"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12920"> </a><div class="pTableText">
+Any .c files to exclude from the MIDP tree
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+MIDP_INCLUDE_CLASSES<a name="wp12922"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12924"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp12926"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12928"> </a><div class="pTableText">
+Any .class files to include from MIDP tree
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+MIDP_INCLUDE_SRC<a name="wp12930"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12932"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp12934"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12936"> </a><div class="pTableText">
+Any .c files to include from the MIDP tree
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+MIDP_SOURCE_FILES<a name="wp12938"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12940"> </a>
+</pre></div>
+</td>
+    <td><a name="wp18305"> </a><div class="pTableText">
+Any <code class="cCode">.java</code> files found in the <code class="cCode">$(MIDP_DIR)/src/</code> directory, excluding files that match any of the patterns listed in <code class="cCode">$(MIDP_EXLUDE_CLASSES)</code>.
+</div>
+</td>
+    <td><a name="wp12944"> </a><div class="pTableText">
+The <code class="cCode">.java</code> files that are part of the <code class="cCode">MIDP Reference Implementation</code>.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+PLATFORM_DEF_SRC<a name="wp12986"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12988"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+dirent.c<a name="wp12990"> </a>
+</pre></div>
+</td>
+    <td><a name="wp12992"> </a><div class="pTableText">
+Default source files specific to the platform
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+PLATFORM_EXCLUDE_CLASSES<a name="wp12994"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp12996"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+SCCS<a name="wp12998"> </a>
+</pre></div>
+</td>
+    <td><a name="wp13000"> </a><div class="pTableText">
+Any class files to exclude from the platform tree
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+PLATFORM_EXCLUDE_SRC <a name="wp13002"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp13004"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp13006"> </a>
+</pre></div>
+</td>
+    <td><a name="wp13008"> </a><div class="pTableText">
+Any platform-specific .c files to exclude when building an executable bundle
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+PLATFORM_INCLUDE_CLASSES<a name="wp13011"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp13013"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp17511"> </a>
+</pre></div>
+</td>
+    <td><a name="wp13017"> </a><div class="pTableText">
+Any platform-specific .class files to include when building an executable bundle
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+PLATFORM_INCLUDE_SRC <a name="wp13019"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp13021"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp17521"> </a>
+</pre></div>
+</td>
+    <td><a name="wp13025"> </a><div class="pTableText">
+Any platform-specific .c files to include when building an executable bundle
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+TEST_DEF_SOURCE<a name="wp13085"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp13087"> </a>
+</pre></div>
+</td>
+    <td><a name="wp17557"> </a><div class="pTableText">
+any <code class="cCode">.java</code> files found in the <code class="cCode">$(MIDP_DIR)/tests</code> directory, if the directory exists.
+</div>
+</td>
+    <td><a name="wp13091"> </a><div class="pTableText">
+Default source files for testing
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+TEST_EXCLUDE_CLASSES<a name="wp13093"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp13095"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+SCCS<a name="wp13097"> </a>
+</pre></div>
+</td>
+    <td><a name="wp13099"> </a><div class="pTableText">
+Any class files to exclude from testing
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+TEST_INCLUDE_CLASSES<a name="wp13101"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp13103"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp17527"> </a>
+</pre></div>
+</td>
+    <td><a name="wp13107"> </a><div class="pTableText">
+Any .class files to include from the tests
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+ </p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq16497">
+  <caption><a name="wp16644"> </a><div class="pTableCaption">
+TABLE&#160;17&#160;&#160;&#8211;&#160;&#160;Directory Names &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp16652"> </a><div style="text-align: left" class="pTableHead">
+Option
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp16654"> </a><div style="text-align: left" class="pTableHead">
+Type
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp18398"> </a><div style="text-align: left" class="pTableHead">
+Default Value on Windows 2000
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp16658"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+ALT_BOOTDIR<a name="wp16660"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16662"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16664"> </a><div class="pTableText">
+Microsoft Windows 2000:
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+C:/JDK1.3<a name="wp16665"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16670"> </a><div class="pTableText">
+Top-level directory of an alternate JDK to use to build the target
+</div>
+<a name="wp16671"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp16672"> </a><div class="pTableText">
+You should set this environment variable when you installed MIDP. See <em class="cEmphasis">Installing MIDP</em> for more information.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+ARCH_DIR<a name="wp16677"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16679"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#8220;&#8220;<a name="wp16681"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16683"> </a><div class="pTableText">
+Additional sub-directory to store object files
+</div>
+<a name="wp17172"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp17173"> </a><div class="pTableText">
+This configuration option is useful when you build binaries for the same platform but two different CPU architectures, such as Solaris&#8482;/X86 and Solaris/SPARC.
+</div>
+<a name="wp16684"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp16685"> </a><div class="pTableText">
+Note: This variable must start with a path separator.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+BINDIR<a name="wp16687"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16689"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(BUILD_DIR)/bin$(ARCH_DIR)<a name="wp16691"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16693"> </a><div class="pTableText">
+Directory to store executable files, such as MIDP_CMD
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+BUILD_DIR<a name="wp16695"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16697"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+ &#8220;.&#8221;<a name="wp16699"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16701"> </a><div class="pTableText">
+The directory from which the build was started
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+CLASSBINDIR<a name="wp16703"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16705"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(BUILD_DIR)/classes<a name="wp16707"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16709"> </a><div class="pTableText">
+&#160;
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+KVM_DIR<a name="wp16711"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16713"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(MIDP_DIR)/../kvm<a name="wp17160"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16719"> </a><div class="pTableText">
+Top-level directory of the KVM to use to build the target
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+LIBDIR<a name="wp16731"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16733"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(BUILD_DIR)/lib<a name="wp16735"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16737"> </a><div class="pTableText">
+&#160;
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+MIDP_DIR<a name="wp16723"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16725"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">midpInstallDir</em><a name="wp16727"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16729"> </a><div class="pTableText">
+Top-level directory of MIDP
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+PLATFORM_CLASS_DIR<a name="wp16739"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16741"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(MIDP_DIR)/src/win32/classes<a name="wp16743"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16745"> </a><div class="pTableText">
+Directory containing platform-specific classes
+</div>
+<a name="wp17178"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp17180"> </a><div class="pTableText">
+This value must not have a trailing path separator, and its last directory <em class="cEmphasis">must</em> be called <code class="cCode">classes</code>.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+PLATFORM_SRC_DIR<a name="wp16767"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16769"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(MIDP_DIR)/src/win32<a name="wp16771"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16773"> </a><div class="pTableText">
+Directory containing platform-specific .c files
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+SHARE_SRC_DIR<a name="wp16759"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp16761"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(MIDP_DIR)/src/share<a name="wp16763"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16765"> </a><div class="pTableText">
+&#160;
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+STORAGEDIR<a name="wp16751"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String <a name="wp16753"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+$(BUILD_DIR)/appdb<a name="wp16755"> </a>
+</pre></div>
+</td>
+    <td><a name="wp16757"> </a><div class="pTableText">
+The directory of the keystore that MIDP uses for secure communications
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+<a name="wp10923"> </a><h2 class="pHeading1">
+B.3	Target Functionality
+</h2>
+<a name="wp10924"> </a><p class="pBody">
+The following table contains the configuration options that affect the functionality present in the build target. (This table does not include any options for debugging. Those are listed in the next section, <a  href="appx-config-opts.html#wp14399"><span style="color: #3366CC">&quot;Debugging</span></a>.&#8221;) &#160;</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq10925">
+  <caption><a name="wp10932"> </a><div class="pTableText">
+TABLE&#160;18 	Target Capabilities &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp10940"> </a><div style="text-align: left" class="pTableHead">
+Option
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp10942"> </a><div style="text-align: left" class="pTableHead">
+Type
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp10944"> </a><div style="text-align: left" class="pTableHead">
+Default Value
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp10946"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+ENABLE_SCREEN_CAPTURE<a name="wp10948"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp10950"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+false<a name="wp10952"> </a>
+</pre></div>
+</td>
+    <td><a name="wp10954"> </a><div class="pTableText">
+Whether to include the code that enables capturing of the contents of the emulator&#8217;s screen
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+INCLUDE_I18N<a name="wp10969"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp10971"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+true<a name="wp10973"> </a>
+</pre></div>
+</td>
+    <td><a name="wp10975"> </a><div class="pTableText">
+Whether the implementation supports internationalization
+</div>
+<a name="wp10976"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp10977"> </a><div class="pTableText">
+<b class="cBold">Note</b>: Setting this option to false reduces the build size by about 35K on Microsoft Windows 2000, and about 90K on UNIX<sup class="cSuperscript">&#174;</sup>.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+PLATFORM<a name="wp13185"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+String<a name="wp13187"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+&#160;<a name="wp13189"> </a>
+</pre></div>
+</td>
+    <td><a name="wp13191"> </a><div class="pTableText">
+Platform on which the executable will run
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+RELEASE_HTTPS<a name="wp10979"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp10981"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+true<a name="wp10983"> </a>
+</pre></div>
+</td>
+    <td><a name="wp10985"> </a><div class="pTableText">
+Whether to include HTTPS functionality in the target for release
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+ROMIZING<a name="wp13302"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp13304"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+true <a name="wp13306"> </a>
+</pre></div>
+</td>
+    <td><a name="wp13308"> </a><div class="pTableText">
+Whether to convert the class files in <code class="cCode">classes.zip</code> to an object-file format for linking with the KVM
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+SOUND_SUPPORTED<a name="wp10987"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp10989"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+false <a name="wp10991"> </a>
+</pre></div>
+</td>
+    <td><a name="wp10993"> </a><div class="pTableText">
+Whether to include calls to augment button pushes with sound cues
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+&#160;
+</p>
+<a name="wp14399"> </a><h2 class="pHeading1">
+B.4	Debugging
+</h2>
+<a name="wp18442"> </a><p class="pBody">
+The following table contains configuration options that affect the amount of debugging information included in the build target.&#160;</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq18443">
+  <caption><a name="wp18450"> </a><div class="pTableText">
+TABLE&#160;19 	Debugging Capabilities &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp18458"> </a><div style="text-align: left" class="pTableHead">
+Option
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp18460"> </a><div style="text-align: left" class="pTableHead">
+Type
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp18462"> </a><div style="text-align: left" class="pTableHead">
+Default Value on Windows 2000
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp18464"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+DEBUG<a name="wp18466"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp18468"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+false<a name="wp18470"> </a>
+</pre></div>
+</td>
+    <td><a name="wp18472"> </a><div class="pTableText">
+Whether to create an object file with debugging symbols
+</div>
+<a name="wp18473"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp18474"> </a><div class="pTableText">
+When this option is set to <code class="cCode">true</code>, the MIDP executable is renamed to <code class="cCode">midp_g</code>, and you can attach to the application with an appropriate C debugger. For example, you can use the <code class="cCode">gdb</code> debugger if you have compiled with <code class="cCode">gcc</code>.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+DEBUG_CFLAGS<a name="wp18476"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+string<a name="wp18478"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+-Zi -Od<a name="wp18480"> </a>
+</pre></div>
+</td>
+    <td><a name="wp18482"> </a><div class="pTableText">
+Additional flags for the C compiler if <code class="cCode">DEBUG</code> is set to <code class="cCode">true</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+DEBUG_COLLECTOR<a name="wp18484"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp18486"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+false<a name="wp18488"> </a>
+</pre></div>
+</td>
+    <td><a name="wp18490"> </a><div class="pTableText">
+Whether to use a version of the garbage collector with debugging hooks
+</div>
+<a name="wp18491"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp18492"> </a><div class="pTableText">
+(The value determines whether the build compiles the KVM file <code class="cCode">collector.c</code> or <code class="cCode">collectorDebug.c</code>.)
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+ENABLE_DEBUGGER<a name="wp18494"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp18496"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+false<a name="wp18498"> </a>
+</pre></div>
+</td>
+    <td><a name="wp18500"> </a><div class="pTableText">
+Whether to compile all Java class files with debugging information to allow source-level debugging
+</div>
+<a name="wp18501"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp18502"> </a><div class="pTableText">
+When this option is set to <code class="cCode">true</code>, you can connect to the application through the KVM debug proxy.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+ENABLEPROFILING<a name="wp18504"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp18506"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+false<a name="wp18508"> </a>
+</pre></div>
+</td>
+    <td><a name="wp18512"> </a><div class="pTableText">
+Whether to have the MIDP Reference Implementation executable print a message on exit giving VM statistics, such as memory usage
+</div>
+<a name="wp18514"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp18515"> </a><div class="pTableText">
+<b class="cBold">Note</b>: This option has no effect unless the option <code class="cCode">INCLUDEDEBUGCODE</code> is also <code class="cCode">true</code>.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+ENABLE_MALLOC_TRACE<a name="wp18517"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp18519"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+false<a name="wp18521"> </a>
+</pre></div>
+</td>
+    <td><a name="wp18523"> </a><div class="pTableText">
+ Whether to trace memory usage and print warnings for memory leaks or corruption
+</div>
+<a name="wp18524"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp18525"> </a><div class="pTableText">
+This option is valid only when <code class="cCode">USE_MIDP_MALLOC</code> is <code class="cCode">true</code>.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+INCLUDEDEBUGCODE<a name="wp18527"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp18529"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+false<a name="wp18531"> </a>
+</pre></div>
+</td>
+    <td><a name="wp18533"> </a><div class="pTableText">
+Whether to include extra code to allow tracing of the VM internals
+</div>
+<a name="wp18534"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp18535"> </a><div class="pTableText">
+If this option is set to <code class="cCode">true</code>, the MIDP executable writes extra status text to the command window, such as stack traces when a method throws an exception.
+</div>
+<a name="wp18536"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp18537"> </a><div class="pTableText">
+<b class="cBold">Note</b>: This slows the VM and slightly increases its size.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+SRCPROFILING<a name="wp18539"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp18541"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+false<a name="wp18543"> </a>
+</pre></div>
+</td>
+    <td><a name="wp18545"> </a><div class="pTableText">
+Whether to compile MIDP so that it is profiler enabled
+</div>
+<a name="wp18546"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp18547"> </a><div class="pTableText">
+This option is valid only when <code class="cCode">GCC</code> is <code class="cCode">true</code>.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+USE_MIDP_MALLOC<a name="wp18549"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+boolean<a name="wp18551"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+false<a name="wp18553"> </a>
+</pre></div>
+</td>
+    <td><a name="wp18555"> </a><div class="pTableText">
+Use internal memory management for native heap allocations
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+&#160;
+</p>
+<a name="wp8221"> </a><p class="pBody">
+
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="appx-targets.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="appx-ssl.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Porting MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

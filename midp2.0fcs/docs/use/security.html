@@ -1,0 +1,374 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 11:35:09" />
+    <title>Using MIDP Security Features</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="manage-midlets.html" />
+    <link rel="Next" href="ca-keys.html" />
+    <link rel="Index" href="useIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="manage-midlets.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="ca-keys.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="useIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp9095"> </a><h2 class="pChapNum">
+Chapter &#160; 3
+</h2>
+<a name="wp1016913"> </a><h2 class="pNewHTMLPage">
+Using MIDP Security Features
+</h2>
+<hr class="pHr"/>
+<a name="wp1016914"> </a><p class="pBody">
+The <em class="cEmphasis">MIDP 2.0 specification</em> defines a security model that requires MIDlets to have permission to use security-sensitive APIs. This is different from the MIDP 1.0 security model, which had all MIDlet suites operate in a sandbox that prevented access to sensitive APIs or functions of the device.
+</p>
+<a name="wp1016882"> </a><p class="pBody">
+This chapter explains the security model as the MIDP Reference Implementation implements it, and how to use it. It has the sections:
+</p>
+<ul class="pBullet1"><a name="wp1016922"> </a><div class="pBullet1"><li><a  href="security.html#wp1016377"><span style="color: #3366CC">Overview</span></a></li></div>
+<a name="wp1018372"> </a><div class="pBullet1Plus"><li><a  href="security.html#wp1019517"><span style="color: #3366CC">The Authorization Process</span></a></li></div>
+<a name="wp1022136"> </a><div class="pBullet1Last"><li><a  href="security.html#wp1018608"><span style="color: #3366CC">Managing the Security Policy</span></a></li></div>
+</ul>
+<a name="wp1016377"> </a><h2 class="pHeading1">
+Overview
+</h2>
+<a name="wp1017709"> </a><p class="pBody">
+This section defines the terms used in the security model. It has the topics:
+</p>
+<ul class="pBullet1"><a name="wp1017710"> </a><div class="pBullet1"><li><a  href="security.html#wp1017558"><span style="color: #3366CC">Trusted and Untrusted MIDlets</span></a></li></div>
+<a name="wp1017718"> </a><div class="pBullet1Plus"><li><a  href="security.html#wp1017566"><span style="color: #3366CC">Permissions</span></a></li></div>
+<a name="wp1017725"> </a><div class="pBullet1Last"><li><a  href="security.html#wp1019372"><span style="color: #3366CC">Protection Domains</span></a></li></div>
+</ul>
+<a name="wp1017558"> </a><h3 class="pHeading2">
+Trusted and Untrusted MIDlets
+</h3>
+<a name="wp1019418"> </a><p class="pBody">
+The security model defines two types of MIDlet suites:
+</p>
+<ul class="pBullet1"><a name="wp1019419"> </a><div class="pBullet1"><li><em class="cEmphasis">Untrusted</em> &#8212; MIDlet suite for which the origin and the integrity of the JAR file cannot be trusted by the device (for example, MIDlet suites written for MIDP 1.0 or other unsigned MIDlet suites)</li></div>
+<a name="wp1019420"> </a><div class="pBullet1Last"><li><em class="cEmphasis">Trusted</em> &#8212; MIDlet suite with a JAR file that is both signed with a certificate that the device can verify and has not been tampered with, or unsigned MIDlet suite for which a user has explicitly set the domain with the <code class="cCode">-domain</code> option to the <code class="cCode">midp</code> command</li></div>
+</ul>
+<a name="wp1021082"> </a><p class="pBody">
+An untrusted MIDlet suite runs in a restricted environment where access to protected APIs or functionality is either not allowed or is allowed only with explicit user permission. A trusted MIDlet suite can be run in a less restricted environment.
+</p>
+<a name="wp1021083"> </a><p class="pBody">
+The MIDP Reference Implementation determines whether it can trust a signed MIDlet suite by following the <em class="cEmphasis">certificate chain </em>of suite&#8217;s digital signature. A certificate chain is a series of certificates: the first certificate contains the public key that can be used to check the signature of the JAR file; the second certificate, if present, vouches that the first certificate valid, and the third certificate, if present, vouches that the second certificate is valid, and so on until a <em class="cEmphasis">root certificate</em> is reached. The root certificate does not have another entity vouching for it; it is <em class="cEmphasis">self-signed</em>. (It is also possible that the first certificate is self-signed. That is the simplest certificate chain.) The certificate chain, except for the root certificate, is in the MIDlet suite&#8217;s JAD file. The entity at the root of the certificate chain must have its information present on the device. The following figure shows an example certificate chain:
+</p>
+<a name="wp1022387"> </a><p class="pBody">
+<img src="images/securitya.gif" height="241" width="568" alt="JAD file with 2 certificates, and device with the root CA certificate" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1022931"> </a><div class="pFigureCaption">
+FIGURE&#160;31&#160;&#160;&#8211;&#160;&#160;Example Certificate Chain
+<br /><br />
+</div><a name="wp1023090"> </a><p class="pBody">
+Root certificates are issued and signed by <em class="cEmphasis">certificate authorities</em> (CAs), which are well known, trusted entities. MIDlet developers might also use root certificates from network operators. For testing purposes, a developer can use a less official certificate as a root certificate, such as <code class="cCode">dummyca</code> from the JCA keystore at <em class="cEmphasis">midpInstallDir</em><code class="cCode">/bin/j2se_test_keystore.bin</code> (the <code class="cCode">readme.txt</code> file in that directory has the passwords) or a certificate generated using the <code class="cCode">keytool</code> utility of the Java&#8482; 2 Platform, Standard Edition (J2SE&#8482;). See <br /><a href="http://java.sun.com/j2se/1.3/docs/tooldocs/win32/keytool.html" target="_blank">
+<span class="cWebJump">http://java.sun.com/j2se/1.3/docs/tooldocs/win32/keytool.html</span></a> for more information.)
+</p>
+<a name="wp1023059"> </a><p class="pBody">
+By being the root of a certificate chain, the entity says that it knows that the MIDlet is a legitimate application, not a malicious one. The root signer of a certificate chain must be one accepted by the device (in this case, the MIDP Reference Implementation&#8217;s device emulator) or the MIDlet suite will not be installed or run. (See <a  href="ca-keys.html#wp9178"><span style="color: #3366CC">Chapter&#160;4, &quot;Managing Public Keys of Certificate Authorities</span></a>&#8221; for more information on adding a CA&#8217;s public key to the device emulator.)
+</p>
+<a name="wp1016979"> </a><p class="pBody">
+A trusted MIDlet suite can be granted access to security-sensitive APIs and functionality, within the bounds of the device emulator&#8217;s <em class="cEmphasis">security policy</em>. A security policy associates MIDlets with <em class="cEmphasis">protection domains</em>. Protection domains list the security-sensitive APIs or functionalities that the device will allow the associated MIDlet suites to access, sometimes only after getting approval from the user. They are lists of <em class="cEmphasis">permissions</em>. (See <a  href="security.html#wp1019372"><span style="color: #3366CC">&quot;Protection Domains&quot; </span></a> for more information.)
+</p>
+<a name="wp1017566"> </a><h3 class="pHeading2">
+Permissions
+</h3>
+<a name="wp1023143"> </a><p class="pBody">
+Permissions identify the security-sensitive APIs or functionalities to which the device limits access. The name of a permission indicates what it is protecting. If a permission is protecting functionality provided by a package, the permission has the package name as a prefix. If a permission is protecting functionality provided by a class, its name must include both the package and class name. For example, a permission that protects the functionality provided by the <code class="cCode">PushRegistry</code> class (the class that a MIDlet uses to have the device launch it to receive an incoming message; in other words, to use the <em class="cEmphasis">push</em> functionality) is called <code class="cCode">javax.microedition.io.PushRegistry</code>.
+</p>
+<a name="wp1018121"> </a><p class="pBody">
+The <em class="cEmphasis">MIDP 2.0 specification</em> defines the following permissions:</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq1017993">
+  <caption><a name="wp1020550"> </a><div class="pTableCaption">
+TABLE&#160;1&#160;&#160;&#8211;&#160;&#160;Permission Names Defined in the MIDP 2.0 Specification
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp1020554"> </a><div style="text-align: left" class="pTableHead">
+Functionality
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp1020556"> </a><div style="text-align: left" class="pTableHead">
+Permission Name
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><a name="wp1020558"> </a><div class="pTableText">
+HTTP protocol
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.http<a name="wp1020560"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1020562"> </a><div class="pTableText">
+HTTPS protocol
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.https<a name="wp1020564"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1020566"> </a><div class="pTableText">
+Datagram protocol
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.datagram<a name="wp1020568"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1020570"> </a><div class="pTableText">
+Datagram server protocol<br />(without host)
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.datagramreceiver<a name="wp1020572"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1020574"> </a><div class="pTableText">
+Socket protocol
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.socket<a name="wp1020576"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1020578"> </a><div class="pTableText">
+Server socket protocol (without host)
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.serversocket<a name="wp1020580"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1020582"> </a><div class="pTableText">
+SSL protocol
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.ssl<a name="wp1020584"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1020586"> </a><div class="pTableText">
+Comm protocol
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.comm<a name="wp1020588"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp1020590"> </a><div class="pTableText">
+Use the registry that holds information on MIDlets that will be launched to handle incoming messages
+</div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.PushRegistry<a name="wp1020592"> </a>
+</pre></div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+<a name="wp1019372"> </a><h3 class="pHeading2">
+Protection Domains
+</h3>
+<a name="wp1019701"> </a><p class="pBody">
+A protection domain defines a set of permissions that can be granted to MIDlet suites. The set does not contain every permission available, but lists only the permissions for which the protection domain can grant access. If a permission does not appear in a protection domain, then the MIDlet suites associated with the domain are denied access to that protected functionality.
+</p>
+<a name="wp1021801"> </a><p class="pBody">
+To explain protection domains more fully, this section has the topics:
+</p>
+<ul class="pBullet1"><a name="wp1021797"> </a><div class="pBullet1"><li><a  href="security.html#wp1023213"><span style="color: #3366CC">Interaction Modes</span></a></li></div>
+<a name="wp1021804"> </a><div class="pBullet1Plus"><li><a  href="security.html#wp1021813"><span style="color: #3366CC">Built-in Protection Domains</span></a></li></div>
+<a name="wp1021805"> </a><div class="pBullet1Last"><li><a  href="security.html#wp1021817"><span style="color: #3366CC">Associating MIDlet Suites and Protection Domains</span></a></li></div>
+</ul>
+<a name="wp1023213"> </a><h4 class="pHeading3">
+Interaction Modes
+</h4>
+<a name="wp1023261"> </a><p class="pBody">
+A protection domain defines the maximum level of access a MIDlet suite can be granted to each permission in its permission set. Each can be either an: 
+</p>
+<ul class="pBullet1"><a name="wp1023262"> </a><div class="pBullet1"><li><em class="cEmphasis">Allowed permission</em> &#8212; MIDlet suites in the protection domain can use the API or functionality without involving the user.</li></div>
+<a name="wp1023273"> </a><p class="pIndented1">
+The name for this interaction mode is <code class="cCode">Allowed</code>. 
+</p>
+<a name="wp1023219"> </a><div class="pBullet1Last"><li><em class="cEmphasis">User permission</em> &#8212; MIDlet suites in the protection domain can use the API or functionality only after the user explicitly grants permission. If the user denies permission, the MIDlet cannot run the protected code. Users can grant permission with one of the following interaction modes: </li></div>
+<ul class="pBullet2"><a name="wp1023303"> </a><div class="pBullet2"><li><code class="cCode">Blanket</code> &#8212; Permission is granted for every invocation of the API by a MIDlet suite until it is uninstalled or the user changes the permission. </li></div>
+<a name="wp1023304"> </a><div class="pBullet2Plus"><li><code class="cCode">Session</code> &#8212; Permission is granted until the user exits the MIDlet suite. If the user restarts the MIDlet suite, the permission request is repeated. </li></div>
+<a name="wp1023314"> </a><div class="pBullet2Last"><li><code class="cCode">Oneshot</code> &#8212; Permission is granted for only that one call. Each time the MIDlet calls the protected code, the permission request is repeated. </li></div>
+</ul>
+</ul>
+<a name="wp1023229"> </a><p class="pBody">
+The user permission interaction modes in the protection domain are the highest levels of access that a user may grant to a MIDlet suite. A protection domain can also associate a default interaction mode with a user permission. The default is the interaction mode that the device could suggest to a user. For example, consider a device that requests permission by presenting interaction modes in an exclusive choice list. (The interaction modes might be presented in choices like, &#8220;No, Not this time,&#8221; &#8220;Yes this time, and ask me again next time,&#8221; &#8220;Yes from now on. Don&#8217;t ask again,&#8221; and so on.) In this case, the device would use the default to determine which element of the list to preselect.
+</p>
+<a name="wp1021813"> </a><h4 class="pHeading3">
+Built-in Protection Domains
+</h4>
+<a name="wp1021302"> </a><p class="pBody">
+The MIDP Reference Implementation provides the following protection domains:
+</p>
+<ul class="pBullet1"><a name="wp1019380"> </a><div class="pBullet1"><li><em class="cEmphasis">Minimum</em> &#8212; Denies its MIDlet suites access to all security-sensitive APIs; this domain contains no permissions</li></div>
+<a name="wp1019381"> </a><div class="pBullet1Plus"><li><em class="cEmphasis">Untrusted</em> &#8212; Requires that its MIDlet suites get user permission to use the push functionality and the network protocols HTTP, HTTPS, socket, datagram, server sockets, and comm</li></div>
+<a name="wp1019382"> </a><div class="pBullet1Plus"><li><em class="cEmphasis">Trusted</em> &#8212; Allows access to the push functionality and all network protocols implemented by this product</li></div>
+<a name="wp1019383"> </a><div class="pBullet1Last"><li><em class="cEmphasis">Maximum</em> &#8212; Same as trusted</li></div>
+</ul>
+<a name="wp1021841"> </a><p class="pBody">
+As the domain descriptions illustrate, the lists of permissions associated with a protection domain can be long. To make protection domains easier to manage, they can contain <em class="cEmphasis">aliases</em>. An alias is a name for a group of permissions. When a protection domain uses an alias for one or more of its permissions, it grants the same level of access to all the permissions in that alias.
+</p>
+<a name="wp1021817"> </a><h4 class="pHeading3">
+Associating MIDlet Suites and Protection Domains
+</h4>
+<a name="wp1022042"> </a><p class="pBody">
+The MIDP Reference Implementation treats signed and unsigned MIDlet suites differently when assigning protection domains. If a MIDlet suite is unsigned, you can force it into any domain when you use the command-line to install it or temporarily download and run it. (Using the command-line is described in <a  href="manage-midlets.html#wp1016916"><span style="color: #3366CC">Chapter&#160;2, &quot;Using the </span><span style="color: #3366CC">midp</span><span style="color: #3366CC"> Executable</span></a>.&#8221;) If it is not forced, the MIDP Reference Implementation assigns an unsigned MIDlet suite to the untrusted domain.
+</p>
+<a name="wp1022034"> </a><p class="pBody">
+If the MIDlet suite is signed, the MIDP Reference Implementation will assign it to the domain associated with an entity that signed the suite. That is, the device emulator holds the public keys of certificate authorities. When you enter a public key into the device emulator, you associate the key with a domain. (See <a  href="ca-keys.html#wp997862"><span style="color: #3366CC">&quot;Importing a Key&quot; </span></a> for more information.) When the MIDP Reference Implementation checks the MIDlet suite&#8217;s digital signature, it uses a CA&#8217;s public key. It then assigns the MIDlet suite to the protection domain associated with that public key, if it determines that it can trust the suite.
+</p>
+<a name="wp1019517"> </a><h2 class="pHeading1">
+The Authorization Process
+</h2>
+<a name="wp1021633"> </a><p class="pBody">
+Authorization is an interaction between the needs of the MIDlet suite to use protected APIs, and the permission policies of the device. For trusted MIDlet suites there are two times that the MIDP implementation checks permissions. The first is when the user tries to put the MIDlet suite on the device; the second is when a MIDlet in the suite calls a protected API:
+</p>
+<ul class="pBullet1"><a name="wp1021725"> </a><div class="pBullet1"><li>Putting the MIDlet on the device &#8211; The MIDP implementation checks the set of permissions requested by the MIDlet suite against the permissions that the suite&#8217;s protection domain could grant. (See the previous section, <a  href="security.html#wp1021817"><span style="color: #3366CC">&quot;Associating MIDlet Suites and Protection Domains&quot; </span></a> for how the device matches a MIDlet suite with a protection domain.) If the MIDlet suite requires a permission that the device cannot grant, the device does not accept the MIDlet suite.</li></div>
+<a name="wp1021740"> </a><div class="pBullet1Last"><li>When a MIDlet from a suite tries to call a protected API or use protected functionality, the MIDP implementation checks whether the MIDlet has been granted access to it. If it must, it queries the user about whether to grant the permission. If the MIDlet is granted access (a successful authorization), the MIDP implementation runs the protected code. If the MIDlet has not been granted access, the MIDP implementation throws a <code class="cCode">java.lang.SecurityException</code>.</li></div>
+</ul>
+<a name="wp1021724"> </a><p class="pBody">
+MIDP checks the permissions of untrusted MIDlets only when they call a protected API.
+</p>
+<a name="wp1018608"> </a><h2 class="pHeading1">
+Managing the Security Policy
+</h2>
+<a name="wp1018612"> </a><p class="pBody">
+The MIDP Reference Implementation defines its security policy in the file <em class="cEmphasis">midpInstallDir</em><code class="cCode">\appdb\_policy.txt</code>, where <em class="cEmphasis">midpInstallDir</em> is the directory that holds your MIDP installation. The policy file defines the following aliases, to make the file easier to read and maintain:
+</p>
+<ul class="pBullet1"><a name="wp1021450"> </a><div class="pBullet1"><li><code class="cCode">net_access</code> &#8211; Permissions for protocols that enable the device emulator to access network resources</li></div>
+<a name="wp1021460"> </a><div class="pBullet1Plus"><li><code class="cCode">application_auto_invocation</code> &#8211; Permission to register with the device so that it can be started in response to an incoming message</li></div>
+<a name="wp1021473"> </a><div class="pBullet1Last"><li><code class="cCode">local_connectivity</code> &#8211; Permission to use the comm protocol</li></div>
+</ul>
+<a name="wp1021461"> </a><p class="pBody">
+It also has the four domains listed previously, <code class="cCode">minimum</code>, <code class="cCode">maximum</code>, <code class="cCode">trusted</code>, and <code class="cCode">untrusted</code>. In the untrusted domain, the permissions have a user permission of <code class="cCode">blanket</code> and a default level of <code class="cCode">session</code>. <a  href="security.html#wp1019821">CODE&#160;EXAMPLE&#160;1</a> shows the policy file.
+</p>
+<a name="wp1019821"> </a><div class="pCodeCaption">
+CODE&#160;EXAMPLE&#160;1 	The midpInstallDir\appdb\_policy.txt File
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+alias: net_access<a name="wp1021347"> </a>
+&#160;&#160;javax.microedition.io.Connector.http,<a name="wp1021348"> </a>
+&#160;&#160;javax.microedition.io.Connector.socket,<a name="wp1021349"> </a>
+&#160;&#160;javax.microedition.io.Connector.https,<a name="wp1021350"> </a>
+&#160;&#160;javax.microedition.io.Connector.ssl,<a name="wp1021351"> </a>
+&#160;&#160;javax.microedition.io.Connector.datagram,<a name="wp1021352"> </a>
+&#160;&#160;javax.microedition.io.Connector.serversocket,<a name="wp1021353"> </a>
+&#160;&#160;javax.microedition.io.Connector.datagramreceiver<a name="wp1021354"> </a>
+<a name="wp1021355"> </a>
+alias: application_auto_invocation<a name="wp1021356"> </a>
+&#160;&#160;javax.microedition.io.PushRegistry<a name="wp1021357"> </a>
+<a name="wp1021358"> </a>
+alias: local_connectivity<a name="wp1021359"> </a>
+&#160;&#160;javax.microedition.io.Connector.comm<a name="wp1021360"> </a>
+<a name="wp1021361"> </a>
+domain: minimum<a name="wp1021362"> </a>
+<a name="wp1021363"> </a>
+domain: maximum<a name="wp1021364"> </a>
+&#160;&#160;allow: net_access<a name="wp1021365"> </a>
+&#160;&#160;allow: application_auto_invocation<a name="wp1021366"> </a>
+&#160;&#160;allow: local_connectivity<a name="wp1021367"> </a>
+<a name="wp1021368"> </a>
+domain: trusted<a name="wp1021369"> </a>
+&#160;&#160;allow: net_access<a name="wp1021370"> </a>
+&#160;&#160;allow: application_auto_invocation<a name="wp1021371"> </a>
+&#160;&#160;allow: local_connectivity<a name="wp1021372"> </a>
+<a name="wp1021373"> </a>
+domain: untrusted<a name="wp1021374"> </a>
+&#160;&#160;blanket(session): net_access<a name="wp1021375"> </a>
+&#160;&#160;blanket(session): application_auto_invocation<a name="wp1021376"> </a>
+&#160;&#160;blanket(session): local_connectivity<a name="wp1019772"> </a>
+</pre></div>
+<a name="wp1019778"> </a><p class="pBody">
+You can change this file with any text editor.
+</p>
+<hr class="pHr"/><div class="note">
+<a name="wp1019941"> </a>
+<b>Note &#8211;</b>  Do not change this file in a way that is incompatible with the <em class="cEmphasis">MIDP 2.0 Specification</em> or with the MIDP TCK.
+<hr class="pHr"/></div>
+<a name="wp1019945"> </a><p class="pBody">
+The <em class="cEmphasis">MIDP 2.0 Specification</em> mandates that a MIDP 2.0 implementation be able to run MIDP 1.0 MIDlets and keep the HTTP and HTTPS functionality protected. This means that the untrusted domain must have a user level of access for the following permissions:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;&#160;javax.microedition.io.Connector.http<a name="wp1020694"> </a>
+&#160;&#160;javax.microedition.io.Connector.https<a name="wp1020696"> </a>
+</pre></div>
+<a name="wp1021599"> </a><p class="pBody">
+See <a  href="security.html#wp1020550"><span style="color: #3366CC">TABLE&#160;1</span></a> for the list of permissions defined by the <em class="cEmphasis">MIDP 2.0 Specification</em>. See the documentation that comes with your TCK for its security requirements.
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="manage-midlets.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="ca-keys.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="useIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Using MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

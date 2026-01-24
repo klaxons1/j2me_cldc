@@ -1,0 +1,1 @@
+MIDP modules. All have 2 layers except security. Modules layers are: (1) RMS (2) Security (3) Networking and AMS (and LCDUI, but it has no dependencies) (4) I18N, Games, and Push/OTA. (I18N and Games depend  on LCDUI, push on all level 3 modules.)

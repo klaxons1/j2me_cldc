@@ -1,0 +1,214 @@
+#
+# @(#)MIDP.gmk	1.66 02/09/17 @(#)
+#
+# Copyright (c) 1999-2002 Sun Microsystems, Inc.  All rights reserved.
+# PROPRIETARY/CONFIDENTIAL
+# Use is subject to license terms.
+#
+#########
+#
+# Makefile for building the MID Profile. It should not contain any
+# targets for VM-specific tools.
+#
+# Most frequently used targets:
+#
+#    all         -- build optimized and debug versions of the core JDK.
+#    example	 -- just compile the example Java source files
+#    tests	 -- just compile the tests Java source files
+#    midp  	 -- build the midp executable
+#    midp-dist    -- binary distribution bundle
+#    midp-src     -- exchange src bundles with RI partners
+#    midp-docs    -- combined javadoc bundle for MIDP and CLDC 
+#
+
+# Cancel implicit rules
+#
+include $(MIDP_DIR)/build/share/makefiles/CancelImplicits.gmk
+
+# Tool targets 
+#
+include $(MIDP_DIR)/build/share/makefiles/Tools.gmk
+
+# Additional global build rules specific to the VM
+#
+include $(MIDP_DIR)/build/share/makefiles/$(VM)/VM.gmk
+
+eraselists:
+	@echo ... searching updated .java files
+	@rm -f .filelist
+
+ams_resources: $(STORAGEDIR)
+	-@cp -f $(MIDP_DIR)/src/share/classes/com/sun/midp/dev/*.png $(STORAGEDIR)
+	-@cp -f $(MIDP_DIR)/src/share/classes/com/sun/midp/security/_policy.txt $(STORAGEDIR)
+
+$(MIDP_CLASS_FILES): classes/%.class : $(MIDP_DIR)/src/share/classes/%.java
+	@echo $< >> .filelist
+
+$(PLATFORM_CLASS_FILES): classes/%.class : $(PLATFORM_CLASS_DIR)/%.java
+	@echo $< >> .filelist
+
+$(SSL_CLASS_FILES): classes/%.class : $(MIDP_DIR)/src/share/classes/%.java
+	@echo $< >> .filelist
+
+#######################################################################
+
+midp-config : $(LIBDIR)
+	@echo ... $@
+	@if [ -f $(LIBDIR)/internal.config ];then \
+		rm -f $(LIBDIR)/internal.config; \
+	fi
+	-@cat $(MIDP_DIR)/build/share/config/internal.config \
+		$(PLATFORM_CONFIG_DIR)/internal.config > \
+		$(LIBDIR)/internal.config
+	@if [ -f $(LIBDIR)/system.config ];then \
+		rm -f $(LIBDIR)/system.config; \
+	fi
+	-@cat $(MIDP_DIR)/build/share/config/system.config \
+		$(PLATFORM_CONFIG_DIR)/system.config > $(LIBDIR)/system.config
+	@chmod +w $(LIBDIR)/*.config
+	-@cp -f $(MIDP_DIR)/build/share/config/*.png $(LIBDIR)
+
+# A user of this makefile can maintin the EXTRA_CLASS_FILES variable.
+# EXTRA_CLASS_FILES contains a list of additional class files that are
+# required to be included in the MIDP build. It is important that the
+# user also defines the target to update .filelist appropriately for
+# compilation.
+#
+
+# Create classes.zip
+#  for licensee builds we have a line to put the SSL classes in the class dir
+classes.zip: $(CLASSBINDIR) $(PREVERIFY_CMD) $(JCC_CMD) eraselists $(MIDP_CLASS_FILES) $(PLATFORM_CLASS_FILES) $(VM_CLASS_FILES) $(EXTRA_CLASS_FILES) $(SSL_TARGET)
+	@if [ -f ssl.jar ];then \
+		(cd $(CLASSBINDIR); $(BOOTDIR)/bin/jar xf ../ssl.jar); \
+	fi
+	$(precompilefiles)
+	$(compilefiles)
+	$(postcompilefiles)
+	@rm -f .filelist
+
+ssl: classes.zip ssl-jar ssl-objects
+
+ssl-jar: $(SSL_CLASS_FILES)
+	@echo ... ssl-classes
+	$(compilefiles)
+	@if [ -f .filelist -o ! -f $@ ];then \
+	  echo ... $@; \
+	  rm -f $@; \
+          $(BOOTDIR)/bin/jar cf ssl.jar -C $(CLASSBINDIR) com/sun/midp/ssl; \
+	fi
+	-@rm -f .filelist
+
+ssl-objects: $(SSL_OBJ_DIR) $(SSL_OBJ_FILES)
+
+# `extractoffsets` is a MIDP tool, however, it presumes the KVM
+#
+$(EXTRACT_OFFSETS): $(EXTRACT_OFFSETS_CMD) $(EXTRACT_OFFSETS_INCDIR)
+	@for i in $(EXTRACT_OFFSET_CLASSES) ; do \
+		$(EXTRACT_OFFSETS_CMD) -c $(CLASSBINDIR) \
+		-o $(EXTRACT_OFFSETS_INCDIR)/`basename $$i`_offsets.h $$i ; \
+	done
+
+# The default midp executable is compiled with the fastest compilation
+# settings and the minimal amount of debugging information.
+#    
+#    DEBUG=false
+#    ENABLEPROFILING=false
+#    ENABLE_DEBUGGER=false
+#    ENABLE_SCREEN_CAPTURE=true
+#    GGC=false
+#    INCLUDEDEBUGCODE=false
+#    INCLUDE_I18N=true
+#    ROMIZING=true
+#    SOUND_SUPPORTED=false
+#
+midp:: $(BINDIR) $(OBJ_DIR) $(BINDIR)/$(MIDP_CMD)$(g)$(EXE) $(KEYSTORE_TARGET) midp-config ams_resources jadtool
+
+# This target is not meant to be built directly; use 'midp' target instead
+#
+$(BINDIR)/$(MIDP_CMD)$(g)$(EXE): classes.zip $(EXTRACT_OFFSETS) $(SSL_TARGET) $(OBJ_FILES)
+	@echo "Linking ... $@"
+	@$(LD) $(LD_FLAGS) $(OBJ_FILES) $(LINKER_OUTPUT)$@ $(LIBS)
+
+$(OBJ_DIR)/%.o: %.c
+	@echo " ... $@"
+	@$(CC) $(CFLAGS) -c $(CC_OUTPUT)$@ $<
+
+$(OBJ_DIR)/%.res: %.rc
+	@echo " ... compiling resource file $@"
+	@$(RC) $(RC_FLAGS) $(RC_OUTPUT) $@ $<
+
+$(SSL_OBJ_DIR)/%.o: %.c
+	@echo "... $@"
+	@$(CC) $(CFLAGS) -c $(CC_OUTPUT)$@ $<
+
+$(OBJ_DIR) $(CLASSBINDIR) $(BINDIR) $(LIBDIR) $(DOCSDIR) $(VERIFYDIR) $(STORAGEDIR) $(CLASSBINDIR)/icons $(CLASSBINDIR)/audio $(SSL_OBJ_DIR) $(EXTRACT_OFFSETS_INCDIR):
+	-@mkdir -p $@
+
+# The debug target creates a fully loaded executable, including debugging
+# support, runtime throttling code and performance metric gathering
+# interfaces for comparisons with previous releases.
+debug:
+	@$(MAKE) DEBUG=true DEBUG_COLLECTOR=false ENABLEPROFILING=true \
+		 ENABLE_DEBUGGER=true ENABLE_SCREEN_CAPTURE=true \
+		 INCLUDEDEBUGCODE=true \
+		 SOUND_SUPPORTED=true \
+		 $(MAKEFLAGS)
+
+# The profile target creates an executable with performance metric gathering
+# interfaces for comparisons with previous releases. The flags also set
+# INCLUDEDEBUGCODE=true to match the default flags used in the 1.0.1 makefiles.
+profile:
+	@$(MAKE) DEBUG=false DEBUG_COLLECTOR=false ENABLEPROFILING=true \
+		 ENABLE_DEBUGGER=false ENABLE_SCREEN_CAPTURE=true \
+		 INCLUDEDEBUGCODE=true \
+		 SOUND_SUPPORTED=false \
+		 $(MAKEFLAGS)
+
+# The small and run-small targets create and launch the smallest
+# valid executable, with extra protocols, I18N support stripped out.
+#
+small :
+	@$(MAKE) DEBUG=false DEBUG_COLLECTOR=false ENABLEPROFILING=false \
+		 ENABLE_DEBUGGER=false ENABLE_SCREEN_CAPTURE=false \
+		 INCLUDE_I18N=false \
+		 INCLUDEDEBUGCODE=false \
+		 ROMIZING=false \
+		 SOUND_SUPPORTED=false \
+		 $(MAKEFLAGS)
+
+run-small :
+	$(BINDIR)/$(MIDP_CMD)  -classpath $(CLASSBINDIR)
+
+lint : $(MIDP_LINT_FILES)
+
+%.ln : %.c
+	@echo "... $@"
+	@$(LINT) $(CFLAGS) $< > $@ 2>&1
+
+clean ::
+	-@rm -fr $(CLASSBINDIR) $(BINDIR) $(LIBDIR) $(EXTRACT_OFFSETS_INCDIR) \
+		$(VERIFYDIR) $(MIDP_LINT_FILES) \
+		$(ROMJAVA).c nativeFunctionTable.c \
+		obj obj_g \
+		.filelist classes.zip
+
+reallyclean :: clean
+	-@rm -fr $(STORAGEDIR)
+
+insanelyclean :: reallyclean
+	-@rm -fr ssl.jar ssl_obj ssl_obj_g
+
+# Sanity checks.  To override, set the environment variable INSANE to 'yes'.
+#
+ifeq ($(INSANE),yes)
+sanity:
+else
+sanity: ; @$(SHELL) $(MIDP_DIR)/build/share/tools/sanityck
+endif
+
+# Phonies to avoid accidents.
+#
+.PHONY: all optimized debug clean clobber sanity classes example examples ams_resources
+
+FORCE:
+

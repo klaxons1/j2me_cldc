@@ -1,0 +1,210 @@
+#
+# @(#)Defs.gmk	1.18 02/10/01 @(#)
+#
+# Copyright (c) 1999-2002 Sun Microsystems, Inc.  All rights reserved.
+# PROPRIETARY/CONFIDENTIAL
+# Use is subject to license terms.
+#
+#########
+#
+# GLOBAL defines. This file should not contain rules.
+#
+# The following variables must be defined prior to including this file:
+#
+#	KVM_DIR   - Top of kVM tree
+#	MIDP_DIR  - Top of MIDP tree
+#	BUILD_DIR - Directory `make` was executed in
+#
+#	KVM_EXCLUDE_CLASSES      - .class files to exclude from kVM tree
+#	MIDP_EXCLUDE_CLASSES     - .class files to exclude from MIDP tree
+#	PLATFORM_EXCLUDE_CLASSES - .class files to exclude from platform
+#	EXAMPLE_EXCLUDE_CLASSES  - .class files to exclude from examples
+#	TEST_EXCLUDE_CLASSES     - .class files to exclude from tests 
+#
+#	PLATFORM_SRC_DIR   - dir containing platform-specific .c files
+#	PLATFORM_CLASS_DIR - dir containing platform-specific classes
+#			      This must _NOT_ have a trailing slash (/)
+#
+# Other variables that must be defined elsewhere:
+#
+#	KVM_EXCLUDE_SRC      - .c files to exclude from kVM tree
+#	KVM_INCLUDE_SRC      - .c files to include from kVM tree
+#	MIDP_EXCLUDE_SRC     - .c files to exclude from MIDP tree
+#	MIDP_INCLUDE_SRC     - .c files to include from MIDP tree
+#	PLATFORM_INCLUDE_SRC - platform-specific .c files to include
+#	PLATFORM_EXCLUDE_SRC - platform-specific .c files to exclude
+#
+#	KVM_INCLUDE_CLASSES      - .class files to include from kVM tree
+#	MIDP_INCLUDE_CLASSES     - .class files to include from MIDP tree
+#	PLATFORM_INCLUDE_CLASSES - .class files to include from platform
+#	EXAMPLE_INCLUDE_CLASSES  - .class files to include from examples
+#	TEST_INCLUDE_CLASSES     - .class files to include from tests
+#	EXTRA_CLASS_FILES        - .class files to include from some other
+#				   tree. Whomever defines this must also
+#				   define the proper target(s) to build all
+#				   classes in this list.
+#
+#	PLATFORM      - Platform to build
+#	PATHSEP       - Path separator for '-classpath' argument
+#	CC_OUTPUT     - Argument used w/ compiler to generate .o file
+#	LINKER_OUTPUT - Argument used w/ linker to generate executable
+#	OBJ_SUFFIX    - Suffix of object files
+#	g             - Suffix of debug-enabled object directory
+#	EXE           - Suffix of executable programs
+#	LIBS          - Libraries to append at link stage
+#	LD            - Linker command
+#	CC            - Compiler command
+#	KDP_CMD       - Command for the KVM Debug Proxy
+#	ROMJAVA       - Name of ROMJava file
+#
+# Other variables that may be defined elsewhere:
+#
+#	ALT_BOOTDIR    - Alternate directory of Java commands
+#	EXTRA_INCLUDES - Additional search directories for .h files
+#	EXTRA_CFLAGS   - Additional arguments for compiler
+#	EX_SERVER_URL  - URL prefix to use for MIDlet-JAR-URL tag when
+#			  creating the example MIDlets. The .jar file
+#			  will be appended to this string.
+#	ARCH_DIR       - Additional sub-directory to store object files.
+#			  This is useful when attempting to build binaries
+#			  for the same platform but two different CPU
+#			  architectures. (For instance Solaris/X86 and
+#			  Solaris/SPARC). This variable must start with
+#			  path separator.
+#
+#	DEBUG_COLLECTOR  - Include the KVM debug version of the collector.
+#			   (default value is false)
+#	ENABLEPROFILING  - Include kvm gathering of performance staistics
+#			   (default value is false)
+#	ENABLE_DEBUGGER  - Include the KVM debugger hooks to communicate
+#                  	   with an external proxy agent.
+#			   (default value is false)
+#	ENABLE_SCREEN_CAPTURE  - Include the code used for screen capture
+#			   used by the QA team for verifying non interactive
+#			   user interface tests 
+#			   (default is true)
+#	INCLUDEDEBUGCODE - Include debugging code used for KVM traces
+#	                   and C-level debugger symbols
+#                          (default is false)
+#	INCLUDE_HTTPS    - Include the https:// protocol handler and 
+#                          associated crypto routiunes.
+#                          (default is false )
+#	INCLUDE_I18N     - Include support for internationalization.
+#			   (default is true)
+#	ROMIZING         - Convert core classes to a native included
+#                          file.
+#			   (default is true)
+#	SOUND_SUPPORTED  - Include calls to augment button pushes with
+#                          sound queues
+#                          (default is false)
+
+JCC_DIR       = $(BUILD_DIR)/jcc_classes
+JCC_CMD       = $(JCC_DIR)/JavaCodeCompact.class
+
+EXTRACT_OFFSETS     = extractOffsets
+EXTRACT_OFFSETS_CMD = $(BINDIR)/extractOffsets$(g)$(EXE)
+
+VM_INCLUDES += -I$(KVM_DIR)/kvm/VmCommon/h \
+	       -I$(KVM_DIR)/kvm/VmExtra/h  \
+	       -I$(EXTRACT_OFFSETS_INCDIR) \
+
+EXTRACT_OFFSETS_INCDIR = $(BUILD_DIR)/include
+
+EXTRA_CFLAGS += -DUSE_KVM=1 -DGENERIC_IO_WAIT_TIME=10
+
+ifneq ($(ROMIZING), false) 
+   KVM_DEF_SRC += $(ROMJAVA).c
+   EXTRA_CFLAGS += -DROMIZING=1 -DMAXIMUMHEAPSIZE=500000
+else
+   EXTRA_CFLAGS += -DROMIZING=0 -DMAXIMUMHEAPSIZE=1000000
+endif
+
+ifeq ($(ENABLE_DEBUGGER), true)
+   KVM_DEF_SRC += debugger.c debuggerSocketIO.c debuggerOutputStream.c \
+		    debuggerInputStream.c
+   EXTRA_CFLAGS += -DENABLE_JAVA_DEBUGGER=1
+   KDP_CMD = $(BINDIR)/kdp.jar
+else
+   EXTRA_CFLAGS += -DENABLE_JAVA_DEBUGGER=0
+   KDP_CMD =
+endif
+
+ifeq ($(DEBUG_COLLECTOR), true)
+   KVM_DEF_SRC += collectorDebug.c
+else
+   KVM_DEF_SRC += collector.c
+endif
+
+# Additional MIDP source files
+#
+KVM_DEF_SRC  += nativeFunctionTable.c
+MIDP_DEF_SRC += midpServices.c
+
+# c source
+#
+KVM_DEF_SRC += cache.c class.c fields.c frame.c garbage.c global.c \
+	       interpret.c loader.c native.c pool.c thread.c  \
+	       nativeCore.c loaderFile.c runtime_md.c events.c \
+	       hashtable.c profiling.c StartJVM.c \
+	       verifier.c verifierUtil.c log.c stackmap.c execute.c \
+	       inflate.c jar.c kni.c
+KVM_SRC_FILES = $(filter-out $(KVM_EXCLUDE_SRC),$(KVM_DEF_SRC))
+KVM_SRC_FILES += $(KVM_INCLUDE_SRC)
+KVM_OBJ_FILES = $(patsubst %.c,$(OBJ_DIR)/%.o,$(KVM_SRC_FILES))
+
+# java source
+#
+KVM_EXCLUDE_CLASSES := $(KVM_EXCLUDE_CLASSES)|j2se
+KVM_EXCLUDE_CLASSES := $(KVM_EXCLUDE_CLASSES)|io/palm
+KVM_EXCLUDE_CLASSES := $(KVM_EXCLUDE_CLASSES)|io/j2me
+KVM_EXCLUDE_CLASSES := $(KVM_EXCLUDE_CLASSES)|io/connections
+KVM_EXCLUDE_CLASSES := $(KVM_EXCLUDE_CLASSES)|io/ConnectionBase.java
+KVM_EXCLUDE_CLASSES := $(KVM_EXCLUDE_CLASSES)|io/NetworkConnectionBase.java
+KVM_EXCLUDE_CLASSES := $(KVM_EXCLUDE_CLASSES)|io/DateParser.java
+KVM_EXCLUDE_CLASSES := $(KVM_EXCLUDE_CLASSES)|java/lang/System.java
+KVM_EXCLUDE_CLASSES := $(KVM_EXCLUDE_CLASSES)|java/lang/Runtime.java
+KVM_EXCLUDE_CLASSES := $(KVM_EXCLUDE_CLASSES)|java/lang/Class.java
+
+KVM_DEF_SOURCE:=$(shell find \
+  $(KVM_DIR)/api/src/java  \
+  $(KVM_DIR)/api/src/javax  \
+  $(KVM_DIR)/api/src/com/sun/cldc  \
+  -name '*.java' | egrep -v '$(KVM_EXCLUDE_CLASSES)')
+
+KVM_SOURCE_FILES = $(KVM_DEF_SOURCE) $(KVM_INCLUDE_CLASSES)
+KVM_CLASS_FILES  = $(subst $(KVM_DIR)/api/src,classes,$(KVM_SOURCE_FILES:java=class))
+
+EXTRACT_OFFSET_CLASSES += \
+	javax/microedition/lcdui/Font		\
+	javax/microedition/lcdui/Image		\
+	javax/microedition/lcdui/Command	\
+	javax/microedition/lcdui/Graphics	\
+	javax/microedition/lcdui/DeviceCaps	\
+	com/sun/midp/main/CommandState		\
+	com/sun/midp/io/NetworkConnectionBase	\
+	com/sun/midp/io/ResourceInputStream
+
+# Set variables used externally
+#
+VM_OBJ_FILES   = $(KVM_OBJ_FILES)
+VM_CLASS_FILES = $(KVM_CLASS_FILES)
+
+# Anything that needs to be done after compiling Java classes
+#
+define postcompilefiles
+	@if [ -f .filelist -o ! -f $@ ];then \
+		echo ... $@; \
+		(rm -f $@;cd $(CLASSBINDIR);\
+		$(ZIP) -qr ../$@ java javax com); \
+	fi
+	@if [ -f .filelist -o ! -f nativeFunctionTable.c ];then \
+		echo ... nativeFunctionTable.c; \
+		$(JAVA) -classpath $(JCC_DIR) JavaCodeCompact \
+		 -nq -arch KVM_Native -o nativeFunctionTable.c classes.zip; \
+	fi
+	@if [ -f .filelist -o ! -f $(ROMJAVA).c ];then \
+		echo ... $(ROMJAVA).c; \
+		$(JAVA) -classpath $(JCC_DIR) JavaCodeCompact \
+		 -nq -arch KVM -o $(ROMJAVA).c classes.zip; \
+	fi
+endef

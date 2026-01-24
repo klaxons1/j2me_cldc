@@ -1,0 +1,578 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="11/04/02 11:28:00" />
+    <title>Building Your Port</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="sound.html" />
+    <link rel="Next" href="appx-targets.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="sound.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="appx-targets.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="portIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp434080"> </a><h2 class="pChapNum">
+Chapter &#160; 12
+</h2>
+<a name="wp434082"> </a><h2 class="pNewHTMLPage">
+Building Your Port
+</h2>
+<hr class="pHr"/>
+<a name="wp449125"> </a><p class="pBody">
+The MIDP build environment is a set of makefiles, the Java&#8482; platform tools, and the free tools from the CygWin project such as gcc and make. For more information on CygWin tools, see:
+</p>
+<a name="wp449127"> </a><p class="pBody">
+<a href="http://sources.redhat.com/cygwin" target="_blank">
+<span class="cWebJump">http://sources.redhat.com/cygwin</span></a>
+</p>
+<a name="wp449128"> </a><p class="pBody">
+The tools and makefiles work together to create a specific <em class="cEmphasis">target</em>. A target is a name in a makefile that is associated with a file or set of related files on which a set of commands will be run. The commands will typically act on the target&#8217;s files to create, update, or delete them.
+</p>
+<a name="wp449129"> </a><p class="pBody">
+The build environment provides <em class="cEmphasis">configuration options</em> to enable you to customize the target. For example, configuration options control whether to include debugging symbols. These configuration options are macros in the makefiles.
+</p>
+<a name="wp449130"> </a><p class="pBody">
+Gnumake accepts targets and configuration options on the command line using the general syntax:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+make [<em class="cEmphasis">target</em> ...]<em class="cEmphasis"> </em>[<em class="cEmphasis">config_option</em>=<em class="cEmphasis">value</em> ...]<a name="wp449131"> </a>
+</pre></div>
+<a name="wp449132"> </a><p class="pBody">
+The <code class="cCode">make</code> command has more options, however. See your make documentation for more information. Instead of being a make tutorial, this section shows you how to use the tool in the context of the MIDP build environment. 
+</p>
+<a name="wp449212"> </a><p class="pBody">
+This chapter contains advice to help you build different versions of the <code class="cCode">midp</code> executable command. It contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp449216"> </a><div class="pBullet1"><li><a  href="build.html#wp449136"><span style="color: #3366CC">The Build Process</span></a></li></div>
+<a name="wp449229"> </a><div class="pBullet1Plus"><li><a  href="build.html#wp449263"><span style="color: #3366CC">Adding Files to the Build</span></a></li></div>
+<a name="wp449220"> </a><div class="pBullet1Last"><li><a  href="build.html#wp448648"><span style="color: #3366CC">Removing Unused Code</span></a></li></div>
+</ul>
+<a name="wp449136"> </a><h2 class="pHeading1">
+12.1	The Build Process
+</h2>
+<a name="wp449372"> </a><p class="pBody">
+This section covers the makefiles that the <code class="cCode">make</code> command uses, how to run a build, and how the full build works. It contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp449381"> </a><div class="pBullet1"><li><a  href="build.html#wp449448"><span style="color: #3366CC">Makefiles</span></a></li></div>
+<a name="wp449392"> </a><div class="pBullet1Plus"><li><a  href="build.html#wp449337"><span style="color: #3366CC">Build Instructions</span></a></li></div>
+<a name="wp449400"> </a><div class="pBullet1Plus"><li><a  href="build.html#wp451810"><span style="color: #3366CC">Example Commands</span></a></li></div>
+<a name="wp449446"> </a><div class="pBullet1Last"><li><a  href="build.html#wp449355"><span style="color: #3366CC">Build Steps for the Target </span><span style="color: #3366CC">all</span></a></li></div>
+</ul>
+<a name="wp449448"> </a><h3 class="pHeading2">
+12.1.1	Makefiles
+</h3>
+<a name="wp449452"> </a><p class="pBody">
+The <em class="cEmphasis">Release Contents</em> contains a list of all files in the build. The table in this section shows only the makefiles, along with a brief description of their purposes, in roughly the order that they are used in the build. In the table, <em class="cEmphasis">midpInstallDir</em> is the directory that holds your MIDP installation. In addition, when a file is in a shared directory, the table shows the directory with Windows-style separators (\).</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq449457">
+  <caption><a name="wp449645"> </a><div class="pTableCaption">
+TABLE&#160;7&#160;&#160;&#8211;&#160;&#160;Makefiles&#160;&#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp450991"> </a><div style="text-align: left" class="pTableHead">
+Makefile
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp449649"> </a><div style="text-align: left" class="pTableHead">
+Directory or directories
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp449651"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+GNUmakefile<a name="wp450993"> </a>
+</pre></div>
+</td>
+    <td><a name="wp451434"> </a><div class="pTableText">
+This file is in multiple, device-specific directories:
+</div>
+<div class="pTableBullet"><ul class="pTableBullet">
+<a name="wp451777"> </a><div class="pTableBullet"><li><em class="cEmphasis">midpInstallDir\</em><code class="cCode">build\win32\kvm\</code></li></div>
+<a name="wp451435"> </a><div class="pTableBullet"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">/build/linux/kvm/</code></li></div>
+<a name="wp450801"> </a><div class="pTableBullet"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">/build/solaris/</code></li></div>
+</ul></div>
+</td>
+    <td><a name="wp449655"> </a><div class="pTableText">
+Top-level makefile; the build starts here
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+Platform.gmk<a name="wp450998"> </a>
+</pre></div>
+</td>
+    <td><a name="wp451782"> </a><div class="pTableText">
+This file is in multiple, device-specific directories:
+</div>
+<div class="pTableBullet"><ul class="pTableBullet">
+<a name="wp450813"> </a><div class="pTableBullet"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\win32\kvm</code></li></div>
+<a name="wp450821"> </a><div class="pTableBullet"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">/build/linux/kvm</code></li></div>
+<a name="wp450826"> </a><div class="pTableBullet"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">/build/solaris</code></li></div>
+</ul></div>
+</td>
+    <td><a name="wp449764"> </a><div class="pTableText">
+Definitions of the target platform and CPU
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+Defs.gmk<a name="wp451003"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">midpInstallDir</em>\build\share\makefiles\<a name="wp450955"> </a>
+</pre></div>
+</td>
+    <td><a name="wp450841"> </a><div class="pTableText">
+Global definitions (such as common Java programming language and native source files); no targets
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+Defs.gmk<a name="wp451006"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">midpInstallDir</em>\build\share\makefiles\kvm\<a name="wp450962"> </a>
+</pre></div>
+</td>
+    <td><a name="wp449796"> </a><div class="pTableText">
+Global virtual machine (VM) specific definitions (such as Java programming language and native VM source files); no targets
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+Defs-pre.gmk<a name="wp451009"> </a>
+</pre></div>
+</td>
+    <td><a name="wp451790"> </a><div class="pTableText">
+This file is in multiple, device-specific directories:
+</div>
+<div class="pTableBullet"><ul class="pTableBullet">
+<a name="wp450869"> </a><div class="pTableBullet"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\win32\kvm\</code>makefiles\</li></div>
+<a name="wp450877"> </a><div class="pTableBullet"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">/build/linux/kvm/</code>makefiles/</li></div>
+<a name="wp450882"> </a><div class="pTableBullet"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">/build/solaris/</code>makefiles/</li></div>
+</ul></div>
+</td>
+    <td><a name="wp449830"> </a><div class="pTableText">
+Platform-specific definitions (such as the suffix for executable files); no targets
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+Defs-post.gmk<a name="wp451014"> </a>
+</pre></div>
+</td>
+    <td><a name="wp451794"> </a><div class="pTableText">
+This file is in multiple, device-specific directories:
+</div>
+<div class="pTableBullet"><ul class="pTableBullet">
+<a name="wp450902"> </a><div class="pTableBullet"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\win32\kvm\</code>makefiles\</li></div>
+<a name="wp450910"> </a><div class="pTableBullet"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">/build/linux/kvm/</code>makefiles/</li></div>
+<a name="wp450915"> </a><div class="pTableBullet"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">/build/solaris/</code>makefiles/</li></div>
+</ul></div>
+</td>
+    <td><a name="wp450384"> </a><div class="pTableText">
+Platform-specific definitions (such as include files); no targets
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+MIDP.gmk<a name="wp451019"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">midpInstallDir</em>\build\share\makefiles\<a name="wp450944"> </a>
+</pre></div>
+</td>
+    <td><a name="wp450616"> </a><div class="pTableText">
+MIDP directives and build targets
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+CancelImplicits.gmk<a name="wp451022"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">midpInstallDir</em>\build\share\makefiles\<a name="wp450973"> </a>
+</pre></div>
+</td>
+    <td><a name="wp450624"> </a><div class="pTableText">
+Directives that cancel the GNUmake implicit rules that MIDP doesn&#8217;t use; this is for faster builds
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+Tools.gmk<a name="wp451025"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">midpInstallDir</em>\build\share\makefiles\<a name="wp450980"> </a>
+</pre></div>
+</td>
+    <td><a name="wp450483"> </a><div class="pTableText">
+Definitions and targets for building MIDP tools, such as <code class="cCode">MEKeyTool</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+VM.gmk<a name="wp451028"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">midpInstallDir</em>\build\share\makefiles\kvm\<a name="wp450987"> </a>
+</pre></div>
+</td>
+    <td><a name="wp450632"> </a><div class="pTableText">
+Definitions and targets for building the VM and its tools (such as the preverifier)
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+Example.gmk<a name="wp451031"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">midpInstallDir</em>\build\share\makefiles\<a name="wp450331"> </a>
+</pre></div>
+</td>
+    <td><a name="wp450512"> </a><div class="pTableText">
+Definitions and targets for building the samples
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+Docs.gmk<a name="wp451036"> </a>
+</pre></div>
+</td>
+    <td><a name="wp451798"> </a><div class="pTableText">
+Files with this name are in multiple directories:
+</div>
+<div class="pTableBullet"><ul class="pTableBullet">
+<a name="wp450313"> </a><div class="pTableBullet"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\share\makefiles\</code></li></div>
+<a name="wp451139"> </a><div class="pTableBullet"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\share\makefiles\kvm\</code></li></div>
+</ul></div>
+</td>
+    <td><a name="wp449691"> </a><div class="pTableText">
+Definitions, directives, and targets for using the Javadoc&#8482; tool to build the reference documentation
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+Release.gmk<a name="wp451038"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">midpInstallDir</em>\build\share\makefiles\<a name="wp450638"> </a>
+</pre></div>
+</td>
+    <td><a name="wp450641"> </a><div class="pTableText">
+Definitions and targets for building release bundles
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+Testbeans.gmk<a name="wp451041"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">midpInstallDir</em>\build\share\makefiles\<a name="wp451163"> </a>
+</pre></div>
+</td>
+    <td><a name="wp450557"> </a><div class="pTableText">
+Definitions and rules for compiling and installing TestBeans unit test programs into an existing MIDP TestBeans runtime workspace
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+<a name="wp450734"> </a><p class="pBody">
+For more information on the targets in these makefiles, see <a  href="appx-targets.html#wp1000008"><span style="color: #3366CC">Appendix&#160;A,  &quot;Build Targets</span></a>.&#8221; For more information on the definitions, see <a  href="appx-config-opts.html#wp9506"><span style="color: #3366CC">Appendix&#160;B,  &quot;Configuration Options</span></a>.&#8221;
+</p>
+<a name="wp449337"> </a><h3 class="pHeading2">
+12.1.2	Build Instructions
+</h3>
+<a name="wp449139"> </a><p class="pBody">
+To build the MIDP executable or documentation bundle:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp449141"> </a><li>Change directories to the location of the platform-dependent makefiles.</li>
+<a name="wp449142"> </a><p class="pBody">
+On a Microsoft Windows platform this is the directory <em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\win32\kvm</code>. For example:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\&gt; <span class="cUserType">cd </span><code class="cCode">midp2.0fcs</code><span class="cUserType">\build\win32\kvm</span><a name="wp449145"> </a>
+</pre></div>
+<a name="wp449147"> </a><p class="pBody">
+On a UNIX&#174; platform, the directory is <em class="cEmphasis">midpInstallDir</em><code class="cCode">/build/linux/kvm</code> or <em class="cEmphasis">midpInstallDir</em><code class="cCode">/build/solaris</code>.
+</p>
+<a name="wp449148"> </a><li>Choose one or more targets and configuration options.</li>
+<a name="wp449149"> </a><p class="pBody">
+You can choose to use the default target and configuration options, or choose other targets and options.
+</p>
+<a name="wp449152"> </a><p class="pBody">
+The default build target, <code class="cCode">all</code>, creates a MIDP executable and builds the examples. The default configuration options direct the build environment to create an executable that supports the full CLDC reference implementation, supports internationalization, and does not include debugging symbols.
+</p>
+<a name="wp449157"> </a><p class="pBody">
+See <a  href="appx-targets.html#wp1000008"><span style="color: #3366CC">Appendix&#160;A,  &quot;Build Targets</span></a>&#8221; for a list of targets and common build options.
+</p>
+<a name="wp449158"> </a><li>Run the make tool with any targets and configuration options. </li>
+<a name="wp449159"> </a><p class="pBody">
+Providing no arguments uses the default build target and configuration-options.
+</p>
+<a name="wp449162"> </a><p class="pBody">
+For example, to clean up from any previous builds, then build a MIDP executable you would run the command:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>\build\win32\kvm&gt; <span class="cUserType">make clean all</span><a name="wp449166"> </a>
+</pre></div>
+</ol>
+</div>
+
+<a name="wp449168"> </a><p class="pBody">
+&#160;
+</p>
+<a name="wp451846"> </a><p class="pBody">
+If the target that you use creates a MIDP executable, it will be placed in the following directory:
+</p>
+<ul class="pBullet1"><a name="wp451847"> </a><div class="pBullet1"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\win32\kvm\bin</code> on a Microsoft Windows 2000 platform</li></div>
+<a name="wp451848"> </a><div class="pBullet1Plus"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">/build/linux/kvm/bin</code> on a Linux platform</li></div>
+<a name="wp451808"> </a><div class="pBullet1Last"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">/build/solaris/bin</code> in the Solaris&#8482; Operating Environment.</li></div>
+</ul>
+<a name="wp451810"> </a><h3 class="pHeading2">
+12.1.3	Example Commands
+</h3>
+<a name="wp449173"> </a><p class="pBody">
+The following list describes common functionality requirements and the combinations of targets and configuration-options that provide them.
+</p>
+<ul class="pBullet1"><a name="wp451707"> </a><div class="pBullet1"><li><b class="cBold">Getting better status text in the command window as the VM runs &#8212; </b>The following command builds a MIDP executable that writes more text to the command window, such as stack traces when a method throws an exception:</li></div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<code class="cCode">&#160;&#160;&#160;</code>c:\<code class="cCode">midp2.0fcs</code>\build\win32\kvm&gt; <span class="cUserType">make INCLUDEDEBUGCODE=true</span><a name="wp451711"> </a>
+</pre></div>
+<a name="wp451729"> </a><p class="pIndented1">
+The command uses the default build target, <code class="cCode">all</code> and creates the MIDP executable <code class="cCode">midp</code>.
+</p>
+<a name="wp449174"> </a><div class="pBullet1Plus"><li><b class="cBold">Debugging capabilities for native code &#8212; </b>The following command builds a MIDP executable with debugging capabilities. It enables you to build an executable that you can attach to with the C debugger that corresponds to your compiler (for example, <code class="cCode">gdb</code> if you compiled with <code class="cCode">gcc</code>).</li></div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<code class="cCode">&#160;&#160;&#160;</code>c:\<code class="cCode">midp2.0fcs</code>\build\win32\kvm&gt; <span class="cUserType">make DEBUG=true</span><a name="wp449180"> </a>
+</pre></div>
+<a name="wp449182"> </a><p class="pIndented1">
+The command uses the default build target, <code class="cCode">all</code> and creates the MIDP executable <code class="cCode">midp_g</code>.
+</p>
+<a name="wp449183"> </a><div class="pBullet1Plus"><li><b class="cBold">Debugging capabilities for Java class files &#8212; </b>The following command compiles the Java class files with information that enables source-code debugging. It enables you to build an executable that you can attach through the KVM debug proxy.</li></div>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;&#160;&#160;c:\<code class="cCode">midp2.0fcs</code>\build\win32\kvm&gt; <span class="cUserType">make ENABLE_DEBUGGER=true</span><a name="wp449186"> </a>
+</pre></div>
+<a name="wp449260"> </a><p class="pIndented1">
+The command uses the default build target, <code class="cCode">all</code> and creates the MIDP executable <code class="cCode">midp</code>.
+</p>
+<a name="wp451594"> </a><div class="pBullet1Plus"><li><b class="cBold">Creating a MIDP Executable but no examples &#8212; </b>The following command provides a faster build time because it creates the MIDP executable but does not build the examples:</li></div>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;&#160;&#160;c:\<code class="cCode">midp2.0fcs</code>\build\win32\kvm&gt; <span class="cUserType">make midp</span><a name="wp451608"> </a>
+</pre></div>
+<a name="wp451765"> </a><p class="pIndented1">
+The command creates the MIDP executable <code class="cCode">midp</code>.
+</p>
+<a name="wp451857"> </a><div class="pBullet1Last"><li><b class="cBold">Checking that your Java programming language code (Java code) compiles &#8212; </b>The following command creates new, preverified Java class files, and recreates the <code class="cCode">classes.zip</code> file:</li></div>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;&#160;&#160;c:\<code class="cCode">midp2.0fcs</code>\build\win32\kvm&gt; <span class="cUserType">make classes.zip</span><a name="wp451861"> </a>
+</pre></div>
+<a name="wp451862"> </a><p class="pIndented1">
+The command does not create the MIDP executable.
+</p>
+</ul>
+<a name="wp449355"> </a><h3 class="pHeading2">
+12.1.4	Build Steps for the Target all
+</h3>
+<a name="wp451195"> </a><p class="pBody">
+When you build the MIDP Reference Implementation with the target all, GNUmake performs the following steps:
+</p>
+<ol class="pList1"><a name="wp451738"> </a><div class="pList1"><li>Builds the preverifier</li></div>
+<a name="wp451739"> </a><div class="pList1Plus"><li>Creates the ROMizer</li></div>
+<a name="wp451740"> </a><div class="pList1Plus"><li>Compiles and preverifies Java code</li></div>
+<a name="wp451253"> </a><div class="pList1Plus"><li>Creates the <code class="cCode">classes.zip</code> file</li></div>
+<a name="wp451254"> </a><div class="pList1Plus"><li>Reads <code class="cCode">classes.zip</code> and generates <code class="cCode">ROMjava</code><em class="cEmphasis">platform</em><code class="cCode">.c</code></li></div>
+<a name="wp451271"> </a><div class="pList1Plus"><li>Builds the <code class="cCode">extractOffsets</code> tool</li></div>
+<a name="wp451288"> </a><div class="pList1Plus"><li>Uses the <code class="cCode">extractOffsets</code> tool to generate header files with offsets into the classes of the Java programming language</li></div>
+<a name="wp451300"> </a><div class="pList1Plus"><li>Compiles CLDC and MIDP C files</li></div>
+<a name="wp451303"> </a><div class="pList1Plus"><li>Links the CLDC and MIDP C file</li></div>
+<a name="wp451308"> </a><div class="pList1Plus"><li>Creates the <code class="cCode">MEKeyTool</code> and <code class="cCode">JadTool</code> utilities</li></div>
+<a name="wp451321"> </a><div class="pList1Plus"><li>Creates the <em class="cEmphasis">MidpInstallDir</em><code class="cCode">/build/appdb</code> directory</li></div>
+<a name="wp451329"> </a><div class="pList1Last"><li>Compiles, preverifies, and packages the examples (except the HelloMIDlet, which is left for the reader of <em class="cEmphasis">Creating MIDlet Suites</em> to do).</li></div>
+</ol>
+<a name="wp449263"> </a><h2 class="pHeading1">
+12.2	Adding Files to the Build
+</h2>
+<a name="wp449267"> </a><p class="pBody">
+The MIDP build environment allows you to add new class files and object files to the build that are not part of the source distribution. To add the files, you must update the contents of the <code class="cCode">Defs-pre.gmk </code>file. (See <a  href="build.html#wp449645"><span style="color: #3366CC">TABLE&#160;7</span></a> for more information on this file.)
+</p>
+<a name="wp445193"> </a><p class="pBody">
+This section shows you how to update the file in the topics:
+</p>
+<ul class="pBullet1"><a name="wp445197"> </a><div class="pBullet1"><li><a  href="build.html#wp445204"><span style="color: #3366CC">Adding Java Programming Language Files</span></a></li></div>
+<a name="wp445201"> </a><div class="pBullet1Last"><li><a  href="build.html#wp445216"><span style="color: #3366CC">Adding C Files</span></a></li></div>
+</ul>
+<a name="wp445204"> </a><h3 class="pHeading2">
+12.2.1	Adding Java Programming Language Files
+</h3>
+<a name="wp445205"> </a><p class="pBody">
+You can add two types of classes written in the Java programming language to the build: platform-specific and platform-generic.
+</p>
+<a name="wp451904"> </a><p class="pBody">
+If you add platform-specific classes, they must be in <code class="cCode">PLATFORM_CLASS_DIR</code>, which has the default value <em class="cEmphasis">midpInstallDir</em><code class="cCode">/src/</code><em class="cEmphasis">platform</em><code class="cCode">/classes</code>. There is no required location for platform-generic classes.
+</p>
+<a name="wp451890"> </a><p class="pBody">
+The two types of classes are held in different variables in the <code class="cCode">Defs-pre.gmk</code> file:
+</p>
+<ul class="pBullet1"><a name="wp451943"> </a><div class="pBullet1"><li><code class="cCode">PLATFORM_INCLUDE_CLASSES</code> &#8212; Holds the file names of platform-specific classes. The filenames that are the value of this variable have the form </li></div>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;&#160;&#160;$(PLATFORM_CLASS_DIR)/<em class="cEmphasis">packageName</em>/<em class="cEmphasis">className</em>.java<a name="wp451961"> </a>
+</pre></div>
+<a name="wp451957"> </a><p class="pIndented1">
+Note that these file names use a slash (&#8220;<code class="cCode">/</code>&#8221;) delimiter, even on Windows 2000.
+</p>
+<a name="wp451944"> </a><div class="pBullet1Last"><li><code class="cCode">MIDP_INCLUDE_CLASSES</code> &#8212; Holds the file names of platform-generic classes.</li></div>
+</ul>
+<a name="wp445208"> </a><p class="pBody">
+To add a file to one of these variables, add a line that has the following syntax to the <code class="cCode">Defs-pre.gmk</code> file:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">VARIABLE_NAME</em> += <em class="cEmphasis">fileName</em><a name="wp445209"> </a>
+</pre></div>
+<a name="wp445210"> </a><p class="pBody">
+For example, to add the platform-specific class <code class="cCode">com.MyCompany.productY.Foo</code>, you would update the <code class="cCode">PLATFORM_INCLUDE_CLASSES</code> variable like this:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+PLATFORM_INCLUDE_CLASSES += classes/com/MyCompany/productY/foo.java <a name="wp445211"> </a>
+</pre></div>
+<a name="wp445212"> </a><p class="pBody">
+Similarly, to add the platform-generic class <code class="cCode">com.MyCompany.midp.bar</code>, you would update the <code class="cCode">MIDP_INCLUDE_CLASSES</code> variable like this:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+MIDP_INCLUDE_CLASSES += classes/com/MyCompany/midp/bar.java<a name="wp445213"> </a>
+</pre></div>
+<a name="wp445214"> </a><p class="pBody">
+The classes will be included in the build the next time you use the default target, <code class="cCode">all</code>.
+</p>
+<a name="wp445216"> </a><h3 class="pHeading2">
+12.2.2	Adding C Files
+</h3>
+<a name="wp445217"> </a><p class="pBody">
+You can add two types of C language files to the build: platform-specific and platform-generic. Different variables in <code class="cCode">Defs-pre.gmk</code> hold these two kinds of files:
+</p>
+<ul class="pBullet1"><a name="wp445218"> </a><div class="pBullet1"><li><code class="cCode">PLATFORM_INCLUDE_SRC</code> &#8212; Holds the names of platform-specific C files</li></div>
+<a name="wp445219"> </a><div class="pBullet1Last"><li><code class="cCode">MIDP_INCLUDE_SRC</code> &#8212; Holds the names of platform-generic C files</li></div>
+</ul>
+<a name="wp445220"> </a><p class="pBody">
+To add a file to one of these variables, add a line that has the following syntax to the <code class="cCode">Defs-pre.gmk</code> file:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">VARIABLE_NAME</em> += <em class="cEmphasis">fileName</em><a name="wp445221"> </a>
+</pre></div>
+<a name="wp445222"> </a><p class="pBody">
+For example, to add the platform-specific file, <code class="cCode">productY_natives.c</code>, you would update the <code class="cCode">PLATFORM_INCLUDE_SRC</code> variable like this:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+PLATFORM_INCLUDE_SRC += productY_natives.c<a name="wp445223"> </a>
+</pre></div>
+<a name="wp445224"> </a><p class="pBody">
+Similarly, to add the platform-generic file, <code class="cCode">common_natives.c</code>, you would update the <code class="cCode">MIDP_INCLUDE_SRC</code> variable like this:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+MIDP_INCLUDE_SRC += common_natives.c<a name="wp445225"> </a>
+</pre></div>
+<a name="wp445229"> </a><p class="pBody">
+This is the normal way to add native method implementations to MIDP. The files will be included in the build the next time you use the default target, <code class="cCode">all</code>.
+</p>
+<a name="wp448648"> </a><h2 class="pHeading1">
+12.3	Removing Unused Code
+</h2>
+<a name="wp452112"> </a><p class="pBody">
+Removing unused code can improve the footprint of your port. This section covers two areas where you might find code to remove: configuration code and code made obsolete by your customization.
+</p>
+<a name="wp452097"> </a><p class="pBody">
+The MIDP Reference Implementation uses a configuration mechanism to select among alternate behaviors at runtime. In commercial ports of the RI, many of these design choices will have been made. (For example, whether the device has a color or grey scale screen.) You can eliminate the branches created by the configuration options that your device does not use. To locate these branches, look for calls to the <code class="cCode">Configuration.getProperty</code> method. The list of classes that include optional behavior based on calls to access configuration parameters is:
+</p>
+<ul class="pBullet1"><a name="wp434195"> </a><div class="pBullet1"><li><code class="cCode">com.sun.midp.Main</code></li></div>
+<a name="wp448841"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.j2me.http.Protocol</code></li></div>
+<a name="wp434196"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.j2me.https.Protocol</code></li></div>
+<a name="wp451983"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.j2me.socket.Protocol</code></li></div>
+<a name="wp451991"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.j2me.comm.Protocol</code></li></div>
+<a name="wp434198"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.lcdui.InputMethodHandler</code></li></div>
+<a name="wp434199"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.lcdui.Resource</code></li></div>
+<a name="wp448836"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.midlet.Scheduler</code></li></div>
+<a name="wp434200"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.midletsuite.Installer</code></li></div>
+<a name="wp434201"> </a><div class="pBullet1Last"><li><code class="cCode">javax.microedition.lcdui.Display</code></li></div>
+</ul>
+<a name="wp452111"> </a><p class="pBody">
+In addition, if you have customized the MIDP Reference Implementation (for example, by re-implementing one or more components in native code), there could be Java programming language or C code that is no longer used. Some examples have already appeared in the text, such as in <a  href="gui.html#wp452410"><span style="color: #3366CC">Section&#160;6.3 &quot;Using Native Widgets for MIDP Screens&quot; </span></a>. You can use the examples in this guide as a starting point for a more thorough search.
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="sound.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="appx-targets.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Porting MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

@@ -1,0 +1,949 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 16:27:08" />
+    <title>Porting the Audio Building Block</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="push.html" />
+    <link rel="Next" href="build.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="push.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="build.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="portIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp434413"> </a><h2 class="pChapNum">
+Chapter &#160; 11
+</h2>
+<a name="wp442099"> </a><h2 class="pNewHTMLPage">
+Porting the Audio Building Block
+</h2>
+<hr class="pHr"/>
+<a name="wp444971"> </a><p class="pBody">
+This chapter discusses porting the <em class="cEmphasis">Audio Building Block</em> (ABB), a proper subset of the Mobile Media API (MMAPI) that provides only audio functionality. MMAPI is specified in the &#8220;Mobile Media API&#8221; (JSR-000135) to support multimedia applications for the Java&#8482; 2 Platform, Micro Edition (J2ME&#8482;). See <a href="http://jcp.org/jsr/detail/135.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/135.jsp</span></a> for more information. 
+</p>
+<a name="wp445131"> </a><p class="pBody">
+ABB in the MIDP Reference Implementation provides the following functionality:
+</p>
+<ul class="pBullet1"><a name="wp449899"> </a><div class="pBullet1"><li>Single tones</li></div>
+<a name="wp449906"> </a><div class="pBullet1Plus"><li>Monotonic tone-sequences</li></div>
+<a name="wp449910"> </a><div class="pBullet1Last"><li>Playback of audio (<em class="cEmphasis">.</em><code class="cCode">wav</code>) files</li></div>
+</ul>
+<a name="wp449911"> </a><p class="pBody">
+If a device implements the ABB, it must support both single tones and monotonic tone sequences. The ability to playback audio files (also called <em class="cEmphasis">sampled audio</em>) is optional.
+</p>
+<a name="wp445008"> </a><p class="pBody">
+This chapter contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp445009"> </a><div class="pBullet1"><li><a  href="sound.html#wp444663"><span style="color: #3366CC">Overview</span></a></li></div>
+<a name="wp449304"> </a><div class="pBullet1Plus"><li><a  href="sound.html#wp443084"><span style="color: #3366CC">Porting Synthetic Tones</span></a></li></div>
+<a name="wp449308"> </a><div class="pBullet1Last"><li><a  href="sound.html#wp443525"><span style="color: #3366CC">Porting Sampled Audio</span></a></li></div>
+</ul>
+<a name="wp444663"> </a><h2 class="pHeading1">
+11.1	Overview
+</h2>
+<a name="wp453508"> </a><p class="pBody">
+This section provides an overview of the audio building block, and how to implement the one interface that is required for every type of audio support. It covers the topics
+</p>
+<ul class="pBullet1"><a name="wp453512"> </a><div class="pBullet1"><li><a  href="sound.html#wp453492"><span style="color: #3366CC">Architecture</span></a></li></div>
+<a name="wp453520"> </a><div class="pBullet1Last"><li><a  href="sound.html#wp449508"><span style="color: #3366CC">Implementing the Player Interface</span></a></li></div>
+</ul>
+<a name="wp453492"> </a><h3 class="pHeading2">
+11.1.1	Architecture
+</h3>
+<a name="wp451433"> </a><p class="pBody">
+The ABB has a high-level object, a <code class="cCode">Player</code> that controls media playback. A factory mechanism, the <code class="cCode">Manager</code> (<code class="cCode">javax.microedition.media.Manager</code>), can create a <code class="cCode">Player</code> from either a URL or an <code class="cCode">InputStream</code> object. The manager also provides a call to produce single tones. To get input, the ABB uses the security functionality of the MIDP Reference Implementation. (See <a  href="security.html#wp442099"><span style="color: #3366CC">Chapter&#160;7, &quot;Security</span></a>&#8221; for more information on the MIDP security model.)
+</p>
+<a name="wp451443"> </a><p class="pBody">
+These classes, and others in the ABB, are implemented with both the Java programming language and calls to native code. The following table describes the high-level breakdown between the two for each media type:</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq451444">
+  <caption><a name="wp451447"> </a><div class="pTableCaption">
+TABLE&#160;2&#160;&#160;&#8211;&#160;&#160;Java Programming Language versus Native Implementation 
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp451453"> </a><div style="text-align: left" class="pTableHead">
+Feature
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp451455"> </a><div style="text-align: left" class="pTableHead">
+ Code in the Java Programming Language
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp451457"> </a><div style="text-align: left" class="pTableHead">
+Native Code
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><a name="wp451459"> </a><div class="pTableText">
+Single tone
+</div>
+</td>
+    <td><a name="wp451461"> </a><div class="pTableText">
+API wrapper: <code class="cCode">playTone</code>
+</div>
+</td>
+    <td><a name="wp451463"> </a><div class="pTableText">
+Low-level MIDI tone synthesis
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp451465"> </a><div class="pTableText">
+Tone Sequence
+</div>
+</td>
+    <td><a name="wp451467"> </a><div class="pTableText">
+API wrapper: <code class="cCode">Player</code>
+</div>
+<a name="wp452969"> </a><div class="pTableText">
+Tone format parsing 
+</div>
+<a name="wp452970"> </a><div class="pTableText">
+Tone sequencing
+</div>
+</td>
+    <td><a name="wp451469"> </a><div class="pTableText">
+Low-level MIDI tone synthesis
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp451471"> </a><div class="pTableText">
+Wave audio playback (Sampled audio)
+</div>
+</td>
+    <td><a name="wp451473"> </a><div class="pTableText">
+API wrapper 
+</div>
+<a name="wp452971"> </a><div class="pTableText">
+I/O handling 
+</div>
+<a name="wp452972"> </a><div class="pTableText">
+Wave file parsing
+</div>
+<a name="wp452973"> </a><div class="pTableText">
+Data flow management
+</div>
+</td>
+    <td><a name="wp451475"> </a><div class="pTableText">
+Native audio output device
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+<a name="wp449936"> </a><p class="pBody">
+The division that you use depends on your device. Take as much advantage as you can of the device&#8217;s native capabilities.
+</p>
+<a name="wp449508"> </a><h3 class="pHeading2">
+11.1.2	Implementing the Player Interface
+</h3>
+<a name="wp449985"> </a><p class="pBody">
+The <code class="cCode">Player</code> interface defines the rendering of time-based media data. Its methods manage the Player&#39;s life cycle, controls playback progress, and gets the presentation components.
+</p>
+<a name="wp444058"> </a><p class="pBody">
+The basic <code class="cCode">Player</code> operations that are common to all media types are the <code class="cCode">Player</code> states, events, controls, and looping. (They are the top-level player API calls.) These operations are usually not CPU-intensive and can be implemented in the Java programming language without sacrificing much performance. The implementation of these basic <code class="cCode">Player</code> operations is referred to as the <em class="cEmphasis">player wrapper</em>. 
+</p>
+<a name="wp444060"> </a><p class="pBody">
+The CPU-intensive operations that require parsing, decoding, and rendering of the media data are described in the later sections that discuss the media types. The implementation of these data processing operations is referred to as the <em class="cEmphasis">playback engine</em>.
+</p>
+<a name="wp450013"> </a><p class="pBody">
+This section discusses how to write classes that implement the <code class="cCode">Player</code> interface, such as the classes in the <code class="cCode">com.sun.mmedia</code> package. This section has the topics:
+</p>
+<ul class="pBullet1"><a name="wp450033"> </a><div class="pBullet1"><li><a  href="sound.html#wp449376"><span style="color: #3366CC">General Player States</span></a></li></div>
+<a name="wp450044"> </a><div class="pBullet1Plus"><li><a  href="sound.html#wp444095"><span style="color: #3366CC">Events</span></a></li></div>
+<a name="wp450111"> </a><div class="pBullet1Last"><li><a  href="sound.html#wp450148"><span style="color: #3366CC">Looping</span></a></li></div>
+</ul>
+<a name="wp449376"> </a><h4 class="pHeading3">
+11.1.2.1	General Player States
+</h4>
+<a name="wp451971"> </a><p class="pBody">
+A <code class="cCode">Player</code> object can be in one of five states:
+</p>
+<ul class="pBullet1"><a name="wp451972"> </a><div class="pBullet1"><li><code class="cCode">UNREALIZED</code> &#8211; Has been instantiated but not have the information needed to aquire resources; this is the starting state.</li></div>
+<a name="wp451694"> </a><div class="pBullet1Plus"><li><code class="cCode">REALIZED</code> &#8211; Has the information needed to acquire the media resources; achieving this state can be resource and time consuming</li></div>
+<a name="wp451800"> </a><div class="pBullet1Plus"><li><code class="cCode">PREFETCHED</code> &#8211; Gets scarce or exclusive resources, fills buffers with media data, or performs other start-up processing; the actions of this state reduce startup latency.</li></div>
+<a name="wp451834"> </a><div class="pBullet1Plus"><li><code class="cCode">STARTED</code> &#8211; Runs and processes data; this is the state in which sound played.</li></div>
+<a name="wp453580"> </a><div class="pBullet1Last"><li><code class="cCode">CLOSED</code> &#8211; Releases most of its resources and must not be used again.</li></div>
+</ul>
+<a name="wp453592"> </a><p class="pBody">
+The <code class="cCode">Player</code> class defines six state transition methods: <code class="cCode">realize</code>, <code class="cCode">prefetch</code>, <code class="cCode">start</code>, <code class="cCode">stop</code>, <code class="cCode">deallocate</code>, and <code class="cCode">close</code>. These are all synchronous methods&#8212;the methods will not return until the state transition is completed or a <code class="cCode">MediaException</code> occurs. For example, if <code class="cCode">prefetch</code> is not able to acquire an audio resource, it will throw a <code class="cCode">MediaException</code> and the <code class="cCode">Player</code> will remain in the <code class="cCode">REALIZED</code> state.
+</p>
+<a name="wp444072"> </a><p class="pBody">
+Typically, a few operations will be carried out in each of these methods. The <code class="cCode">Player</code>&#39;s state will be updated and the method will return. 
+</p>
+<a name="wp444073"> </a><p class="pBody">
+Some of these operations can be executed in native code. For example, opening the audio device in <code class="cCode">prefetch</code> can be executed in native code. If the operation takes a long time to complete, the implementation should make sure that the native code will not block the operations of the virtual machine (VM). Blocking can occur when the native platform or VM does not support multi-threading in native code, such as in the MIDP Reference Implementation.
+</p>
+<a name="wp444075"> </a><p class="pBody">
+In these cases, the implementation should attempt to call the native code in a non-blocking manner and poll the status of the native call until it is finished. The pseudo-code in the following example illustrates this.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+native void nonBlockingNativeCall();<a name="wp444081"> </a>
+&#160;&#160;&#160;&#160;native boolean isNativeCallDone();<a name="wp444082"> </a>
+&#160;&#160;&#160;&#160;:<a name="wp444083"> </a>
+&#160;&#160;&#160;&#160;nonblockingNativeCall();<a name="wp444084"> </a>
+&#160;&#160;&#160;&#160;while (!isNativeCallDone()) {<a name="wp444085"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;try {<a name="wp444086"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;wait(100);    // Poll at every 100ms as an example.<a name="wp444087"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;} catch (Exception e) {}<a name="wp444088"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp444089"> </a>
+</pre></div>
+<a name="wp444095"> </a><h4 class="pHeading3">
+11.1.2.2	Events
+</h4>
+<a name="wp450158"> </a><p class="pBody">
+Events are delivered asynchronously from the <code class="cCode">Player</code> to applications by using the <code class="cCode">PlayerListener</code> interface, which is in the <code class="cCode">javax.microedition.media</code> package. It is recommended that you use a separate thread to deliver the events to the <code class="cCode">PlayerListener</code>s. By doing so, the <code class="cCode">Player</code> operations will not be blocked in case the application is blocked at handling the events.
+</p>
+<a name="wp450144"> </a><p class="pBody">
+The implementation of the <code class="cCode">Player</code>&#8217;s event delivery mechanism is in the <code class="cCode">com.sun.mmedia.BasicPlayer</code>.
+</p>
+<a name="wp450148"> </a><h4 class="pHeading3">
+11.1.2.3	Looping
+</h4>
+<a name="wp450062"> </a><p class="pBody">
+The <code class="cCode">setLoopCount</code> method requests the <code class="cCode">Player</code> to loop for a specified number of times. Looping can generally be implemented in two ways:
+</p>
+<ul class="pBullet1"><a name="wp450066"> </a><div class="pBullet1"><li>The <code class="cCode">Player</code> wrapper can use Java programming language code to track when the media is finished playing by listening for the <code class="cCode">END_OF_MEDIA</code> event. It can then restart the playback.</li></div>
+<a name="wp450068"> </a><div class="pBullet1Last"><li>If the underlying playback engine supports the equivalent looping operation, the operation can be performed directly at the engine level without the intervention of the <code class="cCode">Player</code> wrapper. This may result in smoother loopback transitions.</li></div>
+</ul>
+<a name="wp450070"> </a><p class="pBody">
+The ABB uses the first technique. The class <code class="cCode">com.sun.mmedia.BasicPlayer</code> implements the looping mechanism.
+</p>
+<a name="wp443084"> </a><h2 class="pHeading1">
+11.2	Porting Synthetic Tones
+</h2>
+<a name="wp443085"> </a><p class="pBody">
+The phrase synthetic tone refers to the generation and playback of a simple tone or a monotonic tone sequence. It can provide amusing multimedia experiences, such as playing different ring tones.
+</p>
+<a name="wp443092"> </a><p class="pBody">
+A simple tone is defined by a note, a duration, and a volume. A monotonic tone sequence is defined as a list of &lt;<em class="cEmphasis">note</em>, <em class="cEmphasis">duration</em>&gt; pairs and user-defined blocks. A block is a unit which consists of &lt;<em class="cEmphasis">note</em>, <em class="cEmphasis">duration</em>&gt; pairs and can be referenced as a whole from any place in the rest of the tone sequence. For more information about the format and contents of a tone sequence, see the reference documentation for the <code class="cCode">javax.microedition.media.control.ToneControl</code> class.
+</p>
+<a name="wp450207"> </a><p class="pBody">
+This section covers porting the generation of synthetic tones. It has the topics:
+</p>
+<ul class="pBullet1"><a name="wp450208"> </a><div class="pBullet1"><li><a  href="sound.html#wp443184"><span style="color: #3366CC">Architectural Considerations</span></a></li></div>
+<a name="wp450374"> </a><div class="pBullet1Plus"><li><a  href="sound.html#wp443402"><span style="color: #3366CC">Generating Single Tones</span></a></li></div>
+<a name="wp450382"> </a><div class="pBullet1Last"><li><a  href="sound.html#wp443405"><span style="color: #3366CC">Generating Tone Sequences</span></a></li></div>
+</ul>
+<a name="wp443184"> </a><h3 class="pHeading2">
+11.2.1	Architectural Considerations
+</h3>
+<a name="wp450219"> </a><p class="pBody">
+The ABB includes modules written in both the Java programming language and native code to implement synthetic tones. The Java programming language modules are described in <a  href="sound.html#wp450229">TABLE&#160;3</a>. The native modules are described in <a  href="sound.html#wp450243">TABLE&#160;4</a>.</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq450226">
+  <caption><a name="wp450229"> </a><div class="pTableCaption">
+TABLE&#160;3&#160;&#160;&#8211;&#160;&#160;ABB Java Programming Language Modules for Synthetic Tones 
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp450233"> </a><div style="text-align: left" class="pTableHead">
+Module
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp450235"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><a name="wp450237"> </a><div class="pTableText">
+<code class="cCode">com/sun/mmedia/TonePlayer.java</code>
+</div>
+</td>
+    <td><a name="wp450239"> </a><div class="pTableText">
+Implements the <code class="cCode">javax.microedition.media.Player</code> interface for tone sequences.
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq450240">
+  <caption><a name="wp450243"> </a><div class="pTableCaption">
+TABLE&#160;4&#160;&#160;&#8211;&#160;&#160;ABB Native Modules for Synthetic Tones 
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp450247"> </a><div style="text-align: left" class="pTableHead">
+Module
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp450249"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><a name="wp450251"> </a><div class="pTableText">
+<code class="cCode">src/win32/native/mmaevt.c </code>
+</div>
+<a name="wp450252"> </a><div class="pTableText">
+and 
+</div>
+<a name="wp450253"> </a><div class="pTableText">
+<code class="cCode">src/solaris/native/mmaevt.c</code>
+</div>
+</td>
+    <td><a name="wp450255"> </a><div class="pTableText">
+Module to deliver end of media (<code class="cCode">EOM</code>) events from the native layer to the Java layer.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp450257"> </a><div class="pTableText">
+<code class="cCode">src/win32/native/mmatone.c </code>
+</div>
+<a name="wp450258"> </a><div class="pTableText">
+and 
+</div>
+<a name="wp450259"> </a><div class="pTableText">
+<code class="cCode">src/solaris/native/mmatone.c</code>
+</div>
+</td>
+    <td><a name="wp450261"> </a><div class="pTableText">
+Implementation of synthetic tones and tone sequences.
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+<a name="wp443186"> </a><p class="pBody">
+When porting synthetic tones to a target device platform, you must consider whether it has a native tone generator, and whether the tone generator is available in software or hardware. If the platform does not have a native tone generator, you can implement your own in software, but you must make certain implementation decisions that will affect the quality of the tone. If the tone generator has no mixing support, you can also implement tone and tone sequence mixing in software. Finally, you must decide whether the tone generator will run on a thread in the Java platform or a native thread. This has an impact on how tones and tone sequences are played.
+</p>
+<a name="wp450301"> </a><p class="pBody">
+This section guides you in making these decisions. It covers the topics:
+</p>
+<ul class="pBullet1"><a name="wp450302"> </a><div class="pBullet1"><li><a  href="sound.html#wp443188"><span style="color: #3366CC">Using a Provided Native Tone Generator</span></a></li></div>
+<a name="wp450310"> </a><div class="pBullet1Plus"><li><a  href="sound.html#wp443192"><span style="color: #3366CC">Determining the Quality of Software-Generated Tones</span></a></li></div>
+<a name="wp450318"> </a><div class="pBullet1Plus"><li><a  href="sound.html#wp443288"><span style="color: #3366CC">Thread Considerations</span></a></li></div>
+<a name="wp450339"> </a><div class="pBullet1Plus"><li><a  href="sound.html#wp443309"><span style="color: #3366CC">Issues in Playing a Tone Sequence</span></a></li></div>
+<a name="wp450348"> </a><div class="pBullet1Last"><li><a  href="sound.html#wp443342"><span style="color: #3366CC">Mixing Tones and Tone Sequences</span></a></li></div>
+</ul>
+<a name="wp443188"> </a><h4 class="pHeading3">
+11.2.1.1	Using a Provided Native Tone Generator
+</h4>
+<a name="wp443190"> </a><p class="pBody">
+When porting synthetic tones to a specific device platform, take advantage of any native tone generator that might exist on the device. This is the most efficient and cost-effective way to port synthetic tones. A hardware monotonic tone generator is an example of a generator that might be included on a device platform. If the platform provides a native tone generator, it should also provide native access APIs to start and stop the tone.
+</p>
+<a name="wp443192"> </a><h4 class="pHeading3">
+11.2.1.2	Determining the Quality of Software-Generated Tones
+</h4>
+<a name="wp443194"> </a><p class="pBody">
+If a native tone generator is not available on the device platform to which you are porting, you must generate the tone in software. You must also make decisions that will affect the playback quality of the tone. For example, you must decide which wave form to use for the tone, whether to perform extra processing on the tone if the device supports floating point, and so on. 
+</p>
+<a name="wp443197"> </a><p class="pBody">
+For example, in the ABB on the Solaris&#8482; Operating Environment (OE) and Linux operating system, the decision was made to generate the triangle wave tone in the format of 8Khz/16bit/linear/mono.
+</p>
+<a name="wp449575"> </a><p class="pBody">
+The following sections describe some of the factors which you must consider when generating a synthetic tone.
+</p>
+<a name="wp449576"> </a><h5 class="pHeading4">
+Using Floating Point on the Device Platform
+</h5>
+<a name="wp449578"> </a><p class="pBody">
+Floating point can be used for a number of tasks with synthetic tones. For example, it can be used for calculating and interpolating the amplitude and frequency of the wave form. It can also be used in data encryption and decryption. In some wireless devices, floating-point support is provided in hardware. A hardware floating-point unit allows calculations to be performed faster and with greater accuracy. If you are porting the MMA to a device that has such a unit, you are encouraged to take advantage of it. 
+</p>
+<a name="wp449579"> </a><p class="pBody">
+However, most wireless devices do not have a hardware floating-point unit. In these devices, floating-point computation is emulated in software. This can be extremely slow and expensive in terms of memory.
+</p>
+<a name="wp449580"> </a><p class="pBody">
+For example, if the platform to which you are porting does not have floating-point support, you can work around it by scaling values by a large factor (such as 100) before the calculation and scaling it back after the calculation. You could also use a lookup table as much as possible: for each data sample, find the closest element in the table. Of course, these methods will sacrifice the accuracy and increase the memory usage to certain extent. 
+</p>
+<a name="wp449582"> </a><p class="pBody">
+The ABB in the Solaris OE and Linux operating system does not use floating point. It saves the wave-length of each note in an integer lookup table. Whenever interpolation is needed, the ABB scales up the value by 1000, then scales it down after the calculation.
+</p>
+<a name="wp443210"> </a><p class="pBody">
+<a  href="sound.html#wp443212">CODE&#160;EXAMPLE&#160;1</a> displays how interpolation is performed in the ABB.
+</p>
+<a name="wp443212"> </a><div class="pCodeCaption">
+CODE&#160;EXAMPLE&#160;1 	Interpolation with a Scale Factor of 1000
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;...<a name="wp443213"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;...<a name="wp443214"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;slope = (amplitude) * 1000 /(K[note]/4);<a name="wp443215"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;slopeXFade = (amplitude - *yInterrupt) * 1000 /(K[note]/4);<a name="wp443216"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;...<a name="wp443217"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;...<a name="wp443218"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;/* triangle wave: 4 discrete fcn&#39;s based on phase */<a name="wp443219"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if (t &lt;= K[note]/4) {<a name="wp443220"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if (firstPeriod == 1)<a name="wp443221"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;tonedata = (int)(slopeXFade * t / 1000 + *yInterrupt);<a name="wp443222"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;else<a name="wp443223"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;tonedata = (int) (slope * t / 1000);<a name="wp443224"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}    else if (t &lt;= K[note]/2) {<a name="wp443225"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;tonedata = (int)(amplitude - (slope * (t - (K[note]/4))/1000));<a name="wp443226"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;} else if (t &lt;= ((3 * K[note])/4)) {<a name="wp443227"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;tonedata  = (int) ((-1 * slope) * (t - (K[note]/2))/ 1000);<a name="wp443228"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;} else {<a name="wp443229"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;tonedata = (int) ((-1 * amplitude) + (slope * (t - (3 * (K[note]/4))) / 1000));<a name="wp443230"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}<a name="wp443231"> </a>
+</pre></div>
+<a name="wp443232"> </a><h5 class="pHeading4">
+Choosing the Wave Form of the Tone
+</h5>
+<a name="wp443234"> </a><p class="pBody">
+A synthetic tone can be generated by various different wave forms, such as sine waves, triangle waves, saw waves, square waves, and so on. Each wave form sounds different when it is played back. Sine waves sound purest, but they are also the most expensive to generate in terms of processing and memory. Square waves sound the most compound and are the least expensive to generate. The quality of triangle waves and saw waves are in between sine and square waves. 
+</p>
+<a name="wp443238"> </a><p class="pBody">
+The ABB on the Solaris OE and Linux operating system uses the triangle wave. <a  href="sound.html#wp443212">CODE&#160;EXAMPLE&#160;1</a> displays a sample implementation of a triangle wave from the ABB.
+</p>
+<a name="wp443242"> </a><h5 class="pHeading4">
+Choosing 8-bit versus 16-bit for Audio Format
+</h5>
+<a name="wp443244"> </a><p class="pBody">
+Tone can be generated in either 8-bit or 16-bit format. Normally, 16-bit format has better sound quality, but it requires more memory. A trade-off must be made between sound quality and memory usage.
+</p>
+<a name="wp443245"> </a><p class="pBody">
+Another consideration is whether the device to which you are porting supports 16-bit format audio data. Some audio devices support both 16-bit and 8-bit format, while others support 8-bit only. 
+</p>
+<a name="wp443248"> </a><p class="pBody">
+The ABB on the Solaris OE and Linux operating system uses 16-bit, because the audio driver is more stable with 16-bit data on the Solaris OE.
+</p>
+<a name="wp443252"> </a><p class="pBody">
+The following example shows a sample implementation of 16-bit audio support from the ABB. 
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+...<a name="wp443257"> </a>
+...<a name="wp443258"> </a>
+&#160;&#160;&#160;&#160;int len =  8000 * 16 * 1 / 8 / 32 &amp; ~3;<a name="wp443259"> </a>
+...<a name="wp443260"> </a>
+...<a name="wp443261"> </a>
+#ifdef BIG_ENDIAN<a name="wp443262"> </a>
+&#160;&#160;&#160;&#160;data[2*(x-written)] = (char)((tonedata &gt;&gt; 8) &amp; 0xff);<a name="wp443263"> </a>
+&#160;&#160;&#160;&#160;data[2*(x-written)+1] = (char)(tonedata &amp; 0xff);<a name="wp443264"> </a>
+#else  /* LITTLE_ENDIAN */<a name="wp443265"> </a>
+&#160;&#160;&#160;&#160;data[2*(x-written)] = (char)(tonedata &amp; 0xff);<a name="wp443266"> </a>
+&#160;&#160;&#160;&#160;data[2*(x-written)+1] = (char)((tonedata &gt;&gt; 8) &amp; 0xff);<a name="wp443267"> </a>
+#endif<a name="wp443268"> </a>
+</pre></div>
+<a name="wp443269"> </a><h5 class="pHeading4">
+Choosing a Chunk Size for Data Generation
+</h5>
+<a name="wp443271"> </a><p class="pBody">
+When generating sampled data for a tone, you should decide how much data is generated per cycle; that is, you should choose a good chunk size. Choosing larger chunk sizes means that more CPU time is required per cycle. If the chunk size is too big, then the first chunk might finish playing before the second chunk is fully generated. The result is a tone that sounds choppy. If the chunk size is too small, the playback by audio device might not be that smooth.
+</p>
+<a name="wp443276"> </a><p class="pBody">
+The ABB on the Solaris OE and Linux operating system sets the chunk size to be 32 milliseconds of sampled data. This is an acceptable size for these operating systems.
+</p>
+<a name="wp443280"> </a><p class="pBody">
+The following example displays how the chunk size is set to 32 milliseconds of sampled data in the ABB. 
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+...<a name="wp443285"> </a>
+&#160;&#160;&#160;&#160;int len =  8000 * 16 * 1 / 8 / 32 &amp; ~3;<a name="wp443286"> </a>
+...<a name="wp443287"> </a>
+</pre></div>
+<a name="wp443288"> </a><h4 class="pHeading3">
+11.2.1.3	Thread Considerations
+</h4>
+<a name="wp443290"> </a><p class="pBody">
+Tone generation needs a separate thread to either:
+</p>
+<ul class="pBullet1"><a name="wp443291"> </a><div class="pBullet1"><li>Periodically generate the sampled data and push it into the audio device, or </li></div>
+<a name="wp443292"> </a><div class="pBullet1Last"><li>Sleep for the duration of the tone, then wake up to stop the tone</li></div>
+</ul>
+<a name="wp443293"> </a><p class="pBody">
+You could use either a Java platform thread or a native thread to perform this task. The following sections describe some of the issues that are involved in deciding which thread to use.
+</p>
+<a name="wp443294"> </a><h5 class="pHeading4">
+Using Java Platform Threads versus Native Threads
+</h5>
+<a name="wp443296"> </a><p class="pBody">
+Since the Java programming language has built-in multi-thread support, using those threads is always an option. However, in some cases, Java platform threads could be extremely inefficient. For example, consider the KVM implementation by Sun Microsystems. The entire KVM runs on a single native thread. All of the Java platform threads are green thread: they basically share the time slices within that single native thread. Whenever a Java platform thread invokes a native method, all other Java platform threads are blocked before that native method returns. Therefore, if multiple tones are generated and rendered simultaneously, then there will probably be breakups.
+</p>
+<a name="wp443298"> </a><p class="pBody">
+Some device platforms support multiple native threads, while others support only one thread.
+</p>
+<a name="wp443299"> </a><p class="pBody">
+If the device platform supports multiple native threads, you should consider using native threads, especially when running on the CLDC/MIDP stack.
+</p>
+<a name="wp443300"> </a><p class="pBody">
+For example, consider the function: 
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<code class="cCode">KNI_RETURNTYPE_INT Java_javax_microedition_media_Manager_nPlayTone()</code> <a name="wp443301"> </a>
+</pre></div>
+<a name="wp443304"> </a><p class="pBody">
+in <code class="cCode">mmatone.c</code> in the ABB on the Solaris OE and Linux operating system. This function launches a native thread to generate and render the tone whenever a new tone arrives. 
+</p>
+<a name="wp443305"> </a><h5 class="pHeading4">
+Using the Timer Interrupt on the Device Platform
+</h5>
+<a name="wp443307"> </a><p class="pBody">
+You should consider using the timer interrupt if it is provided by the device platform. The timer interrupt is usually more accurate than <code class="cCode">sleep</code>, especially the Java platform&#8217;s <code class="cCode">Thread.sleep</code> method, and it avoids the overhead of creating a separate thread. This is extremely convenient if you use it in conjunction with the native tone generator.
+</p>
+<a name="wp443309"> </a><h4 class="pHeading3">
+11.2.1.4	Issues in Playing a Tone Sequence
+</h4>
+<a name="wp443311"> </a><p class="pBody">
+Once you resolve how you are going to generate the single tone, playing a tone sequence seems trivial: simply play the tones one by one. However, there are some issues you must consider: whether to cache the sequence in the Java platform layer (Java layer) or the native layer, and how to parse the tone sequence. This section discusses those issues.
+</p>
+<a name="wp443312"> </a><h5 class="pHeading4">
+Caching the Sequence in the Java Layer or the Native Layer
+</h5>
+<a name="wp443314"> </a><p class="pBody">
+Base your decision on where to cache the sequence on the type of single tone generator and the type of thread you use.
+</p>
+<ul class="pBullet1"><a name="wp443315"> </a><div class="pBullet1"><li>If you generate the single tone by using a Java platform thread, then caching the tone sequence in the Java layer is most straight-forward approach.</li></div>
+<a name="wp443316"> </a><div class="pBullet1Last"><li>If you use a native tone generator and native thread, then caching the tone sequence in the native layer is the most straight-forward approach. By using the native layer, you avoid either calling back to the Java layer to request the next tone or creating a polling Java platform thread to periodically check the status in the native layer.</li></div>
+</ul>
+<a name="wp443317"> </a><p class="pBody">
+For example, the file <code class="cCode">mmatone.c</code> in the ABB on Windows 2000 contains code to cache the entire tone sequence in the native layer and create a periodic multimedia timer (similar to a native thread). This timer periodically wakes up to start or stop a tone, move to the next tone, and so on.
+</p>
+<a name="wp443318"> </a><h5 class="pHeading4">
+Parsing the Tone Sequence
+</h5>
+<a name="wp443320"> </a><p class="pBody">
+ABB defines its own tone sequence format as a byte stream. In addition to the &lt;<em class="cEmphasis">note</em>, <em class="cEmphasis">duration</em>&gt; pairs, it also defines the structure component &#8220;block&#8221; and some control pairs, such as tempo setting, resolution setting, volume setting, long note, and so on. For more information on the tone sequence format, see the refernce documentation for the <code class="cCode">ToneControl</code> class.
+</p>
+<a name="wp443321"> </a><p class="pBody">
+Since the format of the tone sequence is not that simple, parsing it is not trivial. You could choose a one-pass or a two-pass parsing approach. 
+</p>
+<a name="wp443322"> </a><p class="pBody">
+<b class="cBold">One Pass Parsing:</b>
+</p>
+<a name="wp443323"> </a><p class="pBody">
+These are the tasks that you would have to complete for one-pass parsing:
+</p>
+<ul class="pBullet1"><a name="wp443324"> </a><div class="pBullet1"><li>Scan the sequence and verify the syntax.</li></div>
+<a name="wp443325"> </a><div class="pBullet1Plus"><li>Play the sequence.</li></div>
+<a name="wp443326"> </a><div class="pBullet1Last"><li>Unroll the blocks on demand.</li></div>
+</ul>
+<a name="wp443327"> </a><p class="pBody">
+This approach uses less memory, but may not be efficient if the sequence is played more than once. 
+</p>
+<a name="wp443328"> </a><p class="pBody">
+<b class="cBold">Two Pass Parsing:</b>
+</p>
+<a name="wp443329"> </a><p class="pBody">
+Two-pass parsing uses more memory than one-pass parsing. These are the tasks that you would have to complete for two-pass parsing: 
+</p>
+<ul class="pBullet1"><a name="wp443330"> </a><div class="pBullet1"><li>First pass:</li></div>
+<ul class="pBullet2"><a name="wp443331"> </a><div class="pBullet2"><li>Scan the sequence and verify the syntax.</li></div>
+<a name="wp443332"> </a><div class="pBullet2Last"><li>Build a block start index table.</li></div>
+</ul>
+<a name="wp443333"> </a><div class="pBullet1Last"><li>Second pass:</li></div>
+<ul class="pBullet2"><a name="wp443334"> </a><div class="pBullet2"><li>Calculate the flat sequence length.</li></div>
+<a name="wp443335"> </a><div class="pBullet2Plus"><li>Unroll all the blocks.</li></div>
+<a name="wp443336"> </a><div class="pBullet2Last"><li>Scan the sequence and convert the blocks into an internal flat format. The flat format is more convenient for playing the audio data.</li></div>
+</ul>
+</ul>
+<a name="wp443342"> </a><h4 class="pHeading3">
+11.2.1.5	Mixing Tones and Tone Sequences
+</h4>
+<a name="wp443344"> </a><p class="pBody">
+Mixing tones and tone sequences can be a very desirable feature in applications, such as games. For example, a background sequence can play while foreground tones are triggered by some event.
+</p>
+<a name="wp443345"> </a><p class="pBody">
+You should decide whether to support mixing and how to do it. For example, ABB on the Solaris 8 OE takes advantage of the underlying audio driver&#39;s mixing functionality. In the Solaris 7 OE and Linux operating system, there is no mixing support.
+</p>
+<a name="wp449765"> </a><p class="pBody">
+You could implement your own tone or tone sequence mixing. In this case, it is recommended that you create only one thread to handle all the tones or tone sequences, instead of creating a new thread for each one.
+</p>
+<a name="wp443402"> </a><h3 class="pHeading2">
+11.2.2	Generating Single Tones
+</h3>
+<a name="wp443403"> </a><p class="pBody">
+In the ABB on Windows 2000, single tone generation uses the Win32 MIDI API and multimedia timer to generate the tone. 
+</p>
+<a name="wp443404"> </a><p class="pBody">
+On the Solaris OE and Linux operating system, the ABB generates single tone in 8khz/16bit/mono/linear format, and renders the generated tone data by using <code class="cCode">/dev/audio</code> and the OSS driver. For each tone or tone sequence, it creates a native thread to generate and render the tone.
+</p>
+<a name="wp443405"> </a><h3 class="pHeading2">
+11.2.3	Generating Tone Sequences
+</h3>
+<a name="wp450199"> </a><p class="pBody">
+The <code class="cCode">com.sun.mmedia.TonePlayer</code> class, and the C-language files <code class="cCode">mmatone.c</code> and <code class="cCode">mmaevt.c</code>, are the implementation modules which play back tone sequences. A <code class="cCode">TonePlayer</code> instance can be created by invoking either of these methods:
+</p>
+<ul class="pBullet1"><a name="wp450189"> </a><div class="pBullet1"><li><code class="cCode">Manager.createPlayer(Manager.TONE_DEVICE_LOCATOR)</code>, or </li></div>
+<a name="wp450190"> </a><div class="pBullet1Last"><li><code class="cCode">Manager.createPlayer(InputStream, tone-mime-type)</code></li></div>
+</ul>
+<a name="wp450191"> </a><p class="pBody">
+The created tone player provides a special type of control, <code class="cCode">ToneControl</code>, to allow the programming of a tone sequence on the fly. 
+</p>
+<a name="wp443407"> </a><p class="pBody">
+<code class="cCode">TonePlayer</code>&#39;s <code class="cCode">setSequence</code> method converts the original sequence to an integer array consisting of <code style="font-style: normal" class="cCode">&lt;</code><em style="font-style: italic" class="cEmphasis">note</em>, <em class="cEmphasis">duration</em><code class="cCode">&gt;</code> pairs. Then it calls a native method to pass this array to the native layer.
+</p>
+<a name="wp443408"> </a><p class="pBody">
+On the Windows 2000 operating system, the <code class="cCode">mmatone.c</code> module contains a native data structure <code class="cCode">TONESEQ</code> which holds the integer array. There is periodic timer which periodically wakes up to send <code class="cCode">Note-On</code> and <code class="cCode">Note-Off</code> messages to the MIDI synthesizer and advance from one tone to the next one. For more information, see the definition of the <code class="cCode">timeTSProc</code> function in the <code class="cCode">mmatone.c</code> module.
+</p>
+<a name="wp443411"> </a><p class="pBody">
+In the Solaris OE and Linux operating system, the <code class="cCode">mmatone.c</code> module contains a native data structure <code class="cCode">TONEDATA</code> which holds the integer array of sequence data. A native thread generates sampled tone data and writes it to the audio device, tone by tone. For more information, see the definition of the <code class="cCode">tonemain</code> function in the <code class="cCode">mmatone.c</code> module.
+</p>
+<a name="wp443412"> </a><h4 class="pHeading3">
+11.2.3.1	Working with the END_OF_MEDIA Event
+</h4>
+<a name="wp443413"> </a><p class="pBody">
+In the ABB running on Windows 2000, Solaris OE, and Linux operating system, the native timer or thread reaches the end of the sequence, it must deliver an <code class="cCode">END_OF_MEDIA</code> (<code class="cCode">EOM</code>) event to <code class="cCode">TonePlayer</code> in the Java layer. Since CLDC/MIDP does not support callbacks to Java programming language smethods in the native layer, the ABB uses the MIDP event queue mechanism to deliver this <code class="cCode">EOM</code>. This not only improves the performance but is more responsive than other techniques such as creating a polling Java platform thread to periodically check whether an <code class="cCode">EOM</code> occurs in the native layer.
+</p>
+<a name="wp443414"> </a><h4 class="pHeading3">
+11.2.3.2	Working with Event Queues
+</h4>
+<a name="wp443416"> </a><p class="pBody">
+The MIDP event queue is based on KVM. However, enqueue/dequeue operations in the KVM event queue are not thread safe. This is because KVM assumes that there is only one native thread. To work around this problem, the ABB employs the MIDP <code class="cCode">read</code> event function. The ABB posts the <code class="cCode">EOM</code> message to the system event queue (as defined in <code class="cCode">mmatevt.c</code>), then allows the read event function to pick up the <code class="cCode">EOM</code> event from the system event queue. 
+</p>
+<a name="wp443417"> </a><p class="pBody">
+For more information on how the ABB handles event queues, see the code in the <code class="cCode">com.sun.midp.lcdui.DefaultEventHandler</code> class and the <code class="cCode">nativeGUI.c</code> implementation module. 
+</p>
+<a name="wp443418"> </a><h4 class="pHeading3">
+11.2.3.3	Controlling Playback Volume
+</h4>
+<a name="wp443419"> </a><p class="pBody">
+The <code class="cCode">TonePlayer</code> in the ABB provides the <code class="cCode">VolumeControl</code> and <code class="cCode">ToneControl</code> classes.
+</p>
+<a name="wp449786"> </a><p class="pBody">
+On the Windows 2000 operating system, the ABB uses the MIDI&#39;s channel volume to implement <code class="cCode">VolumeControl</code>, and the velocity parameter in the MIDI event message to implement the gain set by the <code class="cCode">SET_VOLUME</code> directive. This avoids changes in one <code class="cCode">TonePlayer</code>&#39;s volume affecting the volume of another <code class="cCode">TonePlayer</code>, if they are playing simultaneously.
+</p>
+<a name="wp443421"> </a><p class="pBody">
+In the Solaris OE and Linux operating system, <code class="cCode">VolumeControl</code> is implemented by adjusting the audio device&#39;s volume. The <code class="cCode">SET_VOLUME</code> directive is implemented by adjusting the amplitude of the wave form.
+</p>
+<a name="wp443525"> </a><h2 class="pHeading1">
+11.3	Porting Sampled Audio
+</h2>
+<a name="wp443526"> </a><p class="pBody">
+Sampled audio consists of successive digital snapshots of an analog audio signal. Each snapshot is called a sample. The accuracy of the digital approximation depends on its resolution in time and its quantization or resolution in amplitude. Resolution in time is defined as the sampling rate; resolution in amplitude is defined as the number of bits used to represent each sample.
+</p>
+<a name="wp443531"> </a><p class="pBody">
+As a point of reference, the audio data digitized for storage on compact discs is sampled 44100 times per second and represented with 16-bits per sample. 
+</p>
+<a name="wp443532"> </a><p class="pBody">
+Sampled audio data can be compressed by removing the redundancy among samples. A number of compression algorithms do this, such as MP3, ADPCM, GSM, and ULAW. Also, sampled audio can be saved in various file formats, such as WAV, AIFF, and AU.
+</p>
+<a name="wp451600"> </a><p class="pBody">
+Sampled audio support port is an optional part of the ABB. If you do support sampled audio in your port, you must be able to handle WAV audio files with 8bit, 8K, mono PCM data. You may also support additional formats, but it is not required.
+</p>
+<a name="wp451601"> </a><p class="pBody">
+This section covers porting the generation of synthetic tones. It has the topics:
+</p>
+<ul class="pBullet1"><a name="wp450749"> </a><div class="pBullet1"><li><a  href="sound.html#wp443630"><span style="color: #3366CC">Architectural Considerations</span></a></li></div>
+<a name="wp450765"> </a><div class="pBullet1Last"><li><a  href="sound.html#wp450685"><span style="color: #3366CC">Implementing the Playback of Sampled Audio</span></a></li></div>
+</ul>
+<a name="wp443630"> </a><h3 class="pHeading2">
+11.3.1	Architectural Considerations
+</h3>
+<a name="wp450582"> </a><p class="pBody">
+The ABB implementation of sampled audio has both a Java layer and native modules. The Java layer is described in <a  href="sound.html#wp450592">TABLE&#160;5</a>. The native modules are described in <a  href="sound.html#wp450606">TABLE&#160;6</a>.</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq450589">
+  <caption><a name="wp450592"> </a><div class="pTableCaption">
+TABLE&#160;5&#160;&#160;&#8211;&#160;&#160;ABB Java Programming Language Modules for Sampled Audio &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp450596"> </a><div style="text-align: left" class="pTableHead">
+Module
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp450598"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><a name="wp450600"> </a><div class="pTableText">
+<code class="cCode">com/sun/mmedia/WavPlayer.java</code>
+</div>
+</td>
+    <td><a name="wp450602"> </a><div class="pTableText">
+Implements a <code class="cCode">Player</code> to play back uncompressed WAVE files.
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+ </p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq450603">
+  <caption><a name="wp450606"> </a><div class="pTableCaption">
+TABLE&#160;6&#160;&#160;&#8211;&#160;&#160;ABB Native Modules for Sampled Audio 
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp450610"> </a><div style="text-align: left" class="pTableHead">
+Module
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp450612"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><a name="wp450614"> </a><div class="pTableText">
+<code class="cCode">src/share/native/audiornd.c</code>
+</div>
+</td>
+    <td><a name="wp450616"> </a><div class="pTableText">
+Defines a platform-independent audio renderer wrapper. 
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp450618"> </a><div class="pTableText">
+<code class="cCode">src/win32/native/waveout.c</code>
+</div>
+</td>
+    <td><a name="wp450620"> </a><div class="pTableText">
+Implements an audio renderer using the Win32 <code class="cCode">waveout</code> API.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp450622"> </a><div class="pTableText">
+<code class="cCode">src/solaris/native/waveout.c</code>
+</div>
+</td>
+    <td><a name="wp450624"> </a><div class="pTableText">
+Implements an audio renderer using <br /><code class="cCode">/dev/audio</code> on the Solaris OE, and OSS on the Linux operating system.
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+<a name="wp443632"> </a><p class="pBody">
+The basic requirements for a device to support sampled audio playback are:
+</p>
+<ul class="pBullet1"><a name="wp443633"> </a><div class="pBullet1"><li>Audio output device/hardware to generate the sound</li></div>
+<a name="wp443635"> </a><div class="pBullet1Plus"><li>Basic native APIs to access the audio devices</li></div>
+<a name="wp443636"> </a><div class="pBullet1Plus"><li>Enough I/O performance to sustain audio playback in real time.</li></div>
+<a name="wp443637"> </a><p class="pIndented1">
+The amount of I/O bandwidth required, in bytes per second, can be calculated by the following formula:
+</p>
+<a name="wp443638"> </a><p class="pIndented1">
+<code class="cCode">( sample_size_in_bytes * sample_rate * channels ) / 8</code> 
+</p>
+<a name="wp443639"> </a><p class="pIndented1">
+This assumes the audio data is not compressed (in PCM). Compressed data will have less I/O bandwidth.
+</p>
+<a name="wp443640"> </a><div class="pBullet1Last"><li>Enough CPU performance to sustain audio playback in real-time.</li></div>
+<a name="wp443641"> </a><p class="pIndented1">
+Compressed audio typically places more demands on CPU performance than uncompressed audio.
+</p>
+</ul>
+<a name="wp450656"> </a><p class="pBody">
+If your device meets the basic requirements, then there are further considerations: which audio formats the device will support, and whether there will be support for mixing audio streams. 
+</p>
+<a name="wp450658"> </a><h4 class="pHeading3">
+11.3.1.1	Supported Audio Formats
+</h4>
+<a name="wp450660"> </a><p class="pBody">
+The following parameters must be specified for the audio format:
+</p>
+<ul class="pBullet1"><a name="wp450661"> </a><div class="pBullet1"><li>Sample size &#8211; 8-bit or 16-bit per sample</li></div>
+<a name="wp450662"> </a><div class="pBullet1Plus"><li>Sampling rate &#8211; typical rates are 8000, 11025, 22050, 44100, 16000, 24000, and 48000</li></div>
+<a name="wp450663"> </a><div class="pBullet1Plus"><li>Number of channels &#8211; mono or stereo</li></div>
+<a name="wp450664"> </a><div class="pBullet1Plus"><li>Endianess for 16-bit &#8211; little endian or big endian</li></div>
+<a name="wp450665"> </a><div class="pBullet1Last"><li>Sign&#8212;signed or unsigned</li></div>
+</ul>
+<a name="wp450666"> </a><p class="pBody">
+An audio device might only be able to render certain formats of sampled audio. For example, the audio driver in the Solaris OE renders big endian data and at the sampling rates of 8000, 11025, 22050, 44100 only. In contrast, the <code class="cCode">WaveOut</code> audio driver on Windows 2000 can render only 8-bit/unsigned data or 16-bit/signed/little endian data, but it does support a wider range of the sampling rates. It is also possible that the audio driver on a particular wireless device can render 8000 sampling rate/8-bit/unsigned data only. 
+</p>
+<a name="wp450668"> </a><p class="pBody">
+When you implement the audio player, you must determine: 
+</p>
+<ul class="pBullet1"><a name="wp450669"> </a><div class="pBullet1"><li>The kind of audio format that is supported on the device platform, and </li></div>
+<a name="wp450670"> </a><div class="pBullet1Last"><li>The format of the audio data that is contained in the audio file</li></div>
+</ul>
+<a name="wp450671"> </a><p class="pBody">
+If there is a mismatch between the two, a software format converter must be provided. For example, the <code class="cCode">WavPlayer</code>&#39;s implementation on the Solaris OE in the ABB converts little endian audio data to big endian.
+</p>
+<a name="wp450673"> </a><h4 class="pHeading3">
+11.3.1.2	Support for Mixing Audio Streams
+</h4>
+<a name="wp450675"> </a><p class="pBody">
+Mixing allows you to mix multiple audio streams and render them simultaneously. Not all audio drivers support mixing. Some examples of drivers that do not support mixing are the OSS driver on Linux, the <code class="cCode">WaveOut</code> driver in Windows 95, and the <code class="cCode">/dev/audio</code> driver in the Solaris 7 OE. 
+</p>
+<a name="wp450677"> </a><p class="pBody">
+In some applications, mixing is a highly desirable feature. For example, in a game, a background audio track could be playing all the time; over the background track there could be various sound effects. 
+</p>
+<a name="wp451040"> </a><p class="pBody">
+Therefore, when you implement an audio player on a particular device platform, you must decide whether to support mixing. If you choose to support mixing and the underlying audio driver does not support it, then you must implement mixing in software.
+</p>
+<a name="wp450685"> </a><h3 class="pHeading2">
+11.3.2	Implementing the Playback of Sampled Audio 
+</h3>
+<a name="wp443644"> </a><p class="pBody">
+The code that enables audio playback can be broken up into different modules, each having a specific task. In addition to these modules, you might want to implement buffering to create a smoother playback. Finally, if a device plays back sampled audio, it should have a volume control.
+</p>
+<a name="wp451222"> </a><p class="pBody">
+This section covers these implementation issues in the topics:
+</p>
+<ul class="pBullet1"><a name="wp450776"> </a><div class="pBullet1"><li><a  href="sound.html#wp450807"><span style="color: #3366CC">Modules for Audio Playback</span></a></li></div>
+<a name="wp453398"> </a><div class="pBullet1Last"><li><a  href="sound.html#wp451055"><span style="color: #3366CC">Buffering</span></a></li></div>
+</ul>
+<a name="wp450807"> </a><h4 class="pHeading3">
+11.3.2.1	Modules for Audio Playback
+</h4>
+<a name="wp450812"> </a><p class="pBody">
+The data for playing sampled audio goes through a typical set of transformations. <a  href="sound.html#wp450865">FIGURE&#160;14</a> illustrates the typical data flow that guided the composition of the audio playback modules.
+</p>
+<a name="wp450859"> </a><p class="pBody">
+<img src="images/sounda.gif" height="91" width="539" alt="This illustration is described in the text." border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp450865"> </a><div class="pFigureCaption">
+FIGURE&#160;14&#160;&#160;&#8211;&#160;&#160;Data Flow to Play Back Sampled Audio
+<br /><br />
+</div><a name="wp450846"> </a><p class="pBody">
+The data flow in the illustration is described in the following steps:
+</p>
+<ol class="pList1"><a name="wp450847"> </a><div class="pList1"><li>Data is read from a source.</li></div>
+<a name="wp450848"> </a><div class="pList1Plus"><li>The parser parses the data. It obtains the audio format information and, if necessary, extracts the audio data from the control information. (See <a  href="sound.html#wp443674"><span style="color: #3366CC">&quot;The Parser Module</span></a>.&#8221;)</li></div>
+<a name="wp450849"> </a><div class="pList1Plus"><li>The decoder converts the audio data in the format suitable for the audio device. (See <a  href="sound.html#wp443680"><span style="color: #3366CC">The Decoder Module</span></a>.&#8221;)</li></div>
+<a name="wp450850"> </a><div class="pList1Last"><li>The renderer writes the audio data to the audio device driver. (See <a  href="sound.html#wp443687"><span style="color: #3366CC">&quot;The Renderer Module</span></a>.&#8221;)</li></div>
+</ol>
+<a name="wp450991"> </a><p class="pBody">
+In the Solaris OE, the ABB&#8217;s decoder is merged with the renderer, since it only does the simple format conversion from 8-bit/unsigned to 16-bit/signed/big endian or from 16-bit/little endian to 16-bit/big endian. For more information on the data processing performed by the converter, see the implementation of the <code class="cCode">fmtcvrt</code> function in <code class="cCode">waveout.c</code>.
+</p>
+<a name="wp443674"> </a><h5 class="pHeading4">
+The Parser Module 
+</h5>
+<a name="wp443677"> </a><p class="pBody">
+The parser verifies the validity of the WAVE file and parses the file header to obtain the audio format information. This information includes the sample rate, sample size, number of channels, endianess, sign, and the duration of the WAVE file. Typically, as in the <code class="cCode">WavPlayer</code> implementation, parsing is performed in the <code class="cCode">Player</code>&#39;s <code class="cCode">realize</code> method.
+</p>
+<a name="wp443678"> </a><p class="pBody">
+In a more complicated file format, the audio data might be interleaved with some control information. In this case, the parser must correctly interpret the control information and extract the actual audio data.
+</p>
+<a name="wp443680"> </a><h5 class="pHeading4">
+The Decoder Module
+</h5>
+<a name="wp443682"> </a><p class="pBody">
+The decoder converts the audio data to a format that can be rendered by the audio device. If the audio data in the WAVE file is in a compressed format, MP3 or GSM for example, then the decoder should decompress the data into its uncompressed format.
+</p>
+<a name="wp443684"> </a><p class="pBody">
+The Solaris OE version of the ABB uses the decoder to convert audio data to the audio format supported by the Solaris OE. The decoder uses the <code class="cCode">fmtcvrt</code> function in the native file <code class="cCode">waveout.c</code> to convert the data from 8-bit/unsigned to 16-bit/signed/big endian, and from 16-bit/little endian to 16-bit/big endian.
+</p>
+<a name="wp443687"> </a><h5 class="pHeading4">
+The Renderer Module
+</h5>
+<a name="wp443689"> </a><p class="pBody">
+The renderer is basically a wrapper for the audio device driver. It provides the function that writes the audio data to the device driver. It also provides other functionalities to control the audio device.
+</p>
+<a name="wp451069"> </a><p class="pBody">
+The ABB&#8217;s <code class="cCode">WavPlayer</code> class uses the renderer module to get control information about the playback data flow to the audio device. The following sections describe how the ABB implements these methods.
+</p>
+<a name="wp451070"> </a><p class="pBody">
+<b class="cBold">Prefetching and Deallocating Device Resources</b>
+</p>
+<a name="wp451072"> </a><p class="pBody">
+Typically, the <code class="cCode">prefetch</code> method opens the audio device and initializes it to accept the audio data in a certain audio format. Typically, the <code class="cCode">deallocate</code> method closes the audio device and releases all of the related resources.
+</p>
+<a name="wp451073"> </a><p class="pBody">
+<b class="cBold">Starting and Stopping the Device</b>
+</p>
+<a name="wp451075"> </a><p class="pBody">
+The <code class="cCode">start</code> method starts the playback thread and makes the audio device start playing the audio data. The <code class="cCode">stop</code> method pauses the playback thread and pauses the audio device.
+</p>
+<a name="wp451076"> </a><p class="pBody">
+<b class="cBold">Setting the Media Time</b>
+</p>
+<a name="wp451078"> </a><p class="pBody">
+The <code class="cCode">setMediaTime</code> method fast-forwards and rewinds the <code class="cCode">Player</code>. It first stops the <code class="cCode">Player</code> if it is playing, then it flushes the audio device to remove any audio data buffered in it. The method positions the media input, such as an <code class="cCode">InputStream</code> instance, at the target location, then calls <code class="cCode">start</code> to start the <code class="cCode">Player</code> if it was playing when <code class="cCode">setMediaTime</code> was called.
+</p>
+<a name="wp451079"> </a><p class="pBody">
+<b class="cBold">Getting the Current Media Time</b>
+</p>
+<a name="wp451081"> </a><p class="pBody">
+The <code class="cCode">getMediaTime</code> method reports the current media time. The current media time is defined as the number of microseconds measured from the beginning of the media.
+</p>
+<a name="wp453717"> </a><p class="pBody">
+<b class="cBold">Draining and Flushing the Device</b>
+</p>
+<a name="wp453718"> </a><p class="pBody">
+Conceptually, <code class="cCode">drain</code> is a blocking call: it does not return until the audio device consumes all of the audio data sent to it. The <code class="cCode">drain</code> call is useful for delivering an <code class="cCode">END-OF-MEDIA</code> event, because when the audio device finishes playing all of the audio data, it means that it has reached the end of the media.
+</p>
+<a name="wp451087"> </a><p class="pBody">
+The implementation of <code class="cCode">drain</code> in the MMAPI RI on the KVM/MIDP platform handles the call differently. Here, the RI transforms the blocking <code class="cCode">drain</code> to a non-blocking <code class="cCode">drain</code>, and periodically polls whether the audio device has finished playing. This implementation of <code class="cCode">drain</code> was chosen because the KVM runs on a single native thread. If a blocking call was made from the Java layer to the native layer, then the entire KVM would be blocked.
+</p>
+<a name="wp451088"> </a><p class="pBody">
+The <code class="cCode">flush</code> call simply discards all of the audio data buffered in the audio device.
+</p>
+<a name="wp451055"> </a><h4 class="pHeading3">
+11.3.2.2	Buffering
+</h4>
+<a name="wp453702"> </a><p class="pBody">
+Another factor that you must consider when porting the sampled audio player is the buffer size for the audio device. The larger the buffer, the smoother the playback. However, this has the disadvantage of causing a longer latency.
+</p>
+<a name="wp451207"> </a><p class="pBody">
+&#160;&#160; &#160; 
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="push.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="build.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Porting MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

@@ -1,0 +1,158 @@
+#
+# @(#)Tools.gmk	1.20 02/09/18 @(#)
+#
+# Copyright (c) 1999-2002 Sun Microsystems, Inc.  All rights reserved.
+# PROPRIETARY/CONFIDENTIAL
+# Use is subject to license terms.
+#
+#########
+#
+# Makefile for tools built that are 100% J2SE Java. To be included into
+# the top level makefile.
+#
+
+TOOLSSRCDIR = $(MIDP_DIR)/tools
+
+SHAREDSRCDIR = $(MIDP_DIR)/src/share/classes
+
+TOOLSCLASSDIR = $(BUILD_DIR)/tools_classes
+
+TOOLSCLASSPATH = $(TOOLSCLASSDIR)
+
+#
+# Variables used by targets
+#
+MIDPSRCDIR = $(SHAREDSRCDIR)/com/sun/midp
+
+KEYSTOREDIR = $(MIDPSRCDIR)/publickeystore
+KEYTOOLSOURCEFILES = \
+	$(TOOLSSRCDIR)/com/sun/midp/mekeytool/MEKeyTool.java \
+	$(TOOLSSRCDIR)/com/sun/midp/mekeytool/PublicKeyStoreBuilderBase.java \
+	$(KEYSTOREDIR)/PublicKeyStore.java \
+	$(KEYSTOREDIR)/PublicKeyInfo.java \
+	$(KEYSTOREDIR)/InputStorage.java \
+	$(TOOLSSRCDIR)/com/sun/midp/mekeytool/OutputStorage.java \
+	$(KEYSTOREDIR)/Storage.java
+
+KEYTOOLMAIN = $(TOOLSCLASSDIR)/com/sun/midp/mekeytool/MEKeyTool.class
+KEYTOOLMANIFEST = $(TOOLSCLASSDIR)/MEKeyTool.manifest
+KEYTOOLJAR = $(BINDIR)/MEKeyTool.jar
+
+EXTRACT_OBJ_DIR   = extract_obj$(g)$(ARCH_DIR)
+EXTRACT_SRC_DIR   = $(TOOLSSRCDIR)/extractOffset
+EXTRACT_FLAGS     = -DNEED_GETOPT
+EXTRACT_OFFSETS_SRC = \
+	$(EXTRACT_SRC_DIR)/classfile.c \
+	$(EXTRACT_SRC_DIR)/dump_offsets.c
+EXTRACT_OBJ_FILES = \
+	$(patsubst $(EXTRACT_SRC_DIR)/%.c,$(EXTRACT_OBJ_DIR)/%.o,$(EXTRACT_OFFSETS_SRC))
+
+JADTOOLSOURCEFILES = \
+	$(TOOLSSRCDIR)/com/sun/midp/jadtool/AppDescriptor.java \
+	$(TOOLSSRCDIR)/com/sun/midp/jadtool/AppDescriptorException.java \
+	$(TOOLSSRCDIR)/com/sun/midp/jadtool/Base64.java \
+	$(TOOLSSRCDIR)/com/sun/midp/jadtool/JadWriter.java \
+	$(TOOLSSRCDIR)/com/sun/midp/jadtool/JadTool.java \
+	$(TOOLSSRCDIR)/com/sun/midp/jadtool/SignCert.java \
+	$(MIDPSRCDIR)/io/Properties.java \
+	$(MIDPSRCDIR)/midletsuite/JadProperties.java \
+	$(MIDPSRCDIR)/midletsuite/InvalidJadException.java
+
+JADTOOLMAIN = $(TOOLSCLASSDIR)/com/sun/midp/jadtool/JadTool.class
+JADTOOLMANIFEST = $(TOOLSCLASSDIR)/JadTool.manifest
+JADTOOLJAR = $(BINDIR)/JadTool.jar
+
+#
+# Targets
+#
+all_tools: keytool extractOffsets jadtool
+
+clean_tools:
+	-@rm -fr $(KEYTOOLJAR) $(TOOLSCLASSDIR) $(EXTRACT_OBJ_DIR) \
+		$(JADTOOLJAR)
+
+$(EXTRACT_OBJ_DIR)/%.o: $(EXTRACT_SRC_DIR)/%.c
+	@echo "... $@"
+	@$(CC) $(EXTRACT_FLAGS) $(CFLAGS) $(CC_OUTPUT)$@ -c $<
+
+$(EXTRACT_OBJ_DIR) :
+	-@mkdir -p $@
+
+$(EXTRACT_OFFSETS_CMD): $(EXTRACT_OBJ_DIR) $(EXTRACT_OBJ_FILES)
+	@echo ... $@
+	@$(LD) $(LINKER_OUTPUT)$@ $(EXTRACT_OBJ_FILES) $(LIBS)  
+
+$(TOOLSCLASSDIR):
+	@echo ... $@
+	@mkdir -p $(TOOLSCLASSDIR)
+
+keytool: $(KEYTOOLJAR)
+
+$(KEYTOOLJAR): $(BINDIR) $(KEYTOOLMAIN) $(KEYTOOLMANIFEST)
+	@echo ... $@
+	@(cd $(TOOLSCLASSDIR); $(BOOTDIR)/bin/jar cfm MEKeyTool.jar \
+		MEKeyTool.manifest \
+		com/sun/midp/publickeystore com/sun/midp/mekeytool)
+	@cp -f $(TOOLSCLASSDIR)/MEKeyTool.jar $(KEYTOOLJAR)
+
+$(KEYTOOLMAIN): $(TOOLSCLASSDIR) $(KEYTOOLSOURCEFILES)
+	@echo ... $@
+	@$(JAVAC) -g:none -d $(TOOLSCLASSDIR) -classpath "$(TOOLSCLASSPATH)" \
+		$(KEYTOOLSOURCEFILES)
+
+$(KEYTOOLMANIFEST): 
+	@echo ... $@
+	@echo "Main-Class: com.sun.midp.mekeytool.MEKeyTool" > $@
+
+keystore: $(KEYTOOLJAR) $(STORAGEDIR) $(CA_KEYSTORE) \
+	$(BINDIR)/j2se_test_keystore.bin
+
+$(CA_KEYSTORE): $(MIDP_DIR)/tools/com/sun/midp/mekeytool/j2se_test_keystore.bin
+	@echo ... $@
+	@if [ -f $(CA_KEYSTORE) ]; then rm $(CA_KEYSTORE); fi
+	@$(JAVA) -jar $(KEYTOOLJAR) -import -keystore \
+	   $(MIDP_DIR)/tools/com/sun/midp/mekeytool/j2se_test_keystore.bin \
+	   -alias publicca -storepass keystorepwd -MEkeystore $(CA_KEYSTORE)
+	@$(JAVA) -jar $(KEYTOOLJAR) -import -keystore \
+	   $(MIDP_DIR)/tools/com/sun/midp/mekeytool/j2se_test_keystore.bin \
+	   -alias suntestca -storepass keystorepwd -MEkeystore $(CA_KEYSTORE) \
+	   -domain trusted
+	@$(JAVA) -jar $(KEYTOOLJAR) -import -keystore \
+	   $(MIDP_DIR)/tools/com/sun/midp/mekeytool/j2se_test_keystore.bin \
+	   -alias dummyca -storepass keystorepwd -MEkeystore $(CA_KEYSTORE) \
+	   -domain trusted
+
+$(BINDIR)/j2se_test_keystore.bin: $(MIDP_DIR)/tools/com/sun/midp/mekeytool/j2se_test_keystore.bin
+	@echo ... $@
+	@cp -f \
+	  $(MIDP_DIR)/tools/com/sun/midp/mekeytool/j2se_test_keystore.bin \
+	    $(BINDIR)
+	@cp -f $(MIDP_DIR)/tools/com/sun/midp/mekeytool/readme.txt $(BINDIR)
+
+jadtool: $(JADTOOLJAR)
+
+$(JADTOOLJAR): $(JADTOOLMAIN) $(JADTOOLMANIFEST)
+	@echo ... $@
+	@(cd $(TOOLSCLASSDIR); $(BOOTDIR)/bin/jar cfm JadTool.jar \
+		JadTool.manifest com/sun/midp/midletsuite \
+		com/sun/midp/io com/sun/midp/jadtool)
+	@cp -f $(TOOLSCLASSDIR)/JadTool.jar $(JADTOOLJAR)
+
+$(JADTOOLMAIN): $(TOOLSCLASSDIR) $(JADTOOLSOURCEFILES)
+	@echo ... $@
+	@$(JAVAC) -g:none -d $(TOOLSCLASSDIR) -classpath "$(TOOLSCLASSPATH)" \
+		$(JADTOOLSOURCEFILES)
+
+$(JADTOOLMANIFEST): 
+	@echo ... $@
+	@echo "Main-Class: com.sun.midp.jadtool.JadTool" > $@
+
+clean :: clean_tools
+
+reallyclean :: clean
+	-@rm -fr $(CA_KEYSTORE) $(TOOLSCLASSDIR) extract_obj extract_obj_g
+
+# 
+# Phonies to avoid accidents.
+#
+.PHONY: keystore all_tools clean_tools

@@ -1,0 +1,427 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/29/02 14:46:39" />
+    <title>Creating a MIDlet</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="intro.html" />
+    <link rel="Next" href="compile.html" />
+    <link rel="Index" href="midletsIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="intro.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="compile.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="midletsIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp9095"> </a><h2 class="pChapNum">
+Chapter &#160; 2
+</h2>
+<a name="wp1001452"> </a><h2 class="pNewHTMLPage">
+Creating a MIDlet
+</h2>
+<hr class="pHr"/>
+<a name="wp1001453"> </a><p class="pBody">
+This chapter covers the basics of writing a MIDlet. It contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp1001457"> </a><div class="pBullet1"><li><a  href="create.html#wp997724"><span style="color: #3366CC">Getting Started</span></a></li></div>
+<a name="wp997757"> </a><div class="pBullet1Plus"><li><a  href="create.html#wp998006"><span style="color: #3366CC">Constructing Objects</span></a></li></div>
+<a name="wp998212"> </a><div class="pBullet1Plus"><li><a  href="create.html#wp998210"><span style="color: #3366CC">Handling User Input</span></a></li></div>
+<a name="wp997901"> </a><div class="pBullet1Plus"><li><a  href="create.html#wp998463"><span style="color: #3366CC">Creating the Life Cycle Methods</span></a></li></div>
+<a name="wp1000351"> </a><div class="pBullet1Last"><li><a  href="create.html#wp1001516"><span style="color: #3366CC">APIs and Security</span></a></li></div>
+</ul>
+<a name="wp997880"> </a><p class="pBody">
+The Hello MIDlet example is shown in the following figure. The MIDlet has a single screen that has Hello MIDlet as its title. The screen is a text box that accepts edits and initially displays the string &#8220;Test string.&#8221; It has a single abstract command with the label Exit.
+</p>
+<a name="wp997945"> </a><p class="pBody">
+<img src="images/hello-textbox.gif" height="221" width="192" alt="Hello MIDlet" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997953"> </a><div class="pFigureCaption">
+FIGURE&#160;6&#160;&#160;&#8211;&#160;&#160;Hello World MIDlet
+<br /><br />
+</div><a name="wp997890"> </a><p class="pBody">
+The code for the Hello MIDlet is in the <em class="cEmphasis">midpInstallDir</em><code class="cCode">\src\example</code> directory, where <em class="cEmphasis">midpInstallDir</em> is the directory that holds your installation of the MIDP Reference Implementation. The code is reproduced in <a  href="appx-helloworld.html#wp997084"><span style="color: #3366CC">Appendix&#160;A,  &quot;Code for the Hello MIDlet</span></a>.&#8221;
+</p>
+<a name="wp997724"> </a><h2 class="pHeading1">
+Getting Started
+</h2>
+<a name="wp998003"> </a><p class="pBody">
+MIDlets must extend the <code class="cCode">MIDlet</code> class. They often also implement the <code class="cCode">CommandListener</code> interface as a matter of convenience. The <code class="cCode">CommandListener</code> interface contains the method that the MIDP implementation calls to notify your application that the user has selected an abstract command.
+</p>
+<a name="wp998004"> </a><p class="pBody">
+The <code class="cCode">MIDlet</code> class is in the package <code class="cCode">javax.microedition.midlet</code>. The <code class="cCode">CommandListener</code> interface is in the <code class="cCode">javax.microedition.lcdui</code> package, as are the structured screens, unstructured screens, and abstract commands.
+</p>
+<a name="wp998032"> </a><p class="pBody">
+Initially the file for the Hello World MIDlet could look like this:
+</p>
+<a name="wp1001603"> </a><div class="pCodeCaption">
+CODE&#160;EXAMPLE&#160;1 	Imports and Initial Class Definition for HelloMIDlet
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+<span class="cUserType">import javax.microedition.midlet.*;</span><a name="wp998035"> </a>
+<span class="cUserType">import javax.microedition.lcdui.*;</span><a name="wp998036"> </a>
+<a name="wp998037"> </a>
+/**<a name="wp998906"> </a>
+&#160;* An example MIDlet with simple &quot;Hello&quot; text and an Exit command.<a name="wp998907"> </a>
+&#160;*/<a name="wp998908"> </a>
+public class HelloMIDlet <span class="cUserType">extends MIDlet implements CommandListener</span> {<a name="wp998043"> </a>
+&#160;&#160;&#160; // MIDlet will be defined here.<a name="wp998048"> </a>
+}<a name="wp998049"> </a>
+</pre></div>
+<a name="wp998006"> </a><h2 class="pHeading1">
+Constructing Objects
+</h2>
+<a name="wp998055"> </a><p class="pBody">
+A MIDlet constructor should perform any setup that should be done only once in the lifetime of the MIDlet. Typically the constructor should:
+</p>
+<ul class="pBullet1"><a name="wp998793"> </a><div class="pBullet1"><li>Instantiate the MIDlet&#8217;s screens and abstract commands. Screens that may not appear, such as alerts, are not typically created at MIDlet instantiation. Instead, they are created only when they are needed.</li></div>
+<a name="wp1001406"> </a><div class="pBullet1Plus"><li>Associate screens with their abstract commands. All screens should have at least one abstract command. A single abstract command can be associated with multiple screens.</li></div>
+<a name="wp998801"> </a><div class="pBullet1Plus"><li>Assign a listener to each screen. The listener is the class that implements the <code class="cCode">CommandListener</code> interface; for the example it&#8217;s the <code class="cCode">HelloMIDlet</code> class.</li></div>
+<a name="wp998915"> </a><div class="pBullet1Last"><li>Set static or instance fields. A MIDlet class typically has fields that hold its screens and abstract commands.</li></div>
+</ul>
+<a name="wp998920"> </a><p class="pBody">
+The constructor can also set the MIDlet&#8217;s display to the initial screen of the MIDlet. This task could also be done in the <code class="cCode">startApp</code> method; see <a  href="create.html#wp998463"><span style="color: #3366CC">&quot;Creating the Life Cycle Methods&quot; </span></a> for more information.
+</p>
+<a name="wp998075"> </a><p class="pBody">
+The Hello MIDlet uses a structured screen called a text box, which the MIDlet stores in an instance variable named <code class="cCode">textBox</code>. Because the text box does not need to store any additional data or implement any additional functionality, it can be an instance of the <code class="cCode">TextBox</code> class. (If it did require additional functionality, such as the ability to query a database to get its initial string, you would create a subclass of <code class="cCode">TextBox</code> to instantiate.)
+</p>
+<a name="wp1000658"> </a><p class="pBody">
+You can create text boxes with a title, initial text, the maximum number of characters the text box can hold, and a value that represents any <em class="cEmphasis">constraints</em> and <em class="cEmphasis">modifiers</em>. A constraint is a request that the MIDP implementation uses to limit user input. A modifier is a request that the MIDP implementation uses to change the behavior of text entry and display.
+</p>
+<a name="wp998333"> </a><p class="pBody">
+The Hello MIDlet&#8217;s text box has the title &#8220;Hello MIDlet&#8221; and the initial text &#8220;Test string.&#8221; It can hold up to 256 characters. It has the constraint <code class="cCode">TextField.ANY</code>, which means the text box may contain any text; for example, it is not limited to holding only numbers. It also has the modifier <code class="cCode">TextField.UNEDITABLE</code>, which means that the user is not permitted to change what is in the text box.
+</p>
+<a name="wp998058"> </a><p class="pBody">
+The Hello MIDlet also has a single abstract command that enables users to quit the application. When you create an abstract command you need three pieces of information:
+</p>
+<ul class="pBullet1"><a name="wp998115"> </a><div class="pBullet1"><li>Label &#8212; A string that MIDP can show to the user</li></div>
+<a name="wp998118"> </a><div class="pBullet1Plus"><li>Type &#8212; A constant that tells MIDP the category of action that the user will take with the command, so that MIDP can provide the correct user interface</li></div>
+<a name="wp1000725"> </a><p class="pIndented1">
+For example, some devices have a key typically used to return to a previous state. The MIDP implementation might try to always assign a command of type <code class="cCode">Command.BACK</code> to this key.
+</p>
+<a name="wp1000733"> </a><div class="pBullet1Last"><li>Priority &#8212; A positive integer that identifies how important the command is compared to other commands of the same type on that screen; lower integers are more important</li></div>
+</ul>
+<a name="wp1000317"> </a><p class="pBody">
+The Hello MIDlet&#8217;s command is associated with the text box. The command in the Hello MIDlet has the label Quit, type <code class="cCode">Command.EXIT</code>, and priority one.
+</p>
+<a name="wp998876"> </a><p class="pBody">
+<a  href="create.html#wp1001608">CODE&#160;EXAMPLE&#160;2</a> shows the constructor for the Hello MIDlet.
+</p>
+<a name="wp1001608"> </a><div class="pCodeCaption">
+CODE&#160;EXAMPLE&#160;2 	Constructor for HelloMIDlet
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+/**<a name="wp998931"> </a>
+&#160;*&#160;Constructs the HelloMIDlet, its screen, and<a name="wp998932"> </a>
+&#160;*&#160;its command. It associates the screen and command,<a name="wp998933"> </a>
+&#160;*&#160;and caches the MIDlet&#8217;s display.<a name="wp998934"> </a>
+&#160;*/<a name="wp998935"> </a>
+<span class="cUserType">public HelloMIDlet()</span> {<a name="wp999523"> </a>
+&#160;&#160;&#160;&#160;<span class="cUserType">// Create the abstract command</span><a name="wp999524"> </a>
+&#160;&#160;&#160;&#160;exitCommand = new Command(&quot;Exit&quot;, Command.EXIT, 1);<a name="wp999525"> </a>
+<a name="wp999509"> </a>
+&#160;&#160;&#160;&#160;<span class="cUserType">// Create the screen and give it a command and a listener</span><a name="wp999510"> </a>
+&#160;&#160;&#160;&#160;textBox = new TextBox(&quot;Hello MIDlet&quot;, &quot;Test string&quot;,<a name="wp999511"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;256,<a name="wp999512"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;TextField.ANY | TextField.UNEDITABLE);<a name="wp1001378"> </a>
+&#160;&#160;&#160;&#160;textBox.addCommand(exitCommand);<a name="wp999513"> </a>
+&#160;&#160;&#160;&#160;textBox.setCommandListener(this);<a name="wp999514"> </a>
+<a name="wp999515"> </a>
+&#160;&#160;&#160;&#160;<span class="cUserType">// Set the MIDlet&#39;s display to its initial screen</span><a name="wp999516"> </a>
+&#160;&#160;&#160;&#160;display = Display.getDisplay(this);<a name="wp999517"> </a>
+&#160;&#160;&#160;&#160;display.setCurrent(textBox);<a name="wp999518"> </a>
+}<a name="wp998150"> </a>
+<a name="wp1000755"> </a>
+</pre></div>
+<a name="wp1000756"> </a><p class="pBody">
+The variables that it sets, <code class="cCode">textBox</code>, <code class="cCode">exitCommand</code>, and <code class="cCode">display</code>, are declared prior to defining the class. The following code fragment shows the fields in the Hello MIDlet:
+</p>
+<a name="wp1001616"> </a><div class="pCodeCaption">
+CODE&#160;EXAMPLE&#160;3 	Fields of HelloMIDlet
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+// Fields for the screens, commands, and display of this MIDlet<a name="wp1000744"> </a>
+private TextBox textBox;<a name="wp1000745"> </a>
+private Command exitCommand;<a name="wp1000746"> </a>
+private Display display;<a name="wp1000747"> </a>
+</pre></div>
+<a name="wp998210"> </a><h2 class="pHeading1">
+Handling User Input
+</h2>
+<a name="wp998513"> </a><p class="pBody">
+The MIDP implementation notifies your application every time the user carries out an action (an abstract command) associated with a screen. It does this by calling the <code class="cCode">commandAction</code> method of the <code class="cCode">CommandListener</code> interface on the screen&#8217;s listener.
+</p>
+<a name="wp998514"> </a><p class="pBody">
+The <code class="cCode">commandAction</code> method takes as arguments the action that the user has chosen and the screen that was being displayed. (You need to know the screen because you can associate the same abstract command with multiple screens.) 
+</p>
+<a name="wp998508"> </a><p class="pBody">
+In MIDlets set up like the example, with one class listening for commands, the <code class="cCode">commandAction</code> method typically contains an <code class="cCode">if</code> statement. For example, in natural language, &#8220;If the user chooses Quit, exit the MIDlet. If the user chooses Go Back, then if the screen is <code class="cCode">ScreenB</code>, set the display to <code class="cCode">ScreenA</code>, if the screen is <code class="cCode">ScreenC</code>, set the display to <code class="cCode">ScreenB</code>, and so on.&#8221; The following code example shows the <code class="cCode">commandAction</code> method for the Hello MIDlet:
+</p>
+<a name="wp1001612"> </a><div class="pCodeCaption">
+CODE&#160;EXAMPLE&#160;4 	The commandAction Method of HelloMIDlet
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+/*<a name="wp999249"> </a>
+&#160;* Responds to the user&#8217;s selection of abstract commands.<a name="wp999250"> </a>
+&#160;* This MIDlet has only an exit command, this method responds<a name="wp999251"> </a>
+&#160;* by cleaning up and notifying the system that the MIDlet<a name="wp999252"> </a>
+&#160;* has been destroyed.<a name="wp999253"> </a>
+&#160;*<a name="wp999254"> </a>
+&#160;* @param command the command the user has chosen<a name="wp999255"> </a>
+&#160;* @param screen the displayable shown when the user chose the<a name="wp999256"> </a>
+&#160;* command<a name="wp999320"> </a>
+&#160;*/<a name="wp999257"> </a>
+<span class="cUserType">public void commandAction(Command command, Displayable screen)</span> {<a name="wp999258"> </a>
+&#160;&#160;&#160;&#160;if (command == exitCommand) {<a name="wp999259"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="cUserType">// Always make these two calls when exiting a MIDlet.</span><a name="wp999260"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;destroyApp(false);<a name="wp999261"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;notifyDestroyed();<a name="wp999262"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp999263"> </a>
+}<a name="wp999264"> </a>
+</pre></div>
+<a name="wp998463"> </a><h2 class="pHeading1">
+Creating the Life Cycle Methods
+</h2>
+<a name="wp998552"> </a><p class="pBody">
+There are three life cycle methods in the <code class="cCode">MIDlet</code> class. The methods correspond to the states in the MIDlet life cycle discussed in <a  href="intro.html#wp997508"><span style="color: #3366CC">Section&#160; &quot;MIDlet Life Cycle&quot; </span></a>. The methods are:
+</p>
+<ul class="pBullet1"><a name="wp998572"> </a><div class="pBullet1"><li><code class="cCode">startApp</code> &#8212; Notifies the MIDlet that it has just been moved from the Paused state to the Active state. If your MIDlet requires any shared resources when it runs, have this method aquire them. It can also set the initial screen if the MIDlet&#8217;s constructor hasn&#8217;t done that. It should not set subsequent screens.</li></div>
+<a name="wp998601"> </a><div class="pBullet1Plus"><li><code class="cCode">pauseApp</code> &#8212;Notifies the MIDlet that it has just been moved from the Active state to the Paused state. If the MIDlet is holding shared resources, this method should release them. (The <code class="cCode">startApp</code> method should reaquire them when the MIDlet becomes active again.) If the MIDlet should restart with a particular screen, this method should set it by calling the <code class="cCode">setCurrent</code> method.</li></div>
+<a name="wp998701"> </a><div class="pBullet1Last"><li><code class="cCode">destroyApp</code> &#8212; Notifies the MIDlet that it should prepare to enter the Destroyed state by releasing its resources and saving any persistent state. Unlike the other life cycle methods, this method takes an argument indicating whether the MIDlet must be destroyed. If the argument is <code class="cCode">false</code> (destruction is requested but not required), you can have the MIDlet request to be destroyed at a later time by having the method throw a <code class="cCode">MIDletStateChangeException</code>. The MIDP system could, in response, not change the state of the MIDlet and call the <code class="cCode">destroy</code> method again later.</li></div>
+</ul>
+<a name="wp1001621"> </a><p class="pBody">
+The life cycle methods are declared <code class="cCode">abstract</code>; you must implement them in your MIDlet subclass in order to instantiate your MIDlet. The following code sample shows the life cycle methods of the Hello MIDlet. Because the MIDlet does not use shared resources, the methods are empty.
+</p>
+<a name="wp1001626"> </a><div class="pCodeCaption">
+CODE&#160;EXAMPLE&#160;5 	Life Cycle Methods of HelloMIDlet
+</div>
+<div class="pPreformatted"><pre class="pPreformatted">
+/**<a name="wp1001623"> </a>
+&#160;* Starts the MIDlet; this method does nothing because<a name="wp999547"> </a>
+&#160;* the MIDlet does not require any shared resources.<a name="wp999548"> </a>
+&#160;*/<a name="wp999049"> </a>
+<span class="cUserType">public void startApp()</span> {<a name="wp999050"> </a>
+}<a name="wp999052"> </a>
+<a name="wp999053"> </a>
+/**<a name="wp999054"> </a>
+&#160;* Pauses the MIDlet; this method does nothing because<a name="wp999055"> </a>
+&#160;* there are no background activities or shared resources<a name="wp999056"> </a>
+&#160;* to close.<a name="wp999057"> </a>
+&#160;*/<a name="wp999058"> </a>
+<span class="cUserType">public void pauseApp()</span> {<a name="wp999059"> </a>
+}<a name="wp999060"> </a>
+<a name="wp999061"> </a>
+/**<a name="wp999062"> </a>
+&#160;* Destroys the MIDlet; this method does nothing because<a name="wp999063"> </a>
+&#160;* there is nothing to cleanup that is not handled by the<a name="wp999064"> </a>
+&#160;* garbage collector.<a name="wp999065"> </a>
+&#160;*<a name="wp999219"> </a>
+&#160;*&#160;@param unconditional Whether the MIDlet must be destroyed.<a name="wp999225"> </a>
+&#160;*&#160;If true, the MIDlet must cleanup and release all resources.<a name="wp999235"> </a>
+&#160;*&#160;If false the MIDlet may throw a MIDletStateChangeException to<a name="wp999238"> </a>
+&#160;*&#160;indicate it does not want to be destroyed at this time.<a name="wp999245"> </a>
+&#160;*/<a name="wp999221"> </a>
+<span class="cUserType">public void destroyApp(boolean unconditional)</span> {<a name="wp999556"> </a>
+} <a name="wp1001513"> </a>
+<a name="wp1001514"> </a>
+</pre></div>
+<a name="wp1001516"> </a><h2 class="pHeading1">
+APIs and Security
+</h2>
+<a name="wp1001335"> </a><p class="pBody">
+The MIDP 2.0 security model protects security-sensitive APIs. The APIs in the following table are security sensitive. If you use them in your MIDlet, you must make that known when you package it into a MIDlet suite. (See <a  href="package.html#wp997993"><span style="color: #3366CC">&quot;Creating a JAR File&quot; </span></a> for instructions.)</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq1001336">
+  <caption><a name="wp1001338"> </a><div class="pTableCaption">
+TABLE&#160;2&#160;&#160;&#8211;&#160;&#160;APIs That Require Permission &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp1001342"> </a><div style="text-align: left" class="pTableHead">
+API
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp1001344"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.HttpConnection<a name="wp1001346"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1001348"> </a><div class="pTableText">
+API for making HTTP requests
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.HttpsConnection<a name="wp1001350"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1001352"> </a><div class="pTableText">
+API for making secure HTTP requests
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector<a name="wp1001354"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1001356"> </a><div class="pTableText">
+API for creating connections for the protocols:
+</div>
+<div class="pTableBullet"><ul class="pTableBullet">
+<a name="wp1001357"> </a><div class="pTableBullet"><li><code class="cCode">HTTP</code></li></div>
+<a name="wp1001358"> </a><div class="pTableBullet"><li><code class="cCode">HTTPS</code></li></div>
+<a name="wp1001359"> </a><div class="pTableBullet"><li><code class="cCode">Datagram</code></li></div>
+<a name="wp1001360"> </a><div class="pTableBullet"><li><code class="cCode">Datagramreceiver</code></li></div>
+<a name="wp1001361"> </a><div class="pTableBullet"><li><code class="cCode">Socket</code></li></div>
+<a name="wp1001362"> </a><div class="pTableBullet"><li><code class="cCode">Serversocket</code></li></div>
+<a name="wp1001363"> </a><div class="pTableBullet"><li><code class="cCode">SSL</code></li></div>
+<a name="wp1001364"> </a><div class="pTableBullet"><li><code class="cCode">Comm</code></li></div>
+</ul></div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.PushRegistry<a name="wp1001366"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1001368"> </a><div class="pTableText">
+API for setting up the MIDlet for using <em class="cEmphasis">push</em> functionality (that is, setting up the MIDlet so that the device can launch it to handle incoming messages)
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+<a name="wp1000864"> </a><p class="pBody">
+Not all APIs are security sensitive. The following table shows the APIs that all MIDlets can freely use:</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq1001079">
+  <caption><a name="wp1001082"> </a><div class="pTableCaption">
+TABLE&#160;3&#160;&#160;&#8211;&#160;&#160;APIs That Do Not Require Permission
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp1001086"> </a><div style="text-align: left" class="pTableHead">
+API
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp1001088"> </a><div style="text-align: left" class="pTableHead">
+Description
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.rms<a name="wp1001090"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1001092"> </a><div class="pTableText">
+API for using the persistent storage on the device
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.midlet<a name="wp1001094"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1001096"> </a><div class="pTableText">
+The MIDlet class and other MIDlet life cycle APIs
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.lcdui<a name="wp1001098"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1001100"> </a><div class="pTableText">
+User interface API
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.lcdui.game<a name="wp1001102"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1001104"> </a><div class="pTableText">
+API for MIDlets that are games
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.media and javax.microedition.media.controls <a name="wp1001106"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1001108"> </a><div class="pTableText">
+API for playing sound on the device
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="intro.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="compile.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="midletsIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Creating MIDlet Suites <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

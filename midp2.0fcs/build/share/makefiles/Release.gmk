@@ -1,0 +1,154 @@
+#
+# @(#)Release.gmk	1.42 02/09/18 @(#)
+#
+# Copyright (c) 1999-2002 Sun Microsystems, Inc.  All rights reserved.
+# PROPRIETARY/CONFIDENTIAL
+# Use is subject to license terms.
+#
+#########
+#
+# Peform release engineering tasks.
+#
+# release-all      Build all release engineering targets
+#
+# midp-dist        Build a full distribution for current release, 
+#		   including binaries, documentation and source code.
+#
+# midp-dist-p      Build a full distribution for current release, 
+#		   including binaries, documentation and source code.
+#                  Also build the profiling enabled executable for 
+#                  performance comparison with prior releases
+#
+# midp-src         Source bundle for exchange with reference 
+#		   implementation partners.
+#
+# midp-docs        Build documentation only.
+
+# RE delivables are linked to fixed names.
+#
+SRC_BUNDLE_LINK = j2me_midp_src.zip
+DOC_BUNDLE_LINK = j2me_midp_docs.zip
+BIN_BUNDLE_LINK = j2me_midp_dist.zip
+
+VERSION	     = 2.0
+RELEASE      = dist
+
+VERSION_NAME = $(subst .,_,$(VERSION))
+RELEASE_DATE = $(shell date +"%d-%h-%Y")
+SRC_BUNDLE   = j2me_midp-$(VERSION_NAME)-$(RELEASE)-src-$(RELEASE_DATE).zip
+DOC_BUNDLE   = j2me_midp+cldc-$(VERSION_NAME)-$(RELEASE)-docs-$(RELEASE_DATE).zip
+BIN_BUNDLE   = j2me_midp-$(VERSION_NAME)-$(PLATFORM)-$(ARCH)-$(RELEASE).zip
+BIN_DIR	     = midp-$(RELEASE)
+BIN_DIR_P    = midp-$(RELEASE)-p
+
+#
+# Targets.
+#
+release-all : release-targets midp-dist 
+
+release-targets :
+	@echo $(SRC_BUNDLE_LINK) -\> $(SRC_BUNDLE)
+	@echo $(DOC_BUNDLE_LINK) -\> $(DOC_BUNDLE)
+	@echo $(BIN_BUNDLE_LINK) -\> $(BIN_BUNDLE)
+
+# do not include the SSL source and JCOV related files for now 
+midp-src :
+	chmod a+x  $(MIDP_DIR)/build/share/tools/sanityck
+	(cd $(MIDP_DIR) ;\
+	  find src/share src/solaris src/win32 src/example \
+	       build/share build/solaris build/win32 \
+	       build/linux tools -type f | \
+	  grep SCCS/s. | sed -e 's/SCCS\/s.//' | \
+	  grep -v "midp/ssl" | grep -v crypto | \
+	  grep -v ".jcov" | \
+          grep -v spaceinv | grep -v pong | grep -v starcruiser | \
+	zip -q@ $(SRC_BUNDLE))
+	mv $(MIDP_DIR)/$(SRC_BUNDLE) ./$(SRC_BUNDLE)
+
+midp-docs : docs_html
+	(cd doc ; zip -qr ../$(DOC_BUNDLE) html)
+
+# put the binary parts of SSL in the source bundle
+midp-dist:: midp-src midp-docs all
+	rm -fr $(BIN_DIR)
+	mkdir -p $(BIN_DIR)/bin
+	cp bin/$(MIDP_CMD)$(g)$(EXE) $(BIN_DIR)/bin
+	if [ -f "$(PREVERIFY_CMD)" ];then \
+	    cp $(PREVERIFY_CMD) $(BIN_DIR)/bin; \
+	fi
+	cp bin/readme.txt $(BIN_DIR)/bin
+	cp bin/j2se_test_keystore.bin $(BIN_DIR)/bin
+	cp bin/MEKeyTool.jar $(BIN_DIR)/bin
+	cp bin/JadTool.jar $(BIN_DIR)/bin
+	mkdir -p $(BIN_DIR)/appdb
+	cp appdb/* $(BIN_DIR)/appdb
+	mkdir -p $(BIN_DIR)/lib
+	cp lib/* $(BIN_DIR)/lib
+	mkdir -p $(BIN_DIR)/docs
+	cp -r $(DOC_DIR) $(BIN_DIR)/docs 
+	(cd $(BIN_DIR)/ ; $(UNZIP) -q ../$(SRC_BUNDLE))
+	cp -r classes $(BIN_DIR)/
+	mkdir -p $(BIN_DIR)/example
+	cp *.jar *.jad $(BIN_DIR)/example
+
+midp-dist-p:: midp-src midp-docs profile
+	rm -fr $(BIN_DIR_P)
+	mkdir -p $(BIN_DIR_P)/bin
+	cp bin/$(MIDP_CMD)$(g)$(EXE) $(BIN_DIR_P)/bin
+	if [ -f "$(PREVERIFY_CMD)" ]; then \
+	    cp $(PREVERIFY_CMD) $(BIN_DIR_P)/bin; \
+	fi
+	mkdir -p $(BIN_DIR_P)/appdb
+	cp appdb/* $(BIN_DIR_P)/appdb
+	mkdir -p $(BIN_DIR_P)/lib
+	cp lib/* $(BIN_DIR_P)/lib
+	mkdir -p $(BIN_DIR_P)/docs
+	cp -r $(DOC_DIR) $(BIN_DIR_P)/docs 
+	(cd $(BIN_DIR_P)/ ; $(UNZIP) -q ../$(SRC_BUNDLE))
+	cp -r classes $(BIN_DIR_P)/
+	mkdir -p $(BIN_DIR_P)/example
+	cp *.jar *.jad $(BIN_DIR_P)/example
+
+ifneq ($(RELEASE_HTTPS), false)
+midp-dist:: ssl
+	if [ -d "$(BIN_DIR)/build/$(PLATFORM)/$(VM)" ]; then \
+	    mkdir -p $(BIN_DIR)/build/$(PLATFORM)/$(VM)/ssl_obj; \
+	    cp -r ssl_obj$(g)/* $(BIN_DIR)/build/$(PLATFORM)/$(VM)/ssl_obj; \
+	    mkdir -p $(BIN_DIR)/build/$(PLATFORM)/$(VM)/ssl_obj_g; \
+	    cp -r ssl_obj$(g)/* $(BIN_DIR)/build/$(PLATFORM)/$(VM)/ssl_obj_g; \
+	    cp ssl.jar $(BIN_DIR)/build/$(PLATFORM)/$(VM); \
+	else \
+	    mkdir -p $(BIN_DIR)/build/$(PLATFORM)/ssl_obj; \
+	    cp -r ssl_obj$(g)/* $(BIN_DIR)/build/$(PLATFORM)/ssl_obj; \
+	    mkdir -p $(BIN_DIR)/build/$(PLATFORM)/ssl_obj_g; \
+	    cp -r ssl_obj$(g)/* $(BIN_DIR)/build/$(PLATFORM)/ssl_obj_g; \
+	    cp ssl.jar $(BIN_DIR)/build/$(PLATFORM); \
+	fi
+	rm -f $(BIN_DIR)/example/ssl.jar
+	rm -fr $(BIN_DIR)/classes/com/sun/midp/ssl
+
+midp-dist-p:: ssl
+	if [ -d "$(BIN_DIR_P)/build/$(PLATFORM)/$(VM)" ]; then \
+	    mkdir -p $(BIN_DIR_P)/build/$(PLATFORM)/$(VM)/ssl_obj; \
+	    cp -r ssl_obj/* $(BIN_DIR_P)/build/$(PLATFORM)/$(VM)/ssl_obj; \
+	    mkdir -p $(BIN_DIR_P)/build/$(PLATFORM)/$(VM)/ssl_obj_g; \
+	    cp -r ssl_obj/* $(BIN_DIR_P)/build/$(PLATFORM)/$(VM)/ssl_obj_g; \
+	    cp ssl.jar $(BIN_DIR_P)/build/$(PLATFORM)/$(VM); \
+	else \
+	    mkdir -p $(BIN_DIR_P)/build/$(PLATFORM)/ssl_obj; \
+	    cp -r ssl_obj/* $(BIN_DIR_P)/build/$(PLATFORM)/ssl_obj; \
+	    mkdir -p $(BIN_DIR_P)/build/$(PLATFORM)/ssl_obj_g; \
+	    cp -r ssl_obj/* $(BIN_DIR_P)/build/$(PLATFORM)/ssl_obj_g; \
+	    cp ssl.jar $(BIN_DIR_P)/build/$(PLATFORM); \
+	fi
+	rm -f $(BIN_DIR_P)/example/ssl.jar
+	rm -fr $(BIN_DIR_P)/classes/com/sun/midp/ssl
+endif
+
+clean clobber::
+	@(cd $(MIDP_DIR); \
+	rm -f $(SRC_BUNDLE) $(SRC_BUNDLE_LINK); \
+	rm -f $(DOC_BUNDLE) $(DOC_BUNDLE_LINK); \
+	rm -f $(BIN_BUNDLE) $(BIN_BUNDLE_LINK))
+
+FORCE: ;

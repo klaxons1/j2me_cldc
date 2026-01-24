@@ -1,0 +1,654 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 11:35:04" />
+    <title>Using the Graphical User Interface</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="preface.html" />
+    <link rel="Next" href="manage-midlets.html" />
+    <link rel="Index" href="useIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="preface.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="manage-midlets.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="useIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp997159"> </a><h2 class="pChapNum">
+Chapter &#160; 1
+</h2>
+<a name="wp997169"> </a><h2 class="pNewHTMLPage">
+Using the Graphical User Interface
+</h2>
+<hr class="pHr"/>
+<a name="wp997527"> </a><p class="pBody">
+The MIDP Reference Implementation runs MIDlets in a device emulator, which shows how the MIDlets will look and feel on a device. This chapter shows you how to start the device emulator&#8217;s graphical user interface (GUI), and how to interact with it to run and manage MIDlets. The chapter contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp997698"> </a><div class="pBullet1"><li><a  href="run-midlets.html#wp999689"><span style="color: #3366CC">Overview of the Device Emulator</span></a></li></div>
+<a name="wp997702"> </a><div class="pBullet1Plus"><li><a  href="run-midlets.html#wp997984"><span style="color: #3366CC">Starting the Emulator</span></a></li></div>
+<a name="wp997703"> </a><div class="pBullet1Plus"><li><a  href="run-midlets.html#wp997713"><span style="color: #3366CC">Downloading and Installing a MIDlet Suite</span></a></li></div>
+<a name="wp1000850"> </a><div class="pBullet1Plus"><li><a  href="run-midlets.html#wp997947"><span style="color: #3366CC">Running a MIDlet or MIDlet Suite</span></a></li></div>
+<a name="wp1000992"> </a><div class="pBullet1Plus"><li><a  href="run-midlets.html#wp1000934"><span style="color: #3366CC">Getting Information on a MIDlet Suite</span></a></li></div>
+<a name="wp1001005"> </a><div class="pBullet1Plus"><li><a  href="run-midlets.html#wp1000861"><span style="color: #3366CC">Removing a MIDlet Suite</span></a></li></div>
+<a name="wp999669"> </a><div class="pBullet1Plus"><li><a  href="run-midlets.html#wp997951"><span style="color: #3366CC">Updating a MIDlet Suite</span></a></li></div>
+<a name="wp1001012"> </a><div class="pBullet1Plus"><li><a  href="run-midlets.html#wp1001013"><span style="color: #3366CC">Changing a MIDlet Suite&#8217;s Permission Levels</span></a></li></div>
+<a name="wp999687"> </a><div class="pBullet1Last"><li><a  href="run-midlets.html#wp999353"><span style="color: #3366CC">Getting Information About MIDP</span></a></li></div>
+</ul>
+<a name="wp999689"> </a><h2 class="pHeading1">
+Overview of the Device Emulator
+</h2>
+<a name="wp997697"> </a><p class="pBody">
+The device emulator is a cellular phone. The emulator&#8217;s GUI displays a <em class="cEmphasis">skin</em>, which is a graphic that looks like a device. The skin has a screen and keypad. The following figure shows the skin:
+</p>
+<a name="wp1002879"> </a><p class="pBody">
+<img src="images/device3.gif" height="436" width="168" alt="This illustration is described in the text." border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1002881"> </a><div class="pFigureCaption">
+FIGURE&#160;1&#160;&#160;&#8211;&#160;&#160;Phone Skin
+<br /><br />
+</div><a name="wp1002882"> </a><p class="pBody">
+You press the buttons on the device by clicking them with the left mouse button (left-clicking) or by using their keyboard shortcuts. The buttons and keyboard shortcuts are described below.
+</p>
+<a name="wp997539"> </a><p class="pBody">
+The skin has up, down, left, and right navigation buttons, and a select button in the center of the navigation buttons as shown in <a  href="run-midlets.html#wp997569">FIGURE&#160;2</a>. You can use the arrow keys on the keyboard of your desktop system instead of the navigation buttons, and the Enter key for the Select button.
+</p>
+<a name="wp997568"> </a><p class="pBody">
+<img src="images/device-nav-buttons4.gif" height="130" width="257" alt="This illustration is described in the text." border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997569"> </a><div class="pFigureCaption">
+FIGURE&#160;2&#160;&#160;&#8211;&#160;&#160;Navigation Buttons on the Phone Skin
+<br /><br />
+</div><a name="wp997570"> </a><p class="pBody">
+The skin also has a Start Call button (the button on the left printed with a green handset), an End Call button (the button on the right printed with a red handset), a Clear button, and two soft buttons to either side of the up navigation button. <a  href="run-midlets.html#wp997600">FIGURE&#160;3</a> shows these buttons. You can use the F1 and F2 keys on the keyboard of your desktop system instead of the left and right soft buttons. You can use the F10 key instead of the End Call button. When you are entering text, you can use the backspace key instead of the Clear button.
+</p>
+<a name="wp997599"> </a><p class="pBody">
+<img src="images/device-nav-buttons7.gif" height="82" width="309" alt="This illustration is described in the text." border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997600"> </a><div class="pFigureCaption">
+FIGURE&#160;3&#160;&#160;&#8211;&#160;&#160;Other Buttons Above the Phone Keypad on the Phone Skin
+<br /><br />
+</div><a name="wp997601"> </a><p class="pBody">
+The skin has a standard phone keypad: the numbers 0-9, along with the pound (<code class="cCode">#</code>) and star (<code class="cCode">*</code>) function keys. The mode-shift and space functions are mapped to the * and # keys, respectively, on the keypad. You can use the letter, number, <code class="cCode">#</code>, <code class="cCode">*</code>, shift, and space keys on your keyboard instead.
+</p>
+<a name="wp997610"> </a><p class="pBody">
+<img src="images/device-itu-t-keypad10.gif" height="120" width="144" alt="This illustration is described in the text." border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997611"> </a><div class="pFigureCaption">
+FIGURE&#160;4&#160;&#160;&#8211;&#160;&#160;Standard Phone Keypad on the Phone Skin
+<br /><br />
+</div><a name="wp997612"> </a><p class="pBody">
+Finally, the skin has a power button above the screen, as shown in the following figure, which exits the emulator. Closing the emulator window also exits it.
+</p>
+<a name="wp997625"> </a><p class="pBody">
+<img src="images/device-power-button11.gif" height="102" width="265" alt="This illustration is described in the text." border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997626"> </a><div class="pFigureCaption">
+FIGURE&#160;5&#160;&#160;&#8211;&#160;&#160;Power Button on the Phone Skin
+<br /><br />
+</div><a name="wp997984"> </a><h2 class="pHeading1">
+Starting the Emulator
+</h2>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp997997"> </a><li>Open a terminal window.</li>
+<a name="wp1000095"> </a><li>Change your current directory to the directory that holds your installation of the MIDP Reference Implementation.</li>
+<a name="wp1000102"> </a><p class="pBody">
+For example, if your installation is in the <code class="cCode">c:\midp2.0fcs</code> directory, you could execute the following command:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\&gt; <span class="cUserType">cd midp2.0fcs</span><a name="wp998005"> </a>
+</pre></div>
+<a name="wp998006"> </a><li>Run the <code class="cCode">midp</code> command with no arguments.</li>
+<a name="wp998007"> </a><p class="pBody">
+See <a  href="appx-midp.html#wp1000011"><span style="color: #3366CC">Appendix&#160;C,  &quot;The </span><span style="color: #3366CC">midp</span><span style="color: #3366CC"> Command</span></a>&#8221; for more information in a manpage format. For example, you could use the following command:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0fcs</code>&gt; <span class="cUserType">bin\midp</span><a name="wp998011"> </a>
+</pre></div>
+<a name="wp998012"> </a><p class="pBody">
+The device skin will appear displaying the Java Powered logo&#8482; welcome screen.
+</p>
+<a name="wp998021"> </a><p class="pBody">
+<img src="images/run-midlets16.gif" height="199" width="172" alt="Welcome screen" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp998065"> </a><div class="pFigureCaption">
+FIGURE&#160;6&#160;&#160;&#8211;&#160;&#160;Welcome Screen 
+<br /><br />
+</div>
+</ol>
+</div>
+<a name="wp997713"> </a><h2 class="pHeading1">
+Downloading and Installing a MIDlet Suite
+</h2>
+<a name="wp1000403"> </a><p class="pBody">
+This section describes both how to install a MIDlet suite, and the additional steps that occur if the MIDlet suite uses push functionality. This section has the topics:
+</p>
+<ul class="pBullet1"><a name="wp1000440"> </a><div class="pBullet1"><li><a  href="run-midlets.html#wp1000411"><span style="color: #3366CC">Common Download and Installation Steps</span></a></li></div>
+<a name="wp1000448"> </a><div class="pBullet1Last"><li><a  href="run-midlets.html#wp1000431"><span style="color: #3366CC">Additional Steps for Push Functionality</span></a></li></div>
+</ul>
+<a name="wp1000411"> </a><h3 class="pHeading2">
+Common Download and Installation Steps
+</h3>
+<a name="wp997714"> </a><p class="pBody">
+To download and install a MIDlet suite:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp997990"> </a><li>Start the Emulator as described in <a  href="run-midlets.html#wp997984"><span style="color: #3366CC">&quot;Starting the Emulator&quot; </span></a>.</li>
+<a name="wp998087"> </a><li>Press the button under the Apps label on the device skin to go to the Applications Screen.</li>
+<a name="wp998330"> </a><p class="pBody">
+An Applications screen similar to the one in the following figure will appear:
+</p>
+<a name="wp1001758"> </a><p class="pBody">
+<img src="images/selector-no-midlets20.gif" height="198" width="173" alt="application selector screen" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1001778"> </a><div class="pFigureCaption">
+FIGURE&#160;7&#160;&#160;&#8211;&#160;&#160;Applications Screen With No Installed MIDlets
+<br /><br />
+</div><a name="wp999726"> </a><li>If necessary, move the highlight to the Install Application element.</li>
+<a name="wp999734"> </a><li>Launch the application installation MIDlet:</li>
+<div class="pStep2">
+<ol class="pStep2"><a name="wp1001839"> </a><li type="a">Press the button under the Menu label on the device skin.</li>
+<a name="wp1001916"> </a><p class="pBody">
+A system menu similar to the one in the following figure will appear:
+</p>
+<a name="wp1001876"> </a><p class="pBody">
+<img src="images/selector-ota-launch-system-menu12.gif" height="199" width="173" alt="System menu in the device-emulator screen" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1001877"> </a><div class="pFigureCaption">
+FIGURE&#160;8&#160;&#160;&#8211;&#160;&#160;System menu for the Install Application MIDlet
+<br /><br />
+</div><a name="wp1001843"> </a><li type="a">Move the highlight to the Launch element in the menu by using the navigation buttons shown in <a  href="run-midlets.html#wp997569">FIGURE&#160;2</a>.</li>
+<a name="wp1001926"> </a><li type="a">Press Select.</li>
+<a name="wp1002645"> </a><p class="pBody">
+A MIDlet Locator screen similar to the following figure will appear:
+</p>
+<a name="wp1002654"> </a><p class="pBody">
+<img src="images/ota-file-prompt13.gif" height="198" width="172" alt="MIDlet Installation Screen" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1002655"> </a><div class="pFigureCaption">
+FIGURE&#160;9&#160;&#160;&#8211;&#160;&#160;MIDlet Locator Screen
+<br /><br />
+</div>
+</ol>
+</div>
+<a name="wp1001949"> </a><li>Enter the URL of an HTML page that has links to one or more JAD files for MIDlet suites.</li>
+<a name="wp1001950"> </a><p class="pBody">
+After you enter a URL the MIDlet Locator screen will be similar to the one in the following figure:
+</p>
+<a name="wp1001959"> </a><p class="pBody">
+<img src="images/ota-file-entered16.gif" height="203" width="177" alt="URL entered" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997794"> </a><div class="pFigureCaption">
+FIGURE&#160;10&#160;&#160;&#8211;&#160;&#160;MIDlet Locator Screen With a URL Entered
+<br /><br />
+</div><a name="wp997795"> </a><li>Choose Go:</li>
+<div class="pStep2">
+<ol class="pStep2"><a name="wp1002621"> </a><li type="a">Press the button under the Menu label on the device skin.</li>
+<a name="wp1002622"> </a><p class="pBody">
+A system menu similar to the one in the following figure will appear:
+</p>
+<a name="wp997818"> </a><p class="pBody">
+<img src="images/ota-file-menu18.gif" height="199" width="173" alt="System menu in the device-emulator screen" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997819"> </a><div class="pFigureCaption">
+FIGURE&#160;11&#160;&#160;&#8211;&#160;&#160;System menu for the MIDlet Locator
+<br /><br />
+</div><a name="wp1002666"> </a><li type="a">Move the highlight to the Go element in the menu by using the navigation buttons shown in <a  href="run-midlets.html#wp997569">FIGURE&#160;2</a>.</li>
+<a name="wp1002667"> </a><li type="a">Press Select.</li>
+<a name="wp997820"> </a><p class="pBody">
+A list of the MIDlet suites available on the HTML page will appear. The screen showing the list of MIDlets will be similar to the one in the following figure:
+</p>
+<a name="wp997829"> </a><p class="pBody">
+<img src="images/ota-file-jad-list19.gif" height="204" width="177" alt="List of installable MIDlet suites" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997830"> </a><div class="pFigureCaption">
+FIGURE&#160;12&#160;&#160;&#8211;&#160;&#160;List of Available MIDlets
+<br /><br />
+</div>
+</ol>
+</div>
+<a name="wp997831"> </a><li>Move the highlight to the MIDlet suite you want to install.</li>
+<a name="wp997851"> </a><li>Choose Install by pressing the button under the Install label on the device skin.</li>
+<a name="wp997852"> </a><p class="pBody">
+A confirmation screen will appear, similar to the one shown in the following figure:
+</p>
+<a name="wp997861"> </a><p class="pBody">
+<img src="images/ota-install-confirmation21.gif" height="203" width="177" alt="Installation confirmation screen" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997862"> </a><div class="pFigureCaption">
+FIGURE&#160;13&#160;&#160;&#8211;&#160;&#160;Confirmation Screen for Installing a MIDlet Suite
+<br /><br />
+</div><a name="wp997863"> </a><li>Confirm by pressing the button under the Install label on the device skin.</li>
+<a name="wp997864"> </a><p class="pBody">
+Cancel by pressing the button under the Cancel label on the device skin.
+</p>
+<a name="wp997865"> </a><p class="pBody">
+If you chose Install, MIDP will try to download and install the MIDlet suite. A series of screens will inform you of the progress of the installation, including informing you if there is a problem with the suite that prevents it from being installed.
+</p>
+<a name="wp1001975"> </a><p class="pBody">
+If the installation is successful you will be returned to the Application screen and the newly installed MIDlet suite will be highlighted. If the installation fails, you will be given an error message and returned to the MIDlets list in the Install application. The following figure shows the result of a successful installation:
+</p>
+<a name="wp997874"> </a><p class="pBody">
+<img src="images/selector-one-midlet22.gif" height="197" width="172" alt="application launch screen" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997875"> </a><div class="pFigureCaption">
+FIGURE&#160;14&#160;&#160;&#8211;&#160;&#160;Applications Screen
+<br /><br />
+</div>
+</ol>
+</div>
+<a name="wp1000431"> </a><h3 class="pHeading2">
+Additional Steps for Push Functionality
+</h3>
+<a name="wp1000642"> </a><p class="pBody">
+Push functionality enables MIDP to launch a MIDlet so that it can receive an incoming message. When the emulator assigns a MIDlet suite that uses the push functionality to a domain that gives push a user permission, you must grant that permission before the emulator can install the MIDlet suite. (See <a  href="security.html#wp1016913"><span style="color: #3366CC">Chapter&#160;3, &quot;Using MIDP Security Features</span></a>&#8221; for more information on domains and permissions.) If you deny a permission request, a screen similar to the one in the following figure appears:
+</p>
+<a name="wp1000646"> </a><p class="pBody">
+<img src="images/push-install-denied9.gif" height="200" width="174" alt="Installation aborted" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1000647"> </a><div class="pFigureCaption">
+FIGURE&#160;15&#160;&#160;&#8211;&#160;&#160;Installation Stopping in Response to Being Denied a Required Permission
+<br /><br />
+</div><a name="wp1000749"> </a><p class="pBody">
+If you give permission and then change your mind, you can modify your selection. See <a  href="run-midlets.html#wp1001013"><span style="color: #3366CC">&quot;Changing a MIDlet Suite&#8217;s Permission Levels&quot; </span></a> for instructions.
+</p>
+<a name="wp1000638"> </a><p class="pBody">
+The requests for permission occur after you confirm that you want to install the MIDlet (<a  href="run-midlets.html#wp997863"><span style="color: #3366CC">Step&#160;9</span></a>, above). You must answer the questions before the installation can be completed. The requests are for:
+</p>
+<ul class="pBullet1"><a name="wp1000569"> </a><div class="pBullet1"><li>Permission to use the push functionality</li></div>
+<a name="wp1000498"> </a><p class="pBody">
+<img src="images/push-install-request8.gif" height="199" width="173" alt="Request to use push" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1000506"> </a><div class="pFigureCaption">
+FIGURE&#160;16&#160;&#160;&#8211;&#160;&#160;Request to use the Push Functionality
+<br /><br />
+</div><a name="wp1000602"> </a><div class="pBullet1Last"><li>Request to receive messages:</li></div>
+<a name="wp1000609"> </a><p class="pBody">
+<img src="images/push-receive-info-request13.gif" height="197" width="173" alt="Request to receive information" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1000617"> </a><div class="pFigureCaption">
+FIGURE&#160;17&#160;&#160;&#8211;&#160;&#160;Request to Receive Incoming Data
+<br /><br />
+</div>
+</ul>
+<a name="wp1002924"> </a><p class="pBody">
+You cannot have multiple MIDlets on the device emulator use the same port. If, after you give any permissions required, the device discovers that the MIDlet suite uses the same port as an installed MIDlet suite, the installation will fail. The screen that informs you of the failure will look similar to the one in the following figure:
+</p>
+<a name="wp1002925"> </a><p class="pBody">
+<img src="images/push-portclash-install-denied14.gif" height="200" width="175" alt="Installation failure because port is already used by another MIDlet suite" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp997947"> </a><h2 class="pHeading1">
+Running a MIDlet or MIDlet Suite
+</h2>
+<a name="wp997953"> </a><p class="pBody">
+This section assumes that you have installed one or more MIDlets suites on the device emulator. There are instructions in the previous section, <a  href="run-midlets.html#wp997713"><span style="color: #3366CC">&quot;Downloading and Installing a MIDlet Suite&quot; </span></a> and in <a  href="manage-midlets.html#wp1019259"><span style="color: #3366CC">&quot;Installing a MIDlet Suite&quot; </span></a>. It contains the topics:
+</p>
+<ul class="pBullet1"><a name="wp1000673"> </a><div class="pBullet1"><li><a  href="run-midlets.html#wp1000678"><span style="color: #3366CC">Launching a MIDlet or MIDlet Suite</span></a></li></div>
+<a name="wp1000677"> </a><div class="pBullet1Last"><li><a  href="run-midlets.html#wp1000692"><span style="color: #3366CC">Handling Permission Requests</span></a></li></div>
+</ul>
+<a name="wp1000678"> </a><h3 class="pHeading2">
+Launching a MIDlet or MIDlet Suite
+</h3>
+<a name="wp999295"> </a><p class="pBody">
+This section is titled &#8220;Launching a MIDlet or MIDlet Suite&#8221; because the MIDP Reference Implementation presents both. That is, MIDlet suites can contain one or more MIDlets. In the MIDP Reference Implementation, if a MIDlet suite has only one MIDlet, the device emulator presents that MIDlet and you can choose to run it. If a MIDlet suite has multiple MIDlets, the device emulator presents the MIDlet suite and if you choose to run it, you must then choose which MIDlet to run.
+</p>
+<a name="wp998366"> </a><p class="pBody">
+To run a MIDlet or MIDlet suite installed on the device emulator:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp998369"> </a><li>Start the Emulator as described in <a  href="run-midlets.html#wp997984"><span style="color: #3366CC">&quot;Starting the Emulator&quot; </span></a>.</li>
+<a name="wp998410"> </a><li>Move the highlight to the MIDlet or MIDlet suite you want to run.</li>
+<a name="wp1002749"> </a><li>Press Select.</li>
+<a name="wp1002733"> </a><p class="pBody">
+The MIDlet or MIDlet suite then starts. The following figure shows the TicketLand MIDlet starting:
+</p>
+<a name="wp998458"> </a><p class="pBody">
+<img src="images/ticketland-splash20.gif" height="201" width="176" alt="List of installable MIDlet suites" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp998459"> </a><div class="pFigureCaption">
+FIGURE&#160;18&#160;&#160;&#8211;&#160;&#160;MIDlet Being Launched
+<br /><br />
+</div>
+</ol>
+</div>
+<a name="wp1000692"> </a><h3 class="pHeading2">
+Handling Permission Requests
+</h3>
+<a name="wp1000703"> </a><p class="pBody">
+When a MIDlet tries to use protected functionality for which it requires user permission, you will be asked to grant permission. A permission screen will appear that looks similar to the one shown in the following figure:
+</p>
+<a name="wp1000705"> </a><p class="pBody">
+<img src="images/security-permission-request14.gif" height="197" width="172" alt="Request to send information" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1000717"> </a><div class="pFigureCaption">
+FIGURE&#160;19&#160;&#160;&#8211;&#160;&#160;Request for Permission to Use Protected Functionality
+<br /><br />
+</div><a name="wp1000730"> </a><p class="pBody">
+Note that the protocol for which the permission is required is shown in square brackets after the question. This is for development purposes, not for end users. 
+</p>
+<a name="wp1002110"> </a><p class="pBody">
+In addition to the question in <a  href="run-midlets.html#wp1000717">FIGURE&#160;19</a>, the MIDP Reference Implementation also asks, when necessary, for permission to interrupt, to receive information, and to make a network connection. Although the question will vary depending on which protected functionality the MIDlet is trying to use, the possible answers stay the same. The possible answers are:
+</p>
+<ul class="pBullet1"><a name="wp1000731"> </a><div class="pBullet1"><li>Yes, Always. Don&#8217;t ask again.</li></div>
+<a name="wp1000745"> </a><p class="pIndented1">
+Any time this MIDlet wants to use the network it may, without interrupting to ask permission. Selecting this option means that not only can the MIDlet use the network until you exit the MIDlet, but that it can use the network every other time you run the MIDlet too (or for push, every other time it needs to interrupt).
+</p>
+<a name="wp1000761"> </a><div class="pBullet1Plus"><li>This time. Ask me again next time.</li></div>
+<a name="wp1000765"> </a><p class="pIndented1">
+The MIDlet may perform this one protected action. The next time the MIDlet tries to perform the action, the screen will appear again.
+</p>
+<a name="wp1000786"> </a><div class="pBullet1Plus"><li>Not this time. Ask me next time.</li></div>
+<a name="wp1000790"> </a><p class="pIndented1">
+The MIDlet may not perform this protected action, but you might allow the MIDlet to do so next time. The next time the MIDlet tries to perform the action, the screen will appear again.
+</p>
+<a name="wp1000794"> </a><div class="pBullet1Last"><li>No. Shut off <em class="cEmphasis">MidletName</em>.</li></div>
+<a name="wp1000811"> </a><p class="pIndented1">
+This MIDlet may not perform the protected action. The MIDlet will still appear in the Applications screen, but if you run it, it will not be permitted to use that protected functionality. For example, if the NewsHound MIDlet is shut off, you cannot access any articles or get new ones.
+</p>
+</ul>
+<a name="wp1000757"> </a><p class="pBody">
+If you change your mind about the permission you have granted, you can update your choice. See <a  href="run-midlets.html#wp1001013"><span style="color: #3366CC">&quot;Changing a MIDlet Suite&#8217;s Permission Levels&quot; </span></a> for instructions.
+</p>
+<a name="wp1000934"> </a><h2 class="pHeading1">
+Getting Information on a MIDlet Suite
+</h2>
+<a name="wp1000935"> </a><p class="pBody">
+This section assumes that you have installed one or more MIDlet suites on the device emulator. There are instructions in the previous section, <a  href="run-midlets.html#wp997713"><span style="color: #3366CC">&quot;Downloading and Installing a MIDlet Suite&quot; </span></a> and in <a  href="manage-midlets.html#wp1019259"><span style="color: #3366CC">&quot;Installing a MIDlet Suite&quot; </span></a>.
+</p>
+<a name="wp1000942"> </a><p class="pBody">
+To get information about a MIDlet suite installed on the device emulator:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp1000946"> </a><li>Start the Emulator as described in <a  href="run-midlets.html#wp997984"><span style="color: #3366CC">&quot;Starting the Emulator&quot; </span></a>.</li>
+<a name="wp1000947"> </a><li>Move the highlight to the MIDlet suite about which you want information.</li>
+<a name="wp1000948"> </a><li>Choose Info:</li>
+<div class="pStep2">
+<ol class="pStep2"><a name="wp1002147"> </a><li type="a">Press the button under the Menu label on the device skin.</li>
+<a name="wp1002193"> </a><p class="pBody">
+A system menu will appear that looks like the one in the following figure:
+</p>
+<a name="wp1000970"> </a><p class="pBody">
+<img src="images/selector-info-system-menu2.gif" height="199" width="173" alt="System menu in the device-emulator screen" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1000971"> </a><div class="pFigureCaption">
+FIGURE&#160;20&#160;&#160;&#8211;&#160;&#160;System menu for the Applications Screen
+<br /><br />
+</div><a name="wp1002761"> </a><li type="a">Move the highlight to the Info element in the menu by using the navigation buttons shown in <a  href="run-midlets.html#wp997569">FIGURE&#160;2</a>.</li>
+<a name="wp1002215"> </a><li type="a">Press Select.</li>
+<a name="wp1000972"> </a><p class="pBody">
+A screen appears that is similar to the one in the following figure:
+</p>
+<a name="wp1000981"> </a><p class="pBody">
+<img src="images/midlet-info11.gif" height="202" width="176" alt="List of installable MIDlet suites" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1000982"> </a><div class="pFigureCaption">
+FIGURE&#160;21&#160;&#160;&#8211;&#160;&#160;Information Screen for a MIDlet Suite
+<br /><br />
+</div><a name="wp1002236"> </a><p class="pBody">
+The arrow at the bottom of the screen indicates that you can see more information by scrolling. Scroll by pressing the down navigation button. (<a  href="run-midlets.html#wp997569">FIGURE&#160;2</a> shows the navigation buttons.)
+</p>
+</ol>
+</div>
+<a name="wp1000983"> </a><li>Return to the Applications screen by pressing the button under the Back label on the device skin.</li>
+</ol>
+</div>
+<a name="wp1000861"> </a><h2 class="pHeading1">
+Removing a MIDlet Suite
+</h2>
+<a name="wp1000862"> </a><p class="pBody">
+This section assumes that you have installed one or more MIDlet suites on the device emulator. There are instructions in the previous section, <a  href="run-midlets.html#wp997713"><span style="color: #3366CC">&quot;Downloading and Installing a MIDlet Suite&quot; </span></a> and in <a  href="manage-midlets.html#wp1019259"><span style="color: #3366CC">&quot;Installing a MIDlet Suite&quot; </span></a>.
+</p>
+<a name="wp1000869"> </a><p class="pBody">
+When you remove a MIDlet suite from a device, you remove not only the suite but also any data that its MIDlets stored on the device. You must always remove a MIDlet suite; you cannot remove a MIDlet from a MIDlet suite.
+</p>
+<a name="wp1000870"> </a><p class="pBody">
+To remove a MIDlet suite installed on the device emulator:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp1000874"> </a><li>Start the Emulator as described in <a  href="run-midlets.html#wp997984"><span style="color: #3366CC">&quot;Starting the Emulator&quot; </span></a>.</li>
+<a name="wp1000875"> </a><li>Move the highlight to the MIDlet suite you want to remove.</li>
+<a name="wp1000876"> </a><li>Choose Remove:</li>
+<div class="pStep2">
+<ol class="pStep2"><a name="wp1002247"> </a><li type="a">Press the button under the Menu label on the device skin.</li>
+<a name="wp1002253"> </a><p class="pBody">
+A system menu like the one in the following figure will appear:
+</p>
+<a name="wp1000898"> </a><p class="pBody">
+<img src="images/selector-remove-system-menu30.gif" height="199" width="173" alt="System menu in the device-emulator screen" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1000900"> </a><div class="pFigureCaption">
+FIGURE&#160;22&#160;&#160;&#8211;&#160;&#160;System menu for the Applications Screen
+<br /><br />
+</div><a name="wp1002775"> </a><li type="a">Move the highlight to the Remove element in the menu by using the navigation buttons shown in <a  href="run-midlets.html#wp997569">FIGURE&#160;2</a>.</li>
+<a name="wp1002277"> </a><li type="a">Press Select.</li>
+<a name="wp1000901"> </a><p class="pBody">
+A confirmation screen appears that is similar to the one in the following figure:
+</p>
+<a name="wp1000910"> </a><p class="pBody">
+<img src="images/midlet-remove-confirm31.gif" height="199" width="174" alt="List of installable MIDlet suites" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1000911"> </a><div class="pFigureCaption">
+FIGURE&#160;23&#160;&#160;&#8211;&#160;&#160;Confirmation Screen for Removing a MIDlet Suite
+<br /><br />
+</div>
+</ol>
+</div>
+<a name="wp1000912"> </a><li>Confirm by pressing the button under the Remove label on the device skin.</li>
+<a name="wp1000913"> </a><p class="pBody">
+Cancel by pressing the button under the Cancel label on the device skin.
+</p>
+<a name="wp1000914"> </a><p class="pBody">
+An Applications screen will appear. If you chose Confirm, the MIDlet you removed will have been removed from the list of available applications. 
+</p>
+</ol>
+</div>
+
+<a name="wp997951"> </a><h2 class="pHeading1">
+Updating a MIDlet Suite
+</h2>
+<a name="wp999361"> </a><p class="pBody">
+This section assumes that you have installed one or more MIDlet suites on the device emulator. There are instructions in the previous section, <a  href="run-midlets.html#wp997713"><span style="color: #3366CC">&quot;Downloading and Installing a MIDlet Suite&quot; </span></a> and in <a  href="manage-midlets.html#wp1019259"><span style="color: #3366CC">&quot;Installing a MIDlet Suite&quot; </span></a>.
+</p>
+<a name="wp999365"> </a><p class="pBody">
+When you update a MIDlet suite, you replace the resources (the MIDlets, graphics, and so on) but you do not affect any data that its MIDlets stored on the device. You must always update a MIDlet suite; you cannot update a MIDlet from a MIDlet suite.
+</p>
+<a name="wp999366"> </a><p class="pBody">
+To update a MIDlet suite installed on the device emulator:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp999369"> </a><li>Start the Emulator as described in <a  href="run-midlets.html#wp997984"><span style="color: #3366CC">&quot;Starting the Emulator&quot; </span></a>.</li>
+<a name="wp999382"> </a><li>Move the highlight to the MIDlet suite you want to update.</li>
+<a name="wp999383"> </a><li>Choose Update:</li>
+<div class="pStep2">
+<ol class="pStep2"><a name="wp1002298"> </a><li type="a">Press the button under the Menu label on the device skin.</li>
+<a name="wp1002485"> </a><p class="pBody">
+A system menu like the one in the following figure will appear:
+</p>
+<a name="wp999406"> </a><p class="pBody">
+<img src="images/selector-update-system-menu2.gif" height="199" width="173" alt="System menu in the device-emulator screen" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp999408"> </a><div class="pFigureCaption">
+FIGURE&#160;24&#160;&#160;&#8211;&#160;&#160;System menu for the Applications Screen
+<br /><br />
+</div><a name="wp1002785"> </a><li type="a">Move the highlight to the Update element in the menu by using the navigation buttons shown in <a  href="run-midlets.html#wp997569">FIGURE&#160;2</a>.</li>
+<a name="wp1002323"> </a><li type="a">Press Select.</li>
+<a name="wp1002313"> </a><p class="pBody">
+The system then begins to update the MIDlet suite. It uses the same URL from which you originally downloaded and installed the MIDlet suite. A confirmation screen appears, similar to the one in the following figure:
+</p>
+<a name="wp999418"> </a><p class="pBody">
+<img src="images/midlet-update-confirm5.gif" height="204" width="177" alt="List of installable MIDlet suites" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp999419"> </a><div class="pFigureCaption">
+FIGURE&#160;25&#160;&#160;&#8211;&#160;&#160;Confirmation Screen for Updating a MIDlet Suite
+<br /><br />
+</div><a name="wp999886"> </a><p class="pBody">
+The message that you receive depends on whether the version found is newer, older, or the same as your current version.
+</p>
+</ol>
+</div>
+<a name="wp999420"> </a><li>Confirm by pressing the button under the Continue label on the device skin.</li>
+<a name="wp999421"> </a><p class="pBody">
+Cancel by pressing the button under the Cancel label on the device skin.
+</p>
+<a name="wp999422"> </a><p class="pBody">
+If you chose Continue, the version of the MIDlet suite found at the URL will replace the version of the MIDlet suite currently installed, and you will be returned to the Applications screen.
+</p>
+</ol>
+</div>
+<a name="wp1001013"> </a><h2 class="pHeading1">
+Changing a MIDlet Suite&#8217;s Permission Levels
+</h2>
+<a name="wp1001021"> </a><p class="pBody">
+This section assumes that you have installed one or more MIDlet suites on the device emulator. There are instructions in the previous section, <a  href="run-midlets.html#wp997713"><span style="color: #3366CC">&quot;Downloading and Installing a MIDlet Suite&quot; </span></a> and in <a  href="manage-midlets.html#wp1019259"><span style="color: #3366CC">&quot;Installing a MIDlet Suite&quot; </span></a>.
+</p>
+<a name="wp1001028"> </a><p class="pBody">
+You can change the permission levels that you have granted a MIDlet suite. For example, if you have turned off a permission, you can turn it back on at any level. For example, you could have the MIDlet suite&#8217;s MIDlets ask permission each time one of them wants to use the protected functionality. See <a  href="run-midlets.html#wp1000692"><span style="color: #3366CC">&quot;Handling Permission Requests&quot; </span></a> for a list of the protected functionalities for which you might be asked to set a permission, and the available permission levels.
+</p>
+<a name="wp1001029"> </a><p class="pBody">
+To change a MIDlet suite&#8217;s permissions:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp1001033"> </a><li>Start the Emulator as described in <a  href="run-midlets.html#wp997984"><span style="color: #3366CC">&quot;Starting the Emulator&quot; </span></a>.</li>
+<a name="wp1001034"> </a><li>Move the highlight to the MIDlet suite for which you want to update permissions.</li>
+<a name="wp1002436"> </a><li>Choose Application Settings:</li>
+<div class="pStep2">
+<ol class="pStep2"><a name="wp1002463"> </a><li type="a">Press the button under the Menu label on the device skin.</li>
+<a name="wp1002493"> </a><p class="pBody">
+A system menu like the one in the following figure will appear:
+</p>
+<a name="wp1002459"> </a><p class="pBody">
+<img src="images/selector-app-settings-system-menu17.gif" height="199" width="173" alt="System menu in the device-emulator screen" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1001058"> </a><div class="pFigureCaption">
+FIGURE&#160;26&#160;&#160;&#8211;&#160;&#160;System menu for the Applications Screen
+<br /><br />
+</div><a name="wp1002799"> </a><li type="a">Move the highlight to the Application Settings element in the menu by using the navigation buttons shown in <a  href="run-midlets.html#wp997569">FIGURE&#160;2</a>.</li>
+<a name="wp1002526"> </a><li type="a">Press Select.</li>
+<a name="wp1001059"> </a><p class="pBody">
+A screen will appear that is similar to the one in the following figure. The figure has many parts; each part shows part of the screen, so that you can see all of the questions.
+</p>
+<a name="wp1001068"> </a><p class="pBody">
+<img src="images/midlet-settings24.gif" height="200" width="605" alt="List of installable MIDlet suites" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1001069"> </a><div class="pFigureCaption">
+FIGURE&#160;27&#160;&#160;&#8211;&#160;&#160;Application Settings for a MIDlet Suite
+<br /><br />
+</div>
+</ol>
+</div>
+<a name="wp1001071"> </a><li>Choose the application settings you want.</li>
+<a name="wp1001220"> </a><p class="pBody">
+The Application Settings screen will include all the permissions that you are permitted to set for the suite. The permission levels are similar to the answers given for the permission requests in <a  href="run-midlets.html#wp1000692"><span style="color: #3366CC">&quot;Handling Permission Requests&quot; </span></a>.
+</p>
+<a name="wp1001238"> </a><li>Save your choices by pressing the button under the Save label on the device skin.</li>
+<a name="wp1001072"> </a><p class="pBody">
+Cancel by pressing the button under the Back label on the device skin.
+</p>
+<a name="wp1001410"> </a><p class="pBody">
+In both cases, you will be returned to the Applications screen. If you choose Save, your return will be preceded by a confirmation screen similar to the one in the following figure:
+</p>
+<a name="wp1001414"> </a><p class="pBody">
+<img src="images/midlet-settings-confirm18.gif" height="197" width="173" alt="Confirmation screen (timed alert)" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp1001430"> </a><div class="pFigureCaption">
+FIGURE&#160;28&#160;&#160;&#8211;&#160;&#160;Confirmation of Saved Settings
+<br /><br />
+</div>
+</ol>
+</div>
+<a name="wp999353"> </a><h2 class="pHeading1">
+Getting Information About MIDP
+</h2>
+<a name="wp999557"> </a><p class="pBody">
+The MIDP Reference Implementation includes an About Box for MIDP. The information includes the release number and date.
+</p>
+<a name="wp1000190"> </a><p class="pBody">
+To see the about box:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp999561"> </a><li>Start the Emulator as described in <a  href="run-midlets.html#wp997984"><span style="color: #3366CC">&quot;Starting the Emulator&quot; </span></a>.</li>
+<a name="wp999575"> </a><li>Choose About:</li>
+<div class="pStep2">
+<ol class="pStep2"><a name="wp1002558"> </a><li type="a">Press the button under the Menu label on the device skin.</li>
+<a name="wp1002574"> </a><p class="pBody">
+A system menu like the one in the following figure will appear:
+</p>
+<a name="wp999598"> </a><p class="pBody">
+<img src="images/selector-about-system-menu9.gif" height="199" width="173" alt="System menu in the device-emulator screen" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp999600"> </a><div class="pFigureCaption">
+FIGURE&#160;29&#160;&#160;&#8211;&#160;&#160;System menu for the Applications Screen
+<br /><br />
+</div><a name="wp1002813"> </a><li type="a">Move the highlight to the About element in the menu by using the navigation buttons shown in <a  href="run-midlets.html#wp997569">FIGURE&#160;2</a>.</li>
+<a name="wp1002587"> </a><p class="pBody">
+The About choice is available from the system menu associated with any MIDlet or MIDlet suite on the Applications screen, including the Install Application MIDlet.
+</p>
+<a name="wp1002579"> </a><li type="a">Press Select.</li>
+<a name="wp999601"> </a><p class="pBody">
+A screen similar to the one in the following figure appears:
+</p>
+<a name="wp999610"> </a><p class="pBody">
+<img src="images/midp-about12.gif" height="199" width="174" alt="List of installable MIDlet suites" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp999611"> </a><div class="pFigureCaption">
+FIGURE&#160;30&#160;&#160;&#8211;&#160;&#160;About Box for the MIDP Reference Implementation
+<br /><br />
+</div>
+</ol>
+</div>
+<a name="wp1000065"> </a><li>Return to the Applications screen by pressing the button under the Done label on the device skin.</li>
+</ol>
+</div>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="preface.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="manage-midlets.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="useIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Using MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

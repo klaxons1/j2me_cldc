@@ -1,0 +1,262 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 16:26:59" />
+    <title>Beginning a MIDP Port</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="intro.html" />
+    <link rel="Next" href="events.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="intro.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="events.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="portIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp436134"> </a><h2 class="pChapNum">
+Chapter &#160; 2
+</h2>
+<a name="wp436139"> </a><h2 class="pNewHTMLPage">
+Beginning a MIDP Port
+</h2>
+<hr class="pHr"/>
+<a name="wp444755"> </a><p class="pBody">
+This chapter describes the first steps in porting MIDP. By the end of the chapter, you will have a quick port of the MIDP Reference Implementation that compiles and should run the Hello MIDlet, but may not be fully functional. You will need to do additional work to complete the port and to tailor it for your device. The chapters after this one discuss those possibilities.
+</p>
+<a name="wp444770"> </a><p class="pBody">
+This chapter contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp444762"> </a><div class="pBullet1"><li><a  href="first-steps.html#wp442237"><span style="color: #3366CC">Preparing to Port MIDP</span></a></li></div>
+<a name="wp439879"> </a><div class="pBullet1Plus"><li><a  href="first-steps.html#wp441742"><span style="color: #3366CC">Porting Device-Specific Configuration Code</span></a></li></div>
+<a name="wp444951"> </a><div class="pBullet1Last"><li><a  href="first-steps.html#wp444162"><span style="color: #3366CC">Trying It Out</span></a></li></div>
+</ul>
+<a name="wp442235"> </a><p class="pBody">
+This chapter assumes familiarity with the MIDP overview described in the previous chapter and the <em class="cEmphasis">MIDP 2.0 Specification</em>. The MIDP specification is at <a href="http://jcp.org/jsr/detail/118.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/118.jsp</span></a>.
+</p>
+<a name="wp442237"> </a><h2 class="pHeading1">
+2.1	Preparing to Port MIDP
+</h2>
+<a name="wp442238"> </a><p class="pBody">
+Do the following tasks before beginning a MIDP port:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp441263"> </a><li>Create source and build subdirectories for your device in the MIDP tree.</li>
+<a name="wp441273"> </a><p class="pBody">
+The directories to create are:
+</p>
+<ul class="pBullet1"><a name="wp440716"> </a><div class="pBullet1"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\</code><em class="cEmphasis">newPlatform</em></li></div>
+<a name="wp440720"> </a><div class="pBullet1Last"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">\src\</code><em class="cEmphasis">newPlatform</em></li></div>
+</ul>
+<a name="wp441301"> </a><p class="pIndented1">
+where <em class="cEmphasis">newPlatform</em> is the name for the directory that hold the files for your device. For example, if <em class="cEmphasis">midpInstallDir</em> was <code class="cCode">c:\</code>midp2.0fcs and your device was <code class="cCode">deviceX</code>, you would execute the commands<code class="cCode">:</code>
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;&#160;&#160;&#160;c:\midp2.0fcs\build&gt; <span class="cUserType">mkdir deviceX</span><a name="wp441479"> </a>
+&#160;&#160;&#160;&#160;c:\midp2.0fcs\build&gt; <span class="cUserType">cd ..\src</span><a name="wp441762"> </a>
+&#160;&#160;&#160;&#160;c:\midp2.0fcs\src&gt; <span class="cUserType">mkdir deviceX</span><a name="wp441773"> </a>
+&#160;&#160;&#160;&#160;c:\midp2.0fcs\src&gt; <span class="cUserType">cd deviceX</span><a name="wp441781"> </a>
+&#160;&#160;&#160;&#160;c:\midp2.0fcs\src\deviceX&gt; <span class="cUserType">mkdir native</span><a name="wp441789"> </a>
+</pre></div>
+<a name="wp444420"> </a><li>Copy the code from the existing <em class="cEmphasis">midpInstallDir</em><span class="cUserType">\src</span> subdirectory that most closely matches your system into your <em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\</code><em class="cEmphasis">newPlatform </em>directory.</li>
+<a name="wp444424"> </a><p class="pBody">
+For example, you could copy the files from <em class="cEmphasis">midpInstallDir</em><code class="cCode">\src\solaris</code><em class="cEmphasis">:</em>
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs\src&gt; cp -r solaris/* deviceX<a name="wp444429"> </a>
+</pre></div>
+<a name="wp441407"> </a><li>Copy the makefiles for an existing architecture into your <em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\</code><em class="cEmphasis">newPlatform</em> directory.</li>
+<a name="wp441457"> </a><p class="pBody">
+Copy: 
+</p>
+<ul class="pBullet1"><a name="wp441448"> </a><div class="pBullet1"><li><code class="cCode">GNUmakefile</code></li></div>
+<a name="wp441452"> </a><div class="pBullet1Plus"><li><code class="cCode">platform.gmk</code></li></div>
+<a name="wp441456"> </a><div class="pBullet1Last"><li>The <code class="cCode">makefiles</code> directory and its contents</li></div>
+</ul>
+<a name="wp441468"> </a><p class="pBody">
+For example, you could copy the files from <em class="cEmphasis">midpInstallDir</em><code class="cCode">\build\solaris</code><em class="cEmphasis">:</em>
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs\build&gt; <span class="cUserType">cp solaris/GNUmakefile deviceX</span><a name="wp441509"> </a>
+c:\midp2.0fcs\build&gt; <span class="cUserType">cp solaris/platform.gmk deviceX</span><a name="wp441521"> </a>
+c:\midp2.0fcs\build&gt; <span class="cUserType">cp -r solaris/makefiles deviceX</span><a name="wp441528"> </a>
+</pre></div>
+<a name="wp436161"> </a><li>Set configuration options in your platform&#8217;s makefiles.</li>
+<a name="wp444925"> </a><p class="pBody">
+See <a  href="appx-config-opts.html#wp9506"><span style="color: #3366CC">Appendix&#160;B,  &#8220;Configuration Options</span></a>&#8221; configuration options that you might need to set for porting. Typical options that need updating are:
+</p>
+<ul class="pBullet1"><a name="wp441690"> </a><div class="pBullet1"><li>Compiler flags</li></div>
+<a name="wp444858"> </a><div class="pBullet1Plus"><li><code class="cCode">GCC</code></li></div>
+<a name="wp441699"> </a><div class="pBullet1Plus"><li><code class="cCode">PLATFORM</code></li></div>
+<a name="wp441662"> </a><div class="pBullet1Plus"><li><code class="cCode">MIDP_EXCLUDE_CLASSES</code></li></div>
+<a name="wp441663"> </a><div class="pBullet1Plus"><li><code class="cCode">MIDP_INCLUDE_SRC</code></li></div>
+<a name="wp441664"> </a><div class="pBullet1Plus"><li><code class="cCode">_BOOTDIR</code></li></div>
+<a name="wp441659"> </a><div class="pBullet1Last"><li>Configurable build parameters, such as <code class="cCode">DEBUG</code></li></div>
+</ul>
+<a name="wp441623"> </a><p class="pBody">
+For example, to make the value of the <code class="cCode">PLATFORM</code> option <code class="cCode">deviceX</code>, you would update the <code class="cCode">PLATFORM</code> definition in the <code class="cCode">c:\midp2.0fcs\build\deviceX\platform.gmk</code> file to:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+PLATFORM = deviceX<a name="wp441627"> </a>
+</pre></div>
+<a name="wp441803"> </a><p class="pBody">
+If you have already ported CLDC, use those makefiles as a guide.
+</p>
+<a name="wp441713"> </a><li>Set targets in your platform&#8217;s makefiles.</li>
+<a name="wp441740"> </a><p class="pBody">
+The makefile targets have the MIDP executable run inside the device emulator with debugging symbols, without debugging symbols, with profiling code, and so on. See <a  href="appx-targets.html#wp1000008"><span style="color: #3366CC">Appendix&#160;A,  &#8220;Build Targets</span></a>&#8221; for a list of existing targets. You might want to add targets that include or exclude device-specific features, such as optional communication protocols.
+</p>
+</ol>
+</div>
+<a name="wp441742"> </a><h2 class="pHeading1">
+2.2	Porting Device-Specific Configuration Code
+</h2>
+<a name="wp444291"> </a><p class="pBody">
+To start porting MIDP, do the following tasks:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp444293"> </a><li>Implement the heap allocation macros.</li>
+<a name="wp441926"> </a><p class="pBody">
+There are five allocation macros for managing the memory of the native heap:
+</p>
+<ul class="pBullet1"><a name="wp441963"> </a><div class="pBullet1"><li><code class="cCode">midpMalloc</code></li></div>
+<a name="wp441970"> </a><div class="pBullet1Plus"><li><code class="cCode">midpCalloc</code></li></div>
+<a name="wp441974"> </a><div class="pBullet1Plus"><li><code class="cCode">midpRealloc</code></li></div>
+<a name="wp443932"> </a><div class="pBullet1Plus"><li><code class="cCode">midpStrdup</code></li></div>
+<a name="wp444535"> </a><div class="pBullet1Last"><li><code class="cCode">midpFree</code></li></div>
+</ul>
+<a name="wp444536"> </a><p class="pBody">
+The macros are defined in <em class="cEmphasis">midpInstallDir</em><code class="cCode">\src\share\native\midpMalloc.h</code>. Change the definitions of these macros, if necessary, to work with your device.
+</p>
+<hr class="pHr"/><div class="note">
+<a name="wp441991"> </a>
+<b>Note &#8211;</b>  Always use these macros to manage memory from the heap in any native code you write.
+<hr class="pHr"/></div>
+<a name="wp436188"> </a><li>Update native calls.</li>
+<a name="wp444218"> </a><p class="pBody">
+The files with native calls are in the following directories:
+</p>
+<ul class="pBullet1"><a name="wp444223"> </a><div class="pBullet1"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">\src\share\native</code></li></div>
+<a name="wp444230"> </a><div class="pBullet1Last"><li><em class="cEmphasis">midpInstallDir</em><code class="cCode">\src\</code><em class="cEmphasis">newPlatform</em><code class="cCode">\native</code></li></div>
+</ul>
+<a name="wp444885"> </a><p class="pBody">
+For example, if your system does not support a native call, substitute in a call that has the same functionality, or create a stub for it. To create a stub, comment out or remove the function body that contains the call, and substitute a print statement. One way to find these calls is by trying to build MIDP to see which calls prompt errors. (For instructions on building MIDP, see <em class="cEmphasis">Using MIDP</em>.) The errors could look something like this:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+/tmp/ccTk6mVS.o(.text+0x7): undefined reference to `LCDUIdrawLine&#39;<a name="wp444455"> </a>
+</pre></div>
+<a name="wp444542"> </a><p class="pBody">
+The stub that you create for the call could look something like this:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+LCDUIdrawLine(...){ printf(&quot;in LCDUIdrawLine stub\n&quot;); }<a name="wp444546"> </a>
+</pre></div>
+<a name="wp441816"> </a><p class="pBody">
+This step enables you to quickly get your port compiling. As you go through the chapters that follow, you will fill in the stubs as you port each module.
+</p>
+<a name="wp441827"> </a><li>Update the destination of debugging output, if necessary.</li>
+<a name="wp444154"> </a><p class="pBody">
+Ensure that the <code class="cCode">printf</code> function sends its output to a location from which it is easy for you to collect information. For example, one such destination might be the debug port of your emulator. (If you have already ported CLDC, this step should already be done.)
+</p>
+</ol>
+</div>
+<a name="wp444162"> </a><h2 class="pHeading1">
+2.3	Trying It Out
+</h2>
+<a name="wp444561"> </a><p class="pBody">
+Try out your port at this point:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp444557"> </a><li>Build a ROMized version of MIDP.</li>
+<a name="wp444573"> </a><p class="pBody">
+In the MIDP Reference Implementation, the <code class="cCode">midp</code> target in the build environment builds a ROMized version of MIDP. If you have not changed this aspect of the makefiles, then you would be able to use a command such as this:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\<code class="cCode">midp2.0beta</code>\build\deviceX&gt; <span class="cUserType">make midp</span><a name="wp444585"> </a>
+</pre></div>
+<a name="wp444164"> </a><p class="pBody">
+For instructions on building MIDP, see <a  href="build.html#wp434082"><span style="color: #3366CC">Chapter&#160;12, &#8220;Building Your Port</span></a>.&#8221;
+</p>
+<a name="wp444566"> </a><li>Create the following simple version of the Hello MIDlet to run on the device.</li>
+<a name="wp444595"> </a><p class="pBody">
+The following version of the HelloMIDlet does not use any graphics. It prints simple messages to the serial port of the device:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+import javax.microedition.midlet.*;<a name="wp445083"> </a>
+&#160;<a name="wp445084"> </a>
+public class HelloWorld extends MIDlet {<a name="wp445085"> </a>
+&#160;&#160;&#160;&#160;public HelloWorld() {<a name="wp445086"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;system.out.println(&#8220;In HelloWorld constructor&#8221;);<a name="wp445087"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp445088"> </a>
+&#160;<a name="wp445091"> </a>
+&#160;&#160;&#160;&#160;public void startApp() {<a name="wp445092"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;System.out.println(&#8220;In HelloWorld startapp&#8221;);<a name="wp445093"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp445094"> </a>
+&#160;<a name="wp445095"> </a>
+&#160;&#160;&#160;&#160;public void pauseApp() {<a name="wp445096"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp445097"> </a>
+&#160;<a name="wp445098"> </a>
+&#160;&#160;&#160;&#160;public void destroyApp(boolean unconditional) {<a name="wp445099"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp445100"> </a>
+&#160;<a name="wp445101"> </a>
+}<a name="wp445102"> </a>
+</pre></div>
+<a name="wp445202"> </a><li>Build and package the MIDlet as described in Creating MIDlet Suites.</li>
+<a name="wp445082"> </a><li>Run the MIDlet as described in Using MIDP. </li>
+</ol>
+</div>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="intro.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="events.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Porting MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

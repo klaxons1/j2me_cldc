@@ -1,0 +1,20 @@
+#
+# @(#)Platform.gmk	1.9 02/07/25 @(#)
+#
+# Copyright (c) 1999-2002 Sun Microsystems, Inc.  All rights reserved.
+# PROPRIETARY/CONFIDENTIAL
+# Use is subject to license terms.
+#
+#########
+#
+# Generic definition of PLATFORM, and related, factored-out variables
+#
+
+PLATFORM = solaris
+KVM_DIR = $(MIDP_DIR)/../kvm
+VM = kvm
+
+ifndef MIDP_DIR
+MIDP_DIR=$(BUILD_DIR)/../..
+endif
+

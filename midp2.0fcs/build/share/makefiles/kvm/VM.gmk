@@ -1,0 +1,76 @@
+#
+# @(#)VM.gmk	1.12 02/09/11 @(#)
+#
+# Copyright (c) 1999-2002 Sun Microsystems, Inc.  All rights reserved.
+# PROPRIETARY/CONFIDENTIAL
+# Use is subject to license terms.
+#
+#########
+#
+# Make rules for building the VM. This should not contain any platform
+# specific rules.
+#
+
+# vpath entries
+#
+vpath %.c $(KVM_DIR)/kvm/VmCommon/src
+vpath %.c $(KVM_DIR)/kvm/VmExtra/src
+
+PREVERIFY_OBJ_DIR   = kvm_obj$(g)$(ARCH_DIR)
+PREVERIFY_SRC_DIR   = $(KVM_DIR)/tools/preverifier/src
+PREVERIFY_FLAGS     = -I$(PREVERIFY_SRC_DIR)
+PREVERIFY_SRC_FILES = $(shell find \
+   $(PREVERIFY_SRC_DIR) \
+   -name '*.c' | egrep -v "SCCS")
+PREVERIFY_OBJ_FILES = $(patsubst $(PREVERIFY_SRC_DIR)/%.c,$(PREVERIFY_OBJ_DIR)/%.o,$(PREVERIFY_SRC_FILES))
+
+JCC_SOURCE_DIR   = $(KVM_DIR)/tools/jcc/src
+JCC_SOURCE_FILES = $(shell find \
+   $(JCC_SOURCE_DIR) \
+   -name '*.java' | egrep -v "SCCS")
+
+KDP_DIR = $(BUILD_DIR)/kdp_classes
+KDP_MANIFEST = $(KDP_DIR)/kdp.manifest
+KDP_SOURCE_DIR   = $(KVM_DIR)/tools/kdp/src
+KDP_SOURCE_FILES = $(shell find \
+   $(KDP_SOURCE_DIR) \
+   -name '*.java' | egrep -v "SCCS")
+
+$(VM_CLASS_FILES): classes/%.class : $(KVM_DIR)/api/src/%.java
+	@echo $< >> .filelist
+
+nativeFunctionTable.c: classes.zip  
+
+$(ROMJAVA).c: classes.zip 
+
+$(PREVERIFY_OBJ_DIR)/%.o: $(PREVERIFY_SRC_DIR)/%.c
+	@echo "... $@"
+	@$(CC) $(PREVERIFY_FLAGS) $(CFLAGS) $(CC_OUTPUT)$@ -c $<
+
+$(PREVERIFY_OBJ_DIR) $(KDP_DIR) $(JCC_DIR):
+	-@mkdir -p $@
+
+$(PREVERIFY_CMD) : $(BINDIR) $(PREVERIFY_OBJ_DIR) $(PREVERIFY_OBJ_FILES)
+	@$(LD) $(LINKER_OUTPUT)$@ $(PREVERIFY_OBJ_FILES) $(LIBS)  
+	@rm -f *.$(OBJ_EXTENSION)	
+
+$(JCC_CMD) : $(JCC_DIR) $(JCC_SOURCE_FILES)
+	@echo "... $@"
+	@cp -f $(JCC_SOURCE_DIR)/JCCMessage.properties $(JCC_DIR)
+	@$(JAVAC) -d $(JCC_DIR) $(JCC_SOURCE_FILES)
+
+$(KDP_CMD): $(BINDIR) $(KDP_DIR) $(KDP_SOURCE_FILES) $(KDP_MANIFEST)
+	@echo ... $@
+	@$(JAVAC) -g:none -d $(KDP_DIR) $(KDP_SOURCE_FILES)
+	@(cd $(KDP_DIR); $(BOOTDIR)/bin/jar cfm kdp.jar kdp.manifest kdp)
+	@cp -f $(KDP_DIR)/kdp.jar $(KDP_CMD)
+
+$(KDP_MANIFEST): $(KDP_DIR)
+	@echo "Main-Class: kdp.KVMDebugProxy" > $@
+
+# Build KDP; if defined
+#
+midp:: $(KDP_CMD)
+
+reallyclean::
+	@rm -fr kvm_obj kvm_obj_g $(PREVERIFY_CMD) $(JCC_DIR) $(KDP_DIR)

@@ -1,0 +1,345 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 16:27:06" />
+    <title>Networking</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="security.html" />
+    <link rel="Next" href="ams.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="security.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="ams.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="portIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp445111"> </a><h2 class="pChapNum">
+Chapter &#160; 8
+</h2>
+<a name="wp445115"> </a><h2 class="pNewHTMLPage">
+Networking
+</h2>
+<hr class="pHr"/>
+<a name="wp445121"> </a><p class="pBody">
+This chapter describes porting and customizing the networking protocols of the MIDP Reference Implementation: HTTP, HTTPS, comm, Socket, Server Socket and UDP Datagram. The protocols are built on the Generic Connection Framework of CLDC, defined in the specification from the &#8220;J2ME&#8482; Connected, Limited Device Configuration&#8221; (JSR-000030). For more information on CLDC, see <br /><a href="http://jcp.org/jsr/detail/30.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/30.jsp</span></a>.
+</p>
+<a name="wp450187"> </a><p class="pBody">
+The networking protocols implementation has both a native layer and a Java&#8482; programming language layer (Java layer). This chapter covers the layers in the sections:
+</p>
+<ul class="pBullet1"><a name="wp450283"> </a><div class="pBullet1"><li><a  href="network.html#wp449742"><span style="color: #3366CC">Porting the Native Layer</span></a></li></div>
+<a name="wp450287"> </a><div class="pBullet1Last"><li><a  href="network.html#wp445195"><span style="color: #3366CC">Customizing the Java Layer</span></a></li></div>
+</ul>
+<a name="wp450277"> </a><p class="pBody">
+Many files make up the networking implementation; they are listed in the sections below. Note that the MIDP 2.0 Specification requires support for HTTP and HTTPS, but it only recommends support for datagram connections, server socket stream connections, socket stream connections, and secure socket stream connections. If your port does not support one or more of the recommended protocols, you can remove its associated files to improve the footprint of your implementation. There is one exception: do not remove the <code class="cCode">com.sun.midp.ssl</code> package. Deleting it will break the implementation of PKI secured permissions on signed JAR files.
+</p>
+<a name="wp445189"> </a><p class="pBody">
+In addition to porting the protocols in the MIDP Reference Implementation you can add other network protocols. For example, if you add support for the &#8220;Wireless Messaging API&#8221; (JSR-000120) to your MIDP port, you would add SMS (Short Message Service) and CBS (cell broadcast message) protocols.
+</p>
+<a name="wp449742"> </a><h2 class="pHeading1">
+8.1	Porting the Native Layer
+</h2>
+<a name="wp449786"> </a><p class="pBody">
+Native code provides IP networking support. The socket and datagram implementations for the Windows 2000 operating system and the Solaris&#8482; Operating Environment (OE) are very similar. They share the following files, which assume a Posix layer for the networking calls to <code class="cCode">socket</code>, <code class="cCode">connect</code>, <code class="cCode">bind</code>, and so on. You will need to reimplement the functionality in these files if the networking on your device is not Posix based.
+</p>
+<ul class="pBullet1"><a name="wp449743"> </a><div class="pBullet1"><li><code class="cCode">share/native/socketProtocol.c</code></li></div>
+<a name="wp449744"> </a><div class="pBullet1Plus"><li><code class="cCode">share/native/datagramProtocol.c</code></li></div>
+<a name="wp449745"> </a><div class="pBullet1Last"><li><code class="cCode">share/native/commProtocol.c</code></li></div>
+</ul>
+<a name="wp449825"> </a><p class="pBody">
+The MIDP Reference Implementation also has a set of native files that mediate between the Java layer and the shared files in the native layer. The code in the files handles arguments and checks parameters. The platform-specific files are:
+</p>
+<ul class="pBullet1"><a name="wp449750"> </a><div class="pBullet1"><li>For the Solaris OE:</li></div>
+<ul class="pBullet2"><a name="wp449751"> </a><div class="pBullet2"><li><code class="cCode">solaris/native/commProtocol_md.c</code></li></div>
+<a name="wp449752"> </a><div class="pBullet2Plus"><li><code class="cCode">solaris/native/socketProtocol_md.c</code></li></div>
+<a name="wp449753"> </a><div class="pBullet2Last"><li><code class="cCode">solaris/native/datagramProtocol_md.c</code></li></div>
+</ul>
+<a name="wp449754"> </a><div class="pBullet1Last"><li>For Windows 2000:</li></div>
+<ul class="pBullet2"><a name="wp449755"> </a><div class="pBullet2"><li><code class="cCode">win32/native/dirent.c</code></li></div>
+<a name="wp450355"> </a><div class="pBullet2Plus"><li><code class="cCode">win32/native/commProtocol_md.c</code></li></div>
+<a name="wp449756"> </a><div class="pBullet2Plus"><li><code class="cCode">win32/native/socketProtocol_md.c</code></li></div>
+<a name="wp449757"> </a><div class="pBullet2Last"><li><code class="cCode">win32/native/datagramProtocol_md.c</code></li></div>
+</ul>
+</ul>
+<a name="wp445195"> </a><h2 class="pHeading1">
+8.2	Customizing the Java Layer
+</h2>
+<a name="wp449844"> </a><p class="pBody">
+This section provides a high-level description of the Java layer of the networking code. It points out places where you could get improved performance or footprint by re-implementing the functionality in native code, and places where such replacement would probably not provide much improvement. It has the sections:
+</p>
+<ul class="pBullet1"><a name="wp449888"> </a><div class="pBullet1"><li><a  href="network.html#wp449840"><span style="color: #3366CC">Generic Connections</span></a></li></div>
+<a name="wp449914"> </a><div class="pBullet1Plus"><li><a  href="network.html#wp449198"><span style="color: #3366CC">Comm</span></a></li></div>
+<a name="wp449913"> </a><div class="pBullet1Plus"><li><a  href="network.html#wp445211"><span style="color: #3366CC">IP Support</span></a></li></div>
+<a name="wp449892"> </a><div class="pBullet1Plus"><li><a  href="network.html#wp445239"><span style="color: #3366CC">Secure Connections</span></a></li></div>
+<a name="wp449896"> </a><div class="pBullet1Plus"><li><a  href="network.html#wp450006"><span style="color: #3366CC">HTTP 1.1</span></a></li></div>
+<a name="wp449900"> </a><div class="pBullet1Plus"><li><a  href="network.html#wp445455"><span style="color: #3366CC">HTTPS</span></a></li></div>
+<a name="wp449904"> </a><div class="pBullet1Last"><li><a  href="network.html#wp445611"><span style="color: #3366CC">Internal Utilities</span></a></li></div>
+</ul>
+<a name="wp449840"> </a><h3 class="pHeading2">
+8.2.1	Generic Connections
+</h3>
+<a name="wp445197"> </a><p class="pBody">
+The <em class="cEmphasis">CLDC 1.0 Specification</em> establishes the basic architecture for all stream based IO connections. The architecture is called the Generic Connection Framework (GCF). The architecture is both compact and extensible. A single class, <code class="cCode">Connector</code>, is a factory for specific protocol handlers.
+</p>
+<a name="wp447780"> </a><p class="pBody">
+The MIDP reference implementation adds classes that handle the fundamental capabilities of generic connections.
+</p>
+<ul class="pBullet1"><a name="wp447844"> </a><div class="pBullet1"><li><code class="cCode">com.sun.midp.io.ConnectionBaseAdapter </code>&#8212; Base class for some of the common functionality needed to implement a CLDC Generic Connection.</li></div>
+<a name="wp447786"> </a><div class="pBullet1Last"><li><code class="cCode">com.sun.midp.io.NetworkConnectionBase</code> &#8212; Base class for network connection protocols; if necessary, it enables network initialization</li></div>
+</ul>
+<a name="wp445207"> </a><p class="pBody">
+These are Java programming language implementations of high level stream handling code. Although you could replace some of this functionality with native code, there might not be a significant savings in footprint or performance.
+</p>
+<a name="wp449198"> </a><h3 class="pHeading2">
+8.2.2	Comm
+</h3>
+<a name="wp449199"> </a><p class="pBody">
+The Comm protocol provides a way to access external devices using a local serial port as a stream connection. The MIDP Reference Implementation implements the comm protocol in the following classes:
+</p>
+<ul class="pBullet1"><a name="wp449203"> </a><div class="pBullet1"><li><code class="cCode">javax.microedition.io.CommConnection</code></li></div>
+<a name="wp449204"> </a><div class="pBullet1Last"><li><code class="cCode">com.sun.midp.io.j2me.comm.Protocol</code></li></div>
+</ul>
+<a name="wp449230"> </a><p class="pBody">
+These classes should not need to be changed when you port the MIDP Reference Implementation to a new device.
+</p>
+<a name="wp445211"> </a><h3 class="pHeading2">
+8.2.3	IP Support
+</h3>
+<a name="wp445217"> </a><p class="pBody">
+The MIDP Reference Implementation uses the following classes to provide IP networking support:
+</p>
+<ul class="pBullet1"><a name="wp445219"> </a><div class="pBullet1"><li>Socket:</li></div>
+<ul class="pBullet2"><a name="wp447888"> </a><div class="pBullet2"><li><code class="cCode">javax.microedition.io.SocketConnection</code></li></div>
+<a name="wp447867"> </a><div class="pBullet2Last"><li><code class="cCode">com.sun.midp.io.j2me.socket.Protocol</code></li></div>
+</ul>
+<a name="wp447877"> </a><div class="pBullet1Plus"><li>Server Socket:</li></div>
+<ul class="pBullet2"><a name="wp447910"> </a><div class="pBullet2"><li><code class="cCode">javax.microedition.io.ServerSocketConnection</code></li></div>
+<a name="wp447868"> </a><div class="pBullet2Last"><li><code class="cCode">com.sun.midp.io.j2me.serversocket.Socket</code></li></div>
+</ul>
+<a name="wp447917"> </a><div class="pBullet1Last"><li>Datagram:</li></div>
+<ul class="pBullet2"><a name="wp447871"> </a><div class="pBullet2"><li><code class="cCode">javax.microedition.io.UDPDatagramConnection</code></li></div>
+<a name="wp445229"> </a><div class="pBullet2Plus"><li><code class="cCode">com.sun.midp.io.j2me.datagram.Protocol</code></li></div>
+<a name="wp445231"> </a><div class="pBullet2Last"><li><code class="cCode">com.sun.midp.io.j2me.datagram.DatagramObject</code></li></div>
+</ul>
+</ul>
+<a name="wp449926"> </a><p class="pBody">
+These classes should not need to be changed when you port the MIDP Reference Implementation to a new device.
+</p>
+<a name="wp445239"> </a><h3 class="pHeading2">
+8.2.4	Secure Connections
+</h3>
+<a name="wp448157"> </a><p class="pBody">
+The following interfaces in the <em class="cEmphasis">MIDP 2.0 Specification</em> define the secure connection functionality:
+</p>
+<ul class="pBullet1"><a name="wp448158"> </a><div class="pBullet1"><li><code class="cCode">javax.microedition.io.SecureConnection</code></li></div>
+<a name="wp448159"> </a><div class="pBullet1Plus"><li><code class="cCode">javax.microedition.io.SecurityInfo</code></li></div>
+<a name="wp448160"> </a><div class="pBullet1Last"><li><code class="cCode">javax.microedition.pki.Certificate</code></li></div>
+</ul>
+<a name="wp448161"> </a><p class="pBody">
+The definition also includes the class <code class="cCode">javax.microedition.pki.CertificateException</code>
+</p>
+<a name="wp447931"> </a><p class="pBody">
+According to the <em class="cEmphasis">MIDP 2.0 Specification</em>, a secure connection must implement one or more of the following specifications:
+</p>
+<ul class="pBullet1"><a name="wp447983"> </a><div class="pBullet1"><li><b class="cBold">Transport Layer Security (TLS) </b>&#8212; TLS Protocol Version 1.0 as specified in RFC 2246. (See <a href="http://www.ietf.org/rfc/rfc2246.txt" target="_blank">
+<span class="cWebJump">http://www.ietf.org/rfc/rfc2246.txt</span></a>.)</li></div>
+<a name="wp448193"> </a><div class="pBullet1Plus"><li><b class="cBold">Wireless Application Protocol (WAP) TLS</b> &#8212; <em class="cEmphasis">WAP TLS Profile and Tunneling Specification</em>, <em class="cEmphasis">WAP-219-TLS-20010411-a</em> at <br /><a href="http://www.wapforum.com/what/technical.htm" target="_blank">
+<span class="cWebJump">http://www.wapforum.com/what/technical.htm</span></a>.</li></div>
+<a name="wp447984"> </a><div class="pBullet1Last"><li><b class="cBold">Secure Socket Layer</b> &#8212; SSL V3 as specified in <em class="cEmphasis">The SSL Protocol Version 3.0</em> at <br /><a href="http://wp.netscape.com/eng/ssl3/draft302.txt" target="_blank">
+<span class="cWebJump">http://wp.netscape.com/eng/ssl3/draft302.txt</span></a>.</li></div>
+</ul>
+<a name="wp445273"> </a><p class="pBody">
+The MIDP Reference Implementation uses the following classes to provide Secure Socket Layer (SSL) functionality:
+</p>
+<ul class="pBullet1"><a name="wp448038"> </a><div class="pBullet1"><li><code class="cCode">com.sun.midp.io.j2me.ssl.Protocol</code></li></div>
+<a name="wp445275"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.SSLStreamConnection</code></li></div>
+<a name="wp445277"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.Record</code></li></div>
+<a name="wp445279"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.In</code></li></div>
+<a name="wp445281"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.Out</code></li></div>
+<a name="wp445283"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.X509Certificate</code></li></div>
+<a name="wp445285"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.Cipher</code></li></div>
+<a name="wp445287"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.Handshake</code></li></div>
+<a name="wp445289"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.Session</code></li></div>
+<a name="wp445291"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.Utils</code></li></div>
+<a name="wp445293"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.Alg2</code></li></div>
+<a name="wp445295"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.RSASig</code></li></div>
+<a name="wp445297"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.Signature</code></li></div>
+<a name="wp445299"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.SSLSecurityInfo</code></li></div>
+<a name="wp445301"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.Alg3</code></li></div>
+<a name="wp445303"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.CertStore</code></li></div>
+<a name="wp445305"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.MessageDigest</code></li></div>
+<a name="wp445307"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.SecretKey</code></li></div>
+<a name="wp445309"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.Key</code></li></div>
+<a name="wp445311"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.RSAPublicKey</code></li></div>
+<a name="wp445313"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.PublicKey</code></li></div>
+<a name="wp445315"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.CryptoException</code></li></div>
+<a name="wp445317"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.RandomData</code></li></div>
+<a name="wp445319"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.RSAKey</code></li></div>
+<a name="wp445321"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.RSAPrivateKey</code></li></div>
+<a name="wp445323"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.PrivateKey</code></li></div>
+<a name="wp445325"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.KeyBuilder</code></li></div>
+<a name="wp445327"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.MD5</code></li></div>
+<a name="wp445329"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.PRand</code></li></div>
+<a name="wp445331"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.ssl.MD2</code></li></div>
+<a name="wp445333"> </a><div class="pBullet1Last"><li><code class="cCode">com.sun.midp.ssl.SHA</code></li></div>
+</ul>
+<a name="wp448102"> </a><p class="pBody">
+The interfaces and classes above support the HTTPS protocol and network connections that have URIs beginning with <a href="http://ssl://host:port" target="_blank">
+<span class="cWebJump">ssl://host:port</span></a>. (For more information on HTTPS, see <a  href="network.html#wp445455"><span style="color: #3366CC">Section&#160;8.2.6 &quot;HTTPS&quot; </span></a>.) The SSL functionality also supports the PKI secured permissions on signed JAR files. (See <a  href="security.html#wp442099"><span style="color: #3366CC">Chapter&#160;7, &quot;Security</span></a>&#8221; for more information on signed JAR files and other security topics.)
+</p>
+<a name="wp450004"> </a><p class="pBody">
+If your device will provide a secure connection using a different specification, do not remove the <code class="cCode">com.sun.midp.ssl</code> package. Deleting it will break the implementation of PKI secured permissions on signed JAR files.
+</p>
+<a name="wp450006"> </a><h3 class="pHeading2">
+8.2.5	HTTP 1.1
+</h3>
+<a name="wp445347"> </a><p class="pBody">
+The MIDP Reference Implementation implements the HTTP 1.1 protocol atop its socket URL support. (See <a  href="network.html#wp445211"><span style="color: #3366CC">Section&#160;8.2.3 &quot;IP Support&quot; </span></a> for more information.) The HTTP 1.1 implementation is in the following Java classes:
+</p>
+<ul class="pBullet1"><a name="wp445355"> </a><div class="pBullet1"><li><code class="cCode">javax.microedition.io.HttpConnection</code></li></div>
+<a name="wp445357"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.j2me.http.Protocol</code></li></div>
+<a name="wp445359"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.j2me.http.StreamConnectionElement</code></li></div>
+<a name="wp445361"> </a><div class="pBullet1Last"><li><code class="cCode">com.sun.midp.io.j2me.http.StreamConnectionPool</code></li></div>
+</ul>
+<a name="wp445363"> </a><p class="pBody">
+This organization provides for maximum portability but might not provide the most optimum performance or size. If your device has a native implementation of HTTP, you might gain efficiency if you change the classes to take advantage of your device&#8217;s native functionality.
+</p>
+<a name="wp445413"> </a><h4 class="pHeading3">
+8.2.5.1	HTTP Requests Using Proxies
+</h4>
+<a name="wp448523"> </a><p class="pBody">
+A high level feature in the <code class="cCode">com.sun.midp.io.j2me.http.Protocol</code> class is making requests through a proxy server. The implementation requires that HTTP proxy servers support the generic tunneling mechanism for TCP based protocols through Web proxy servers. See the following documents for more information on HTTP tunneling:
+</p>
+<ul class="pBullet1"><a name="wp448482"> </a><div class="pBullet1"><li><a href="http://www.globecom.net/ietf/draft/draft-luotonen-web-proxy-tunneling-01.html" target="_blank">
+<span class="cWebJump">http://www.globecom.net/ietf/draft/draft-luotonen-web-proxy-tunneling-01.html</span></a></li></div>
+<a name="wp448483"> </a><div class="pBullet1Last"><li><a href="http://www.ietf.org/rfc/rfc2817.txt" target="_blank">
+<span class="cWebJump">http://www.ietf.org/rfc/rfc2817.txt</span></a></li></div>
+</ul>
+<a name="wp448484"> </a><p class="pBody">
+If you modify the HTTP implementation to be layered on top of a WAP Gateway, the WAP Gateway would replace the proxy access. Replace the references to a generic HTTP proxy with calls to a native WSP stack.
+</p>
+<a name="wp448542"> </a><p class="pBody">
+(To have the device emulator use a proxy server, set the <code class="cCode">com.sun.midp.io.http.proxy</code> configuration parameter. See <em class="cEmphasis">Using MIDP</em> for more information.)
+</p>
+<a name="wp445433"> </a><h4 class="pHeading3">
+8.2.5.2	HTTP1.1 Persistent Connections
+</h4>
+<a name="wp447618"> </a><p class="pBody">
+The <em class="cEmphasis">MIDP 2.0 Specification</em> supports HTTP 1.1 persistent connections. Do <em class="cEmphasis">not</em> change the implementation to include only HTTP 1.0 connection behavior. Persistent connections are important because they:
+</p>
+<ul class="pBullet1"><a name="wp447623"> </a><div class="pBullet1"><li>Open and close fewer TCP connections. This saves CPU time and memory throughout the network.</li></div>
+<a name="wp447624"> </a><div class="pBullet1Plus"><li>Reduce latency on subsequent requests, since there is no time spent in TCP&#8217;s connection-opening handshake.</li></div>
+<a name="wp448668"> </a><div class="pBullet1Plus"><li>Allow HTTP requests and responses to be pipelined. (That is, it allows requests to be made without first getting responses to preceding requests.) This improves the efficiency because not as much time is spent waiting on the network connection.</li></div>
+<a name="wp448669"> </a><div class="pBullet1Last"><li>Allow HTTP exchanges to degrade gracefully, since errors can be reported without closing the TCP connection. A client using a future version of HTTP might try a new feature and, if the server were older and reported an error, could use the same TCP connection to retry the request using old HTTP semantics.</li></div>
+</ul>
+<a name="wp445449"> </a><p class="pBody">
+Persistent connections have many advantages, but on small devices with limited resources they can be a problem if they are not closed properly. The MIDP Reference Implementation uses the value of the configuration property <code class="cCode">com.sun.midp.io.http.persistent_connection_linger_time</code>, set in <code class="cCode">com/sun/midp/io/j2me/http/Protocol.java</code>, as the time that a connection can remain open and unused. Its default is 60000 ms. (60 seconds). Once the time limit is exceeded, the MIDP Reference Implementation closes the connection and removes it from the connection pool. (See <em class="cEmphasis">Using MIDP</em> for the location of the property in the <code class="cCode">midp</code> executable&#8217;s configuration files.)
+</p>
+<a name="wp445455"> </a><h3 class="pHeading2">
+8.2.6	HTTPS
+</h3>
+<a name="wp448880"> </a><p class="pBody">
+The <em class="cEmphasis">MIDP 2.0 Specification</em> requires a secure HTTP (HTTPS) connection be compliant one or more of the following specifications: 
+</p>
+<ul class="pBullet1"><a name="wp448881"> </a><div class="pBullet1"><li><b class="cBold">HTTP over TLS</b> &#8212; See HTTP Over TLS as specified in RFC 2818 a <br /><a href="http://www.ietf.org/rfc/rfc2818.txt" target="_blank">
+<span class="cWebJump">http://www.ietf.org/rfc/rfc2818.txt</span></a> and TLS Protocol Version 1.0 as specified in RFC 2246 at <a href="http://www.ietf.org/rfc/rfc2246.txt" target="_blank">
+<span class="cWebJump">http://www.ietf.org/rfc/rfc2246.txt</span></a>.</li></div>
+<a name="wp448968"> </a><div class="pBullet1Plus"><li><b class="cBold">SSL V3</b> &#8212; See <em class="cEmphasis">The SSL Protocol Version 3.0</em> at <br /><a href="http://wp.netscape.com/eng/ssl3/draft302.txt" target="_blank">
+<span class="cWebJump">http://wp.netscape.com/eng/ssl3/draft302.txt</span></a>.</li></div>
+<a name="wp448889"> </a><div class="pBullet1Plus"><li><b class="cBold">WTLS</b> &#8212; See the Wireless Transport Layer Security document WAP-199 at the WAP Forum Specifications June 2000 (WAP 1.2.1) conformance release at <br /><a href="http://www.wapforum.org/what/technical_1_2_1.htm" target="_blank">
+<span class="cWebJump">http://www.wapforum.org/what/technical_1_2_1.htm</span></a>. </li></div>
+<a name="wp448976"> </a><div class="pBullet1Last"><li><b class="cBold">Wireless Application Protocol (WAP) TLS</b> &#8212; <em class="cEmphasis">WAP TLS Profile and Tunneling Specification</em>, <em class="cEmphasis">WAP-219-TLS-20010411-a</em> at <br /><a href="http://www.wapforum.com/what/technical.htm" target="_blank">
+<span class="cWebJump">http://www.wapforum.com/what/technical.htm</span></a>.</li></div>
+</ul>
+<a name="wp448905"> </a><p class="pBody">
+The HTTPS implementation in the MIDP Reference Implementation is built on top of HTTP. (See <a  href="network.html#wp450006"><span style="color: #3366CC">&quot;HTTP 1.1&quot; </span></a> for more information.) It uses the secure socket layer (SSL) implementation to make secure connections, and uses the implementation of the <code class="cCode">SecureConnection</code> for all certificate handling and data encryption. (See <a  href="network.html#wp445239"><span style="color: #3366CC">Section&#160;8.2.4 &quot;Secure Connections&quot; </span></a> for more information on SSL and on <code class="cCode">SecureConnection</code>.)
+</p>
+<a name="wp445463"> </a><p class="pBody">
+The MIDP Reference Implementation implements HTTPS with the following Java classes:
+</p>
+<ul class="pBullet1"><a name="wp445465"> </a><div class="pBullet1"><li><code class="cCode">javax.microedition.io.HttpsConnection</code></li></div>
+<a name="wp448838"> </a><div class="pBullet1Last"><li><code class="cCode">com.sun.midp.io.j2me.https.Protocol</code></li></div>
+</ul>
+<a name="wp448802"> </a><p class="pBody">
+The implementation of HTTPS does not expose an API to control the handshake listener. Exposing such an API would allow certain certificate errors to be over-ridden by higher level applications. It should not be possible for an end-user to override policy decisions about expired certificates. (Not exporting this API is compliant with the <em class="cEmphasis">MIDP 2.0 Specification</em>.)
+</p>
+<a name="wp449041"> </a><p class="pBody">
+The organization of the Java layer for HTTPS provides for maximum portability but might not provide the most optimum performance or size. If your device has a native implementation of HTTPS, you might gain efficiency if you change the classes to take advantage of your device&#8217;s native functionality. To replace the entire HTTPS implementation, replace the <code class="cCode">com.sun.midp.io.j2me.https</code> package.
+</p>
+<a name="wp445611"> </a><h3 class="pHeading2">
+8.2.7	Internal Utilities
+</h3>
+<a name="wp445619"> </a><p class="pBody">
+The MIDP Reference Implementation implements the following utilities in the Java programming language:
+</p>
+<ul class="pBullet1"><a name="wp445621"> </a><div class="pBullet1"><li><code class="cCode">com.sun.midp.io.ConnectionBaseAdapter</code></li></div>
+<a name="wp445623"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.Base64</code></li></div>
+<a name="wp445625"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.HttpUrl</code></li></div>
+<a name="wp445627"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.Properties</code></li></div>
+<a name="wp445629"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.NetworkConnectionBase</code></li></div>
+<a name="wp445631"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.BufferedConnectionAdapter</code></li></div>
+<a name="wp445633"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.ResourceInputStream</code></li></div>
+<a name="wp445635"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.SystemOutputStream</code></li></div>
+<a name="wp445637"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.Util</code></li></div>
+<a name="wp445639"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.BaseInputStream</code></li></div>
+<a name="wp445641"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.io.BaseOutputStream</code></li></div>
+<a name="wp449059"> </a><div class="pBullet1Last"><li><code class="cCode">com.sun.midp.io.InternalConnector</code></li></div>
+</ul>
+<a name="wp450057"> </a><p class="pBody">
+They should not need to be changed when the MIDP Reference Implementation is ported to a new device. 
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="security.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="ams.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Porting MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

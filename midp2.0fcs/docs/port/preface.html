@@ -1,0 +1,417 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 16:26:57" />
+    <title>Preface</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="portLOT.html" />
+    <link rel="Next" href="intro.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="portLOT.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="intro.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="portIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp431762"> </a><h2 class="pNewHTMLPage">
+Preface
+</h2>
+<hr class="pHr"/>
+<a name="wp432936"> </a><p class="pBody">
+Porting MIDP describes how to port the MIDP Reference Implementation to a mobile device<em class="cEmphasis">. </em>By the end of chapter two you should have a simple, although perhaps not entirely functional, port of the MIDP Reference Implementation. It will not be tailored for your device. The remaining chapters will help you make your port fully functional and customized for your device. The chapters typically include details of how to port any native code associated with a module (such as persistent storage, or the audio building block) and suggestions for customizing it.
+</p>
+<a name="wp437061"> </a><p class="pBody">
+Because this guide includes customization information, Porting MIDP could be useful for optimizing a MIDP implementation for increased speed or decreased footprint, as well as being useful for porting. The organization of the guide, however, reflects the tasks for porting MIDP to a new device.
+</p>
+<a name="wp435204"> </a><p class="pBody">
+This guide assumes that you have already installed the product, as described in <em class="cEmphasis">Installing MIDP</em>, and that you are familiar with the <em class="cEmphasis">MIDP 2.0 Specification</em>. You can download the specification from <a href="http://jcp.org/jsr/detail/118.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/118.jsp</span></a>.
+</p>
+<a name="wp433922"> </a><h2 class="pHeading1">
+How This Book Is Organized
+</h2>
+<a name="wp433923"> </a><p class="pBody">
+This book has the following chapters:
+</p>
+<a name="wp432166"> </a><p class="pBody">
+<a  href="intro.html#wp432511"><span style="color: #3366CC">Chapter&#160;1</span></a> introduces MIDP and its architecture, and the high-level requirements for porting MIDP to a new device.
+</p>
+<a name="wp432171"> </a><p class="pBody">
+<a  href="first-steps.html#wp436134"><span style="color: #3366CC">Chapter&#160;2</span></a> describes the first steps in porting MIDP to a new platform.
+</p>
+<a name="wp437219"> </a><p class="pBody">
+<a  href="events.html#wp434413"><span style="color: #3366CC">Chapter&#160;3</span></a> describes the event model.
+</p>
+<a name="wp436774"> </a><p class="pBody">
+<a  href="storage.html#wp427639"><span style="color: #3366CC">Chapter&#160;4</span></a> gives you information on porting the persistent storage module, the record management system (RMS)
+</p>
+<a name="wp437232"> </a><p class="pBody">
+<a  href="thread-safety.html#wp513486"><span style="color: #3366CC">Chapter&#160;5</span></a> gives advice on making a port of the user-interface thread-safe.
+</p>
+<a name="wp437236"> </a><p class="pBody">
+<a  href="gui.html#wp427639"><span style="color: #3366CC">Chapter&#160;6</span></a> covers some topics in porting the MIDP user-interface, including the <code class="cCode">game</code> package.
+</p>
+<a name="wp436807"> </a><p class="pBody">
+<a  href="security.html#wp434413"><span style="color: #3366CC">Chapter&#160;7</span></a> discusses the security functionality of the MIDP Reference Implementation.
+</p>
+<a name="wp437245"> </a><p class="pBody">
+<a  href="network.html#wp445111"><span style="color: #3366CC">Chapter&#160;8</span></a> discusses porting the MIDP network protocols.
+</p>
+<a name="wp436783"> </a><p class="pBody">
+<a  href="ams.html#wp427639"><span style="color: #3366CC">Chapter&#160;9</span></a> gives you information on porting the persistent storage module, the application management system (AMS).
+</p>
+<a name="wp435400"> </a><p class="pBody">
+<a  href="push.html#wp434413"><span style="color: #3366CC">Chapter&#160;10</span></a> discusses porting the push functionality of MIDP.
+</p>
+<a name="wp436823"> </a><p class="pBody">
+<a  href="sound.html#wp434413"><span style="color: #3366CC">Chapter&#160;11</span></a> describes porting the audio building block.
+</p>
+<a name="wp432477"> </a><p class="pBody">
+<a  href="build.html#wp434080"><span style="color: #3366CC">Chapter&#160;12</span></a> describes how to build MIDP.
+</p>
+<a name="wp437115"> </a><p class="pBody">
+<a  href="appx-targets.html#wp1000944"><span style="color: #3366CC">Appendix&#160;A</span></a> lists the targets in the build environment.
+</p>
+<a name="wp437122"> </a><p class="pBody">
+<a  href="appx-config-opts.html#wp9504"><span style="color: #3366CC">Appendix&#160;B</span></a> lists the configuration options in the build environment.
+</p>
+<a name="wp437181"> </a><p class="pBody">
+<a  href="appx-ssl.html#wp1035128"><span style="color: #3366CC">Appendix&#160;C</span></a> is the reference documentation generated by the Javadoc &#8482; tool for the <code class="cCode">com.sun.midp.ssl</code> package.
+</p>
+<a name="wp433931"> </a><h2 class="pHeading1">
+Using Operating System Commands
+</h2>
+<a name="wp433932"> </a><p class="pBody">
+This document may not contain information on basic UNIX&#174; or Microsoft Windows commands and procedures such as opening a terminal window, changing directories, and setting environment variables. See the software documentation that you received with your system for this information.
+</p>
+<a name="wp436937"> </a><h2 class="pHeading1">
+Typographic Conventions</h2><div align="left">
+<table border="0" cellpadding="7" summary="This table describes the typographic conventions used in this guide."   id="SummaryNotReq436894">
+  <caption><a name="wp436898"> </a><div class="pTableCaption">
+
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp436904"> </a><div style="text-align: left" class="pTableHead">
+Typeface
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp436906"> </a><div style="text-align: left" class="pTableHead">
+Meaning
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp436908"> </a><div style="text-align: left" class="pTableHead">
+Examples
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><a name="wp436910"> </a><div class="pTableText">
+<code class="cCode">AaBbCc123</code>
+</div>
+</td>
+    <td><a name="wp436912"> </a><div class="pTableText">
+The names of commands, files, and directories; on-screen computer output
+</div>
+</td>
+    <td><a name="wp436914"> </a><div class="pTableText">
+Edit your <code class="cCode">.login</code> file.
+</div>
+<a name="wp436915"> </a><div class="pTableText">
+Use <code class="cCode">ls -a</code> to list all files.
+</div>
+<a name="wp436916"> </a><div class="pTableText">
+<code class="cCode">% You have mail</code>.
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp436918"> </a><div class="pTableText">
+<span class="cUserType">AaBbCc123</span>
+</div>
+</td>
+    <td><a name="wp436920"> </a><div class="pTableText">
+What you type, when contrasted with on-screen computer output
+</div>
+</td>
+    <td><a name="wp436922"> </a><div class="pTableText">
+<code class="cCode">% </code><span class="cUserType">su</span>
+</div>
+<a name="wp436923"> </a><div class="pTableText">
+<code class="cCode">Password:</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp436925"> </a><div class="pTableText">
+<em class="cEmphasis">AaBbCc123</em>
+</div>
+</td>
+    <td><a name="wp436927"> </a><div class="pTableText">
+Book titles, new words or terms, words to be emphasized
+</div>
+<a name="wp436928"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp436929"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp436930"> </a><div class="pTableText">
+Command-line variable; replace with a real name or value
+</div>
+</td>
+    <td><a name="wp436932"> </a><div class="pTableText">
+Read Chapter 6 in the <em class="cEmphasis">User&#8217;s Guide</em>.
+</div>
+<a name="wp436933"> </a><div class="pTableText">
+These are called <em class="cEmphasis">class</em> options.
+</div>
+<a name="wp436934"> </a><div class="pTableText">
+You <em class="cEmphasis">must</em> be superuser to do this.
+</div>
+<a name="wp436935"> </a><div class="pTableText">
+&#160;
+</div>
+<a name="wp436936"> </a><div class="pTableText">
+To delete a file, type <code class="cCode">rm</code> <em class="cEmphasis">filename</em>.
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<h2 class="pHeading1">
+
+</h2>
+<a name="wp436938"> </a><p class="pBody">
+
+</p>
+<a name="wp436960"> </a><h2 class="pHeading1">
+Shell Prompts</h2><div align="left">
+<table border="0" cellpadding="7" summary="This table describes the shell prompts that preceed examples of commands." id="wp436945">
+  <caption><a name="wp436945"> </a><div class="pTableCaption">
+
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp436949"> </a><div style="text-align: left" class="pTableHead">
+Shell
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp436951"> </a><div style="text-align: left" class="pTableHead">
+Prompt
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><a name="wp436953"> </a><div class="pTableText">
+C shell 
+</div>
+</td>
+    <td><a name="wp436955"> </a><div class="pTableText">
+<code class="cCode">%</code>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp436957"> </a><div class="pTableText">
+Microsoft Windows
+</div>
+</td>
+    <td><a name="wp436959"> </a><div class="pTableText">
+<em class="cEmphasis">directory</em><code class="cCode">&gt;</code>
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<h2 class="pHeading1">
+
+</h2>
+<a name="wp436961"> </a><p class="pBody">
+
+</p>
+<a name="wp436965"> </a><h2 class="pHeading1">
+Related Documentation
+</h2>
+<a name="wp437028"> </a><p class="pBody">
+The following documentation is included with this release:</p><div align="left">
+<table border="0" cellpadding="7" summary="This table lists the documentation that comes with this product." id="wp436969">
+  <caption><a name="wp436969"> </a><div class="pTableCaption">
+
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp436973"> </a><div style="text-align: left" class="pTableHead">
+Application
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp436975"> </a><div style="text-align: left" class="pTableHead">
+Title
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><a name="wp436977"> </a><div class="pTableText">
+All
+</div>
+</td>
+    <td><a name="wp436982"> </a><div class="pTableText">
+<em class="cEmphasis">Release Notes</em>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp436984"> </a><div class="pTableText">
+Installing
+</div>
+</td>
+    <td><a name="wp436989"> </a><div class="pTableText">
+<em class="cEmphasis">Installing MIDP</em>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp436991"> </a><div class="pTableText">
+Running and managing security for emulator 
+</div>
+</td>
+    <td><a name="wp436996"> </a><div class="pTableText">
+<em class="cEmphasis">Using MIDP</em>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp437001"> </a><div class="pTableText">
+Porting the MIDP Reference Implementation
+</div>
+</td>
+    <td><a name="wp437006"> </a><div class="pTableText">
+<em class="cEmphasis">Porting MIDP</em>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp437008"> </a><div class="pTableText">
+Creating and building MIDlets
+</div>
+</td>
+    <td><a name="wp437013"> </a><div class="pTableText">
+<em class="cEmphasis">Creating MIDlet Suites</em>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp437015"> </a><div class="pTableText">
+Viewing reference documentation created by the Javadoc&#8482; tool
+</div>
+</td>
+    <td><a name="wp437020"> </a><div class="pTableText">
+<em class="cEmphasis">API Reference</em>
+</div>
+</td>
+</tr>
+  <tr align="left">    <td><a name="wp437022"> </a><div class="pTableText">
+Looking at examples
+</div>
+</td>
+    <td><a name="wp437027"> </a><div class="pTableText">
+<em class="cEmphasis">Example Overview</em>
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+<a name="wp435607"> </a><p class="pBody">
+In addition, you might find the following documentation helpful:
+</p>
+<ul class="pBullet1"><a name="wp434036"> </a><div class="pBullet1"><li><em class="cEmphasis">The Java&#8482; Language Specification</em> (Java Series), Second Edition by James Gosling, Bill Joy, Guy Steele and Gilad Bracha. Addison-Wesley, 2000, &#160;<br /><a href="http://java.sun.com/docs/books/jls/index.html" target="_blank">
+<span class="cWebJump">http://java.sun.com/docs/books/jls/index.html</span></a>.</li></div>
+<a name="wp431981"> </a><div class="pBullet1Plus"><li><em class="cEmphasis">KVM Porting Guide</em>, available as part of the CLDC download package.</li></div>
+<a name="wp437155"> </a><div class="pBullet1Plus"><li>The Java Specification Request (JSR), <em class="cEmphasis">J2ME&#8482; Connected, Limited Device Configuration</em>, [JSR-000030] at <a href="http://jcp.org/jsr/detail/30.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/30.jsp</span></a>.</li></div>
+<a name="wp437156"> </a><div class="pBullet1Plus"><li>The JSR, <em class="cEmphasis">Mobile Information Device Profile 2.0</em>, [JSR-000118] at &#160;<br /><a href="http://jcp.org/jsr/detail/118.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/118.jsp</span></a>.</li></div>
+<a name="wp435658"> </a><div class="pBullet1Plus"><li>A full list of JSRs for the J2ME platform, available at &#160;<br /><a href="http://jcp.org/jsr/tech/j2me.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/tech/j2me.jsp</span></a>.</li></div>
+<a name="wp435618"> </a><div class="pBullet1Last"><li><em class="cEmphasis">KVM Debug Wire Protocol (KDWP) Specification</em>, Sun Microsystems, Inc., available as part of the CLDC download package.</li></div>
+</ul>
+<a name="wp436666"> </a><h2 class="pHeading1">
+Accessing Sun Documentation Online
+</h2>
+<a name="wp436667"> </a><p class="pBody">
+The Java Developer Connectionsm web site enables you to access Java platform technical documentation on the Web:
+</p>
+<a name="wp436668"> </a><p class="pBody">
+<a href="http://developer.java.sun.com/developer/infodocs/" target="_blank">
+<span class="cWebJump">http://developer.java.sun.com/developer/infodocs/</span></a>
+</p>
+<a name="wp436669"> </a><h2 class="pHeading1">
+Sun Welcomes Your Comments
+</h2>
+<a name="wp436670"> </a><p class="pBody">
+We are interested in improving our documentation and welcome your comments and suggestions. You can email your comments to us at:
+</p>
+<a name="wp436671"> </a><p class="pBody">
+<a href="mailto:docs@java.sun.com" target="_blank">
+<span class="cEmail">docs@java.sun.com</span></a>
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="portLOT.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="intro.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Porting MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

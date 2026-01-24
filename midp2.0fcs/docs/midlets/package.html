@@ -1,0 +1,362 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/29/02 14:46:44" />
+    <title>Packaging a MIDlet</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="compile.html" />
+    <link rel="Next" href="publish.html" />
+    <link rel="Index" href="midletsIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="compile.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="publish.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="midletsIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp9095"> </a><h2 class="pChapNum">
+Chapter &#160; 4
+</h2>
+<a name="wp999045"> </a><h2 class="pNewHTMLPage">
+Packaging a MIDlet
+</h2>
+<hr class="pHr"/>
+<a name="wp1000040"> </a><p class="pBody">
+Packaging a MIDlet into a MIDlet suite prepares it to be downloaded and run. A MIDlet suite consists of two files: a JAR file, which holds the MIDlet classes and other resources (such as graphics), and a Java&#8482; application description (JAD) file, which holds attributes and values that describe the MIDlet suite and its MIDlets.
+</p>
+<a name="wp999389"> </a><p class="pBody">
+In addition to creating the JAR and JAD file, you can optionally sign the JAR file. This gives the MIDlet a better chance of being trusted. (See <a  href="intro.html#wp9178"><span style="color: #3366CC">Chapter&#160;1, &#8220;Introduction</span></a> for more information on trusted MIDlets.)
+</p>
+<a name="wp997922"> </a><p class="pBody">
+This chapter shows you how to package one or more MIDlets into a MIDlet suite. It has the sections:
+</p>
+<ul class="pBullet1"><a name="wp997926"> </a><div class="pBullet1"><li><a  href="package.html#wp997993"><span style="color: #3366CC">Creating a JAR File</span></a></li></div>
+<a name="wp997951"> </a><div class="pBullet1Plus"><li><a  href="package.html#wp998425"><span style="color: #3366CC">Creating a JAD File</span></a></li></div>
+<a name="wp999458"> </a><div class="pBullet1Last"><li><a  href="package.html#wp999512"><span style="color: #3366CC">Signing a JAR File</span></a></li></div>
+</ul>
+<a name="wp997993"> </a><h2 class="pHeading1">
+Creating a JAR File
+</h2>
+<a name="wp1000086"> </a><p class="pBody">
+A JAR file is a bundle of files that includes the MIDlet&#8217;s preverified files and other supporting files, such as graphics. You create the JAR file with the <code class="cCode">jar</code> command. (The <code class="cCode">jar</code> command is part of the Java 2 Platform, Standard Edition (J2SE&#8482; platform) distribution. See the <em class="cEmphasis">Release Notes</em> for J2SE platform version requirements, and your Java platform documentation for more information on the <code class="cCode">jar</code> command and JAR files.)
+</p>
+<a name="wp1000110"> </a><p class="pBody">
+A JAR file for distributing a MIDlet suite must contain:
+</p>
+<ul class="pBullet1"><a name="wp998000"> </a><div class="pBullet1"><li>A manifest file</li></div>
+<a name="wp998001"> </a><div class="pBullet1Plus"><li>Class files for the MIDlets in the suite</li></div>
+<a name="wp998002"> </a><div class="pBullet1Last"><li>Resource files (such as graphics files) for the MIDlets in the suite</li></div>
+</ul>
+<a name="wp998003"> </a><p class="pBody">
+To create a JAR file for a MIDlet suite:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp998004"> </a><li>Ensure that all the preverified class files for the MIDlet suite are in their expected directory.</li>
+<a name="wp998130"> </a><p class="pBody">
+For example:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">dir classes</span><a name="wp998136"> </a>
+Volume in drive C has no label.<a name="wp998137"> </a>
+...<a name="wp1000687"> </a>
+10/21/2002  03:32p &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;1,555 HelloMIDlet.class<a name="wp1000688"> </a>
+...<a name="wp1000689"> </a>
+</pre></div>
+<a name="wp1000142"> </a><li>Copy any resource files for the MIDlets into the directory that contains the preverified class files.</li>
+<a name="wp1000154"> </a><p class="pBody">
+The example MIDlet has no resource files. If, for example, it required a graphics file, <code class="cCode">mySplashImage.png</code>, a command like the following one would put it in the same directory as the preverified files:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">cp src/example/mySplashImage.png classes/</span><a name="wp1000155"> </a>
+</pre></div>
+<a name="wp1000156"> </a><li>Decide what you will call the JAR file.</li>
+<a name="wp1000157"> </a><p class="pBody">
+The rest of this chapter will refer it as <em class="cEmphasis">jarFileName</em>.
+</p>
+<a name="wp1000158"> </a><p class="pBody">
+For example, the <em class="cEmphasis">jarFileName</em> for the MIDlet example will be <code class="cCode">HelloMIDlet</code>.
+</p>
+<a name="wp1000143"> </a><li>Change directories to the location of the preverified class files and resource files.</li>
+<a name="wp1000147"> </a><p class="pBody">
+For example,
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">cd classes</span><a name="wp998015"> </a>
+</pre></div>
+<a name="wp998017"> </a><li>Create a manifest file.</li>
+<a name="wp998018"> </a><p class="pBody">
+The manifest file, <em class="cEmphasis">filename</em><code class="cCode">.mf</code>, is a text file that you can create with any text editor. It must contain at least the following attributes:
+</p>
+<ul class="pBullet1"><a name="wp998019"> </a><div class="pBullet1"><li><code class="cCode">MIDlet-Name</code> &#8212; Name that will be presented to the user</li></div>
+<a name="wp998020"> </a><div class="pBullet1Plus"><li><code class="cCode">MIDlet-Version</code> &#8212; Version number of the MIDlet in the <code class="cCode">major.minor.micro</code> format described in the Java Product Versioning Specification at <a href="http://java.sun.com/products/jdk/1.2/docs/guide/versioning/spec/VersioningSpecification.html" target="_blank">
+<span class="cWebJump">http://java.sun.com/products/jdk/1.2/docs/guide/versioning/spec/VersioningSpecification.html</span></a></li></div>
+<a name="wp998536"> </a><div class="pBullet1Last"><li><code class="cCode">MIDlet-Vendor</code> &#8212; Creator of the MIDlet.</li></div>
+</ul>
+<a name="wp1000200"> </a><p class="pBody">
+If you have used any security-sensitive APIs, you can also declare them in the manifest file. (If they are not in this file, they must be in the JAD file.) To declare them, use the following attributes:
+</p>
+<ul class="pBullet1"><a name="wp1000223"> </a><div class="pBullet1"><li><code class="cCode">MIDlet-Permissions</code> &#8211; Permissions that are critical to the correct functioning of the MIDlet suite</li></div>
+<a name="wp1000248"> </a><div class="pBullet1Last"><li><code class="cCode">MIDlet-Permissions-Opt</code> &#8211; Permissions that the MIDlet suite would like, but that it can function correctly without (For example, use this if the MIDlet suite could run with reduced functionality if the permission were not available.)</li></div>
+</ul>
+<a name="wp1000252"> </a><p class="pBody">
+The values for <code class="cCode">MIDlet-Permissions</code> and <code class="cCode">MIDlet-Permissions-Opt</code> are comma-separated lists. Leading and trailing white space (Unicode U+0020) and tabs (Unicode U+0009) are ignored. The following table shows the correspondence of MIDP 2.0 functionality and permissions:</p><div align="left">
+<table border="0" cellpadding="7"   id="SummaryNotReq1000440">
+  <caption><a name="wp1000502"> </a><div class="pTableCaption">
+TABLE&#160;4&#160;&#160;&#8211;&#160;&#160;APIs and Their Corresponding Permission &#160;
+</div>
+</caption>
+<thead>
+<tr  align="center">    <th  class="sun-verylightblue" scope="col"><a name="wp1000506"> </a><div style="text-align: left" class="pTableHead">
+API
+</div>
+
+</th>
+    <th  class="sun-verylightblue" scope="col"><a name="wp1000508"> </a><div style="text-align: left" class="pTableHead">
+Corresponding Permission Name
+</div>
+
+</th>
+</tr>
+</thead>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.HttpConnection<a name="wp1000510"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.http<a name="wp1000512"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.HttpsConnection<a name="wp1000514"> </a>
+</pre></div>
+</td>
+    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector.https<a name="wp1000516"> </a>
+</pre></div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.Connector<a name="wp1000518"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1000574"> </a><div class="pTableText">
+Use the permission corresponding to the protocol you used when you created a connection:
+</div>
+<div class="pTableBullet"><ul class="pTableBullet">
+<a name="wp1000520"> </a><div class="pTableBullet"><li><code class="cCode">javax.microedition.io.Connector.http</code></li></div>
+<a name="wp1000521"> </a><div class="pTableBullet"><li><code class="cCode">javax.microedition.io.Connector.https</code></li></div>
+<a name="wp1000522"> </a><div class="pTableBullet"><li><code class="cCode">javax.microedition.io.Connector.datagram</code></li></div>
+<a name="wp1000523"> </a><div class="pTableBullet"><li><code class="cCode">javax.microedition.io.<br />Connector.datagramreceiver</code></li></div>
+<a name="wp1001075"> </a><div class="pTableBullet"><li><code class="cCode">javax.microedition.io.Connector.socket</code></li></div>
+<a name="wp1001076"> </a><div class="pTableBullet"><li><code class="cCode">javax.microedition.io.Connector.serversocket</code></li></div>
+<a name="wp1001077"> </a><div class="pTableBullet"><li><code class="cCode">javax.microedition.io.Connector.ssl</code></li></div>
+<a name="wp1000527"> </a><div class="pTableBullet"><li><code class="cCode">javax.microedition.io.Connector.comm</code></li></div>
+</ul></div>
+</td>
+</tr>
+  <tr align="left">    <td><div class="pPreformatted"><pre class="pPreformatted">
+javax.microedition.io.PushRegistry<a name="wp1000529"> </a>
+</pre></div>
+</td>
+    <td><a name="wp1000531"> </a><div class="pTableText">
+javax.microedition.io.PushRegistry
+</div>
+</td>
+</tr>
+<tr><td colspan="15"><hr class="pTableHr" /></td></tr>
+</table>
+</div>
+<p class="pBody">
+
+</p>
+<a name="wp999000"> </a><p class="pBody">
+The manifest file can also contain the following attributes. (If they are not in this file, they must be in the JAD file.)
+</p>
+<ul class="pBullet1"><a name="wp998023"> </a><div class="pBullet1"><li><code class="cCode">MIDlet-</code><em class="cEmphasis">n</em> &#8212; Comma-separated list of the <em class="cEmphasis">n</em>th MIDlet&#8217;s name, icon, and class where <em class="cEmphasis">n</em> is the <em class="cEmphasis">n</em>th MIDlet in the JAR file. The lowest value of <em class="cEmphasis">n</em> is one, and <em class="cEmphasis">n </em>increments by one for each consecutive MIDlet. Supplying an icon is optional.</li></div>
+<a name="wp999855"> </a><div class="pBullet1Plus"><li><code class="cCode">MicroEdition-Profile</code> &#8212; J2ME platform profiles that the MIDlet requires. Multiple profiles are separated with a blank (Unicode x20). For MIDP 2.0, the value should be MIDP-2.0.</li></div>
+<a name="wp999856"> </a><div class="pBullet1Last"><li><code class="cCode">MicroEdition-Configuration</code> &#8212; J2ME platform configuration that the MIDlet requires. Multiple configurations are separated with a blank (Unicode x20). For MIDP 2.0, the value should be <code class="cCode">CLDC-1.0</code>.</li></div>
+</ul>
+<a name="wp998029"> </a><p class="pBody">
+The manifest file is also permitted to contain other attributes. For more information on the legal attributes in a MIDlet&#8217;s a JAR file, see the specification for the Mobile Information Device Profile 2.0 [JSR-000118] at&#160; <br /><a href="http://jcp.org/jsr/detail/118.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/118.jsp</span></a>.
+</p>
+<a name="wp998031"> </a><p class="pBody">
+For example, the manifest file for the <code class="cCode">HelloMIDlet.jar</code> file, called <code class="cCode">HelloMIDlet.mf</code>, looks like this:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+MIDlet-Name: HelloWorld<a name="wp998212"> </a>
+MIDlet-Version: 2.0<a name="wp998213"> </a>
+MIDlet-Vendor: Sun Microsystems, Inc.<a name="wp998214"> </a>
+</pre></div>
+<a name="wp1001164"> </a><p class="pBody">
+(If you are following this example by creating the Hello MIDlet, you should know that the <code class="cCode">HelloMIDlet.mf</code> file is shipped in the <em class="cEmphasis">midpInstallDir</em><code class="cCode">\src\example</code> directory. Instead of entering a new version of the file, you can copy it into the <em class="cEmphasis">midpInstallDir</em><code class="cCode">\classes</code> directory.)
+</p>
+<a name="wp1001166"> </a><li>Create the JAR file with the <code class="cCode">jar</code> tool.</li>
+<a name="wp1001167"> </a><p class="pBody">
+Put the manifest file, class files, and resource files into the JAR file. (See your Java platform documentation for more information on the <code class="cCode">jar</code> command.) For example:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs\classes&gt;<span class="cUserType"> jar -cmf HelloMIDlet.mf HelloMIDlet.jar HelloMIDlet.class</span><a name="wp998041"> </a>
+</pre></div>
+</ol>
+</div>
+<a name="wp998425"> </a><h2 class="pHeading1">
+Creating a JAD File
+</h2>
+<a name="wp998426"> </a><p class="pBody">
+A JAD file is a text file that you create with any text editor. Its lines have the following syntax:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">attribute</em>: <em class="cEmphasis">value</em><a name="wp998045"> </a>
+</pre></div>
+<a name="wp998046"> </a><p class="pBody">
+The JAD file must contain at least the following attributes:
+</p>
+<ul class="pBullet1"><a name="wp998050"> </a><div class="pBullet1"><li><code class="cCode">MIDlet-Name</code> &#8212; Same as the attribute in the JAR file&#8217;s manifest. See <a  href="package.html#wp998017"><span style="color: #3366CC">Step&#160;5</span></a> in the previous section.</li></div>
+<a name="wp998051"> </a><div class="pBullet1Plus"><li><code class="cCode">MIDlet-Version</code> &#8212; Same as the attribute in the JAR file&#8217;s manifest. See <a  href="package.html#wp998017"><span style="color: #3366CC">Step&#160;5</span></a> in the previous section.</li></div>
+<a name="wp998058"> </a><div class="pBullet1Plus"><li><code class="cCode">MIDlet-Vendor</code> &#8212; Same as the attribute in the JAR file&#8217;s manifest. See <a  href="package.html#wp998017"><span style="color: #3366CC">Step&#160;5</span></a> in the previous section.</li></div>
+<a name="wp998059"> </a><div class="pBullet1Plus"><li><code class="cCode">MIDlet-Jar-URL</code> &#8212; Location of the JAR file.</li></div>
+<a name="wp998060"> </a><div class="pBullet1Last"><li><code class="cCode">MIDlet-Jar-Size</code> &#8212; Number of bytes in the JAR file.</li></div>
+</ul>
+<a name="wp999006"> </a><p class="pBody">
+The JAD file may also contain the other attributes, including those listed in <a  href="package.html#wp998017"><span style="color: #3366CC">Step&#160;5</span></a> in the previous section. For more information on the legal attributes in a MIDlet&#8217;s a JAD file, see the specification for the Mobile Information Device Profile 2.0 [JSR-000118] at <a href="http://jcp.org/jsr/detail/118.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/118.jsp</span></a>.
+</p>
+<a name="wp998063"> </a><p class="pBody">
+The JAD and JAR file must have the same values for the <code class="cCode">MIDlet-Name</code>, <code class="cCode">MIDlet-Version</code>, and <code class="cCode">MIDlet-Vendor</code> attributes. If the values differ, MIDP will not be able to load the MIDlet.
+</p>
+<a name="wp999033"> </a><p class="pBody">
+If the JAD and JAR file have other attributes in common, the requirements depend on whether the MIDlet suite is trusted:
+</p>
+<ul class="pBullet1"><a name="wp1000350"> </a><div class="pBullet1"><li>Trusted &#8211; The values of duplicated attributes must be identical or the MIDP Reference Implementation will not be able to load the MIDlet.</li></div>
+<a name="wp1000354"> </a><div class="pBullet1Last"><li>Not trusted &#8211; The values of duplicated attributes may differ. If they differ, MIDP uses the values in the JAD file.</li></div>
+</ul>
+<a name="wp998064"> </a><p class="pBody">
+For example, the JAD file for the Hello MIDlet, <code class="cCode">HelloMIDlet.jad</code>, could look like this:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+MIDlet-Name: HelloWorld<a name="wp1000720"> </a>
+MIDlet-Version: 2.0<a name="wp1000721"> </a>
+MIDlet-Vendor: Sun Microsystems, Inc.<a name="wp1000722"> </a>
+MIDlet-Jar-URL: HelloMIDlet.jar<a name="wp1000723"> </a>
+MIDlet-Jar-Size: 1212<a name="wp1000724"> </a>
+MicroEdition-Profile: MIDP-2.0 <a name="wp1000725"> </a>
+MicroEdition-Configuration: CLDC-1.0 <a name="wp1000726"> </a>
+MIDlet-1: Hello World,, HelloMIDlet <a name="wp1000588"> </a>
+</pre></div>
+<a name="wp999512"> </a><h2 class="pHeading1">
+Signing a JAR File
+</h2>
+<a name="wp1000382"> </a><p class="pBody">
+Establishing trust is important for MIDlet suites that use security-sensitive APIs because trusted MIDlets can typically access more protected functionality than untrusted ones. Checking the signature of a MIDlet suite is one way that a device can determine whether to trust a MIDlet suite. As a result, signing a MIDlet suite makes it more likely that your MIDlet suite will be trusted by a device. (See <em class="cEmphasis">Using MIDP</em> for more information on signatures and certificates.)
+</p>
+<a name="wp1000411"> </a><p class="pBody">
+The HelloMIDlet does not access protected APIs, so it is not necessary to sign its MIDlet suite. This section signs the MIDlet suite just to show how it is done.
+</p>
+<a name="wp1000870"> </a><p class="pBody">
+The example below signs the MIDlet suite the RSA key pair provided with this release. The key pair is in the file <em class="cEmphasis">midpInstallDir</em>\<code class="cCode">bin\j2se_test_keystore.bin</code>, which is a keystore that can be managed with the J2SE platform&#8217;s <code class="cCode">keytool</code> utility. (See <a href="http://java.sun.com/j2se/1.3/docs/tooldocs/win32/keytool.html" target="_blank">
+<span class="cWebJump">http://java.sun.com/j2se/1.3/docs/tooldocs/win32/keytool.html</span></a> for more information on the <code class="cCode">keytool</code> utility.) The password for the file is <code class="cCode">keystorepwd</code>. The alias of the key pair is <code class="cCode">dummyca</code> and its private-key password is <code class="cCode">keypwd</code>. The file is provided for testing purposes.
+</p>
+<a name="wp1000827"> </a><p class="pBody">
+For MIDlets that you will publish, you will probably use an RSA key pair backed by a certificate or certificate chain from a certificate authority. The certificate authority vouches for your public/private key pair. You must have imported that certificate or certificate chain into a J2SE keystore with the J2SE platform&#8217;s <code class="cCode">keytool</code> utility.
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp999077"> </a><li>Add the certificate for your public key pair to the JAD file using the <code class="cCode">JadTool</code> utility.</li>
+<a name="wp999078"> </a><p class="pBody">
+The <code class="cCode">JadTool</code> utility will add the certificate as the value of an attribute named <code class="cCode">MIDlet-Certificate-</code><em class="cEmphasis">m</em><code class="cCode">-</code><em class="cEmphasis">n</em> where <em class="cEmphasis">m</em> is the number of the certificate chain (it defaults to one; you can provide a different number with the <code class="cCode">-chainnum</code> switch), and <em class="cEmphasis">n</em> is an integer that, for new certificates, begins at one and increments by one each time you add a new certificate to the JAD file.
+</p>
+<a name="wp999079"> </a><p class="pBody">
+For example, the following command would add the certificate as the value of the attribute <code class="cCode">MIDlet-Certificate-1-1</code> to the JAD file:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs\classes&gt;<span class="cUserType"> java -jar ../bin/JadTool.jar -addcert -keystore ../bin/j2se_test_keystore.bin -alias dummyca -storepass keystorepwd -inputjad HelloMIDlet.jad -outputjad HelloMIDlet.jad</span><a name="wp999080"> </a>
+</pre></div>
+<a name="wp999218"> </a><li>Optionally, verify that the certificate was added to the JAD file by using the <code class="cCode">JadTool</code> utility to list the certificate in the JAD file.</li>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs\classes&gt; <span class="cUserType">java -jar ../bin/JadTool.jar -showcert -certnum 1 -inputjad HelloMIDlet.jad</span><a name="wp999235"> </a>
+Subject: C=US, ST=CA, L=Santa Clara, O=dummy CA, OU=JCT, CN=thehost<a name="wp1000745"> </a>
+Issuer : C=US, ST=CA, L=Santa Clara, O=dummy CA, OU=JCT, CN=thehost<a name="wp1000746"> </a>
+Serial number: 3d3ece8a<a name="wp1000747"> </a>
+Valid from Wed Jul 24 08:58:02 PDT 2002 to Sat Jul 21 08:58:02 PDT 2012<a name="wp1000748"> </a>
+Certificate fingerprints:<a name="wp1000749"> </a>
+  MD5: 87:7f:5e:64:c8:dd:b4:bf:35:39:76:87:99:9b:68:82<a name="wp1000750"> </a>
+  SHA: 9d:c0:88:ce:08:83:cd:e6:fe:13:8b:26:f6:b4:df:e2:da:3c:25:98<a name="wp1001226"> </a>
+</pre></div>
+<a name="wp1001227"> </a><li>If you have a key pair backed by a certificate chain, import the intermediate certificates.</li>
+<a name="wp1000921"> </a><p class="pBody">
+Import the intermediate certificates using the <code class="cCode">JadTool</code> utility with the <code class="cCode">-addcert</code> switch shown in <a  href="package.html#wp999077"><span style="color: #3366CC">Step&#160;1</span></a>, taking care to use the correct chain order. That is, if the Acme company provides a certificate that vouches for your key pair, and the WidgetCertificates company vouches for the Acme certificate, and, finally, Verisign vouches for the WidgetCertificates certificate, you would import the Acme certificate followed by the WidgetCertificate. The Acme certificate would <code class="cCode">MIDlet-Certificate-1-2</code> and the WidgetCertificate certificate would be &#160;<br /><code class="cCode">MIDlet-Certificate-1-3</code>.
+</p>
+<a name="wp1000941"> </a><p class="pBody">
+Note that you do not import the certificate of the <em class="cEmphasis">root CA</em> (that is, the certificate at the end of the chain, which is the certificate from Verisign in this example). The CA&#8217;s public key will be on the device.
+</p>
+<a name="wp1000922"> </a><li>Sign the JAR file using the <code class="cCode">JadTool</code> utility.</li>
+<a name="wp999089"> </a><p class="pBody">
+The <code class="cCode">JadTool</code> utility will sign the JAR file, base64 encode the signature, and store it as the value of the <code class="cCode">MIDlet-Jar-RSA-SHA1</code> attribute of the output JAD file.
+</p>
+<hr class="pHr"/><div class="note">
+<a name="wp999090"> </a>
+<b>Note &#8211;</b>  Be sure that the key you use to sign the JAR file is from the same JCA keystore<em class="cEmphasis"> </em>entry as key pair you specified in <a  href="package.html#wp999077"><span style="color: #3366CC">Step&#160;1</span></a>. The <code class="cCode">JadTool</code> utility does not check that you are signing the JAR file with a keystore entry that has a certificate in the JAD file.
+<hr class="pHr"/></div>
+<a name="wp999091"> </a><p class="pBody">
+For example:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs\classes&gt;<span class="cUserType"> java -jar ../bin/JadTool.jar -addjarsig -keystore ../bin/j2se_test_keystore.bin -alias dummyca -storepass keystorepwd -keypass keypwd -jarfile HelloMIDlet.jar -inputjad HelloMIDlet.jad -outputjad HelloMIDlet.jad&#160; &#160;</span><a name="wp999092"> </a>
+</pre></div>
+</ol>
+</div>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="compile.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="publish.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="midletsIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Creating MIDlet Suites <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

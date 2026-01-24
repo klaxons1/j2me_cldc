@@ -1,0 +1,733 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 16:27:02" />
+    <title>LCDUI Graphical User Interface</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="thread-safety.html" />
+    <link rel="Next" href="security.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="thread-safety.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="security.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="portIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp427639"> </a><h2 class="pChapNum">
+Chapter &#160; 6
+</h2>
+<a name="wp431760"> </a><h2 class="pNewHTMLPage">
+LCDUI Graphical User Interface
+</h2>
+<hr class="pHr"/>
+<a name="wp445914"> </a><p class="pBody">
+This chapter covers some issues in porting the graphical user-interface (GUI) portion of the MIDP Reference Implementation. The GUI portion of MIDP is implemented in the <code class="cCode">javax.microedition.lcdui</code> package and the <code class="cCode">javax.microedition.lcdui.games</code> package. The GUI portion of MIDP is often called <em class="cEmphasis">LCDUI</em>.
+</p>
+<a name="wp451894"> </a><p class="pBody">
+Most of LCDUI is written in the Java&#8482; programming language, although some of the code is written in C. The native methods are written using portable code whenever possible, but some will require additional porting. Native methods that require additional porting have an <code class="cCode">LCDUI</code> prefix. Their signatures are listed in <em class="cEmphasis">midpInstallDir</em><code class="cCode">/src/share/native/defaultLCDUI.h</code>.
+</p>
+<a name="wp441236"> </a><p class="pBody">
+This chapter discusses issues in porting both the <code class="cCode">javax.microedition.lcdui</code> and the <code class="cCode">javax.microedition.lcdui.games</code> packages. It contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp441279"> </a><div class="pBullet1"><li><a  href="gui.html#wp451917"><span style="color: #3366CC">Overview</span></a></li></div>
+<a name="wp451943"> </a><div class="pBullet1Plus"><li><a  href="gui.html#wp441226"><span style="color: #3366CC">Issues in Porting Low Level API Functionality</span></a></li></div>
+<a name="wp443741"> </a><div class="pBullet1Plus"><li><a  href="gui.html#wp452410"><span style="color: #3366CC">Using Native Widgets for MIDP Screens</span></a></li></div>
+<a name="wp444946"> </a><div class="pBullet1Last"><li><a  href="gui.html#wp452207"><span style="color: #3366CC">Porting the Game Package</span></a></li></div>
+</ul>
+<a name="wp451917"> </a><h2 class="pHeading1">
+6.1	Overview
+</h2>
+<a name="wp451899"> </a><p class="pBody">
+The <code class="cCode">javax.microedition.lcdui</code> package contains APIs for creating both <em class="cEmphasis">structured screens</em> and <em class="cEmphasis">unstructured screens</em>. (MIDP 2.0 also has a hybrid class, <code class="cCode">CustomItem</code>, which is an unstructured item for a form.) The parent class for both structured and unstructured screens is <code class="cCode">Displayable</code>. It contains the common capabilities, such as a title, a ticker (an instance of the <code class="cCode">Ticker</code> class), and the ability to have associated abstract commands (instances of the <code class="cCode">Command</code> class.) You will probably extend <code class="cCode">Displayable</code> if you replace RI widgets with native ones. (See <a  href="gui.html#wp447593"><span style="color: #3366CC">Section&#160;6.3.2 &quot;Example: Replacing Part of </span><span style="color: #3366CC">DateField</span><span style="color: #3366CC">&quot; </span></a> for an example.)
+</p>
+<a name="wp451903"> </a><p class="pBody">
+Structured screens are portable but do not give the application access to low-level input mechanisms or control of the screen. Lists are an example of a structured screen. You create a structured screen with the LCDUI&#8217;s <em class="cEmphasis">high-level</em> APIs. The high-level APIs are subclasses of the <code class="cCode">Screen</code> class: <code class="cCode">Alert</code>, <code class="cCode">Form</code>, <code class="cCode">List</code>, and <code class="cCode">TextBox</code>. A form is a screen that contains items. These items are subclasses of the <code class="cCode">Item</code> class: <code class="cCode">ChoiceGroup</code>, <code class="cCode">CustomItem</code>, <code class="cCode">DateField</code>, <code class="cCode">Gauge</code>, <code class="cCode">ImageItem</code>, <code class="cCode">Spacer</code>, <code class="cCode">StringItem</code>, and <code class="cCode">TextField</code>. An alert can have an associated <code class="cCode">AlertType</code> so that its behavior can be customized for different purposes. 
+</p>
+<a name="wp452134"> </a><p class="pBody">
+Unstructured screens provide access to low-level I/O, but can be less portable. A screen that shows the push puzzle game board is an example of an unstructured screen. You create unstructured screens with the LCDUI&#8217;s <em class="cEmphasis">low-level</em> APIs. The low-level APIs are provided by the classes <code class="cCode">Canvas</code>, <code class="cCode">GameCanvas</code>, and <code class="cCode">Graphics</code>.
+</p>
+<a name="wp452137"> </a><p class="pBody">
+The <code class="cCode">javax.microedition.lcdui.games</code> package is series of classes for creating rich gaming content for wireless devices.
+</p>
+<a name="wp441226"> </a><h2 class="pHeading1">
+6.2	Issues in Porting Low Level API Functionality
+</h2>
+<a name="wp442066"> </a><p class="pBody">
+This chapter discusses some issues in porting low-level graphics classes, such as <code class="cCode">Canvas</code> and <code class="cCode">Graphics</code>. It covers the topics:
+</p>
+<ul class="pBullet1"><a name="wp442077"> </a><div class="pBullet1"><li><a  href="gui.html#wp441306"><span style="color: #3366CC">Drawing Graphics Primitives</span></a></li></div>
+<a name="wp442082"> </a><div class="pBullet1Last"><li><a  href="gui.html#wp441916"><span style="color: #3366CC">Porting PNG Transparency</span></a></li></div>
+</ul>
+<a name="wp441306"> </a><h3 class="pHeading2">
+6.2.1	Drawing Graphics Primitives
+</h3>
+<a name="wp447067"> </a><p class="pBody">
+The <code class="cCode">Graphics</code> class provides drawing primitives for text, images, lines, rectangles, and arcs. This section describe the graphics coordinate system, and how that affects the drawing of lines, rectangles, and filled rectangles. It also explains the requirements of drawing arcs. It contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp447158"> </a><div class="pBullet1"><li><a  href="gui.html#wp447172"><span style="color: #3366CC">Overview of the Coordinate System</span></a></li></div>
+<a name="wp447162"> </a><div class="pBullet1Plus"><li><a  href="gui.html#wp447215"><span style="color: #3366CC">Drawing Lines</span></a></li></div>
+<a name="wp447163"> </a><div class="pBullet1Plus"><li><a  href="gui.html#wp447278"><span style="color: #3366CC">Drawing and Filling Rectangles</span></a></li></div>
+<a name="wp447164"> </a><div class="pBullet1Last"><li><a  href="gui.html#wp447005"><span style="color: #3366CC">Drawing and Filling Arcs</span></a></li></div>
+</ul>
+<a name="wp447172"> </a><h4 class="pHeading3">
+6.2.1.1	Overview of the Coordinate System
+</h4>
+<a name="wp452038"> </a><p class="pBody">
+A <code class="cCode">Graphics</code> object has a coordinate system with its origin at the upper left-hand corner of the destination. The X-axis direction is positive towards the right, and the Y-axis direction is positive downwards. The coordinate system and graphics implementation in the MIDP Reference Implementation assume that the device has square pixels. If your device does not have square pixels, you will have to modify the graphics subsystem to take the different pixel shape into account. An application must be able to rely on equal horizontal and vertical distances being equal on the device display.
+</p>
+<a name="wp452067"> </a><p class="pBody">
+The coordinate system represents locations between pixels, not the pixels themselves. The first pixel in the upper left corner of the display lies in the square bounded by coordinates <code class="cCode">(0,0)</code>, <code class="cCode">(1,0)</code>, <code class="cCode">(0,1)</code>, and <code class="cCode">(1,1)</code>. This is shown in the following figure.
+</p>
+<a name="wp447107"> </a><p class="pBody">
+<img src="images/coordinates8.gif" height="234" width="400" alt="Pixel in upper left corner" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp447111"> </a><div class="pFigureCaption">
+FIGURE&#160;3&#160;&#160;&#8211;&#160;&#160;Coordinate System of the Graphics Class
+<br /><br />
+</div><a name="wp447215"> </a><h4 class="pHeading3">
+6.2.1.2	Drawing Lines
+</h4>
+<a name="wp447277"> </a><p class="pBody">
+A <code class="cCode">Graphics</code> object must draw a line between the coordinates <code class="cCode">(x1,y1)</code> and <code class="cCode">(x2,y2)</code>. In the coordinate system, that means that the line begins below and to the left of the <code class="cCode">(x1,y1)</code>, and ends below and to the left of <code class="cCode">(x2,y2)</code>. This is shown in the following picture, which shows a line drawn from <code class="cCode">(2,2)</code> to <code class="cCode">(6,6)</code>.
+</p>
+<a name="wp447284"> </a><p class="pBody">
+<img src="images/drawline9.gif" height="234" width="406" alt="line from (2,2) to (6,6)" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp447314"> </a><div class="pFigureCaption">
+FIGURE&#160;4&#160;&#160;&#8211;&#160;&#160;Drawing a Line
+<br /><br />
+</div><a name="wp447278"> </a><h4 class="pHeading3">
+6.2.1.3	Drawing and Filling Rectangles
+</h4>
+<a name="wp447340"> </a><p class="pBody">
+A <code class="cCode">Graphics</code> object draws and fills rectangles such that a drawn rectangle will be one pixel larger than a filled rectangle of the same requested height and width. That is, the <em class="cEmphasis">MIDP 2.0 Specification</em> says that the <code class="cCode">drawRect</code> method, &#8220;Draws the outline of the specified rectangle...The resulting rectangle will cover an area <code class="cCode">(width + 1)</code> pixels wide by <code class="cCode">(height + 1)</code> pixels tall.&#8221; In contrast, the <code class="cCode">fillRect</code> method, &#8220;Fills the specified rectangle with the current color.&#8221;
+</p>
+<a name="wp447415"> </a><p class="pBody">
+The following figure shows two rectangles. The one on the left shows the <code class="cCode">drawRect</code> method drawing a rectangle starting at <code class="cCode">(0,0)</code> with a width of <code class="cCode">8</code> and height of <code class="cCode">6</code>. The one on the right shows the <code class="cCode">fillRect</code> method&#8217;s rectangle that starts at <code class="cCode">(0,0)</code> and has a width of <code class="cCode">8</code> and height of <code class="cCode">6</code>. That is, they correspond to the calls:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+drawRect(0, 0, 8, 6);<a name="wp447428"> </a>
+fillRect(0, 0, 8, 6);<a name="wp447448"> </a>
+</pre></div>
+<a name="wp447455"> </a><p class="pBody">
+<img src="images/draw-fill-rectangle10.gif" height="228" width="528" alt="2 rectangles: one outlined and one filled" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp447466"> </a><div class="pFigureCaption">
+FIGURE&#160;5&#160;&#160;&#8211;&#160;&#160;Drawing Versus Filling a Rectangle
+<br /><br />
+</div><a name="wp451972"> </a><p class="pBody">
+&#160;
+</p>
+<a name="wp447005"> </a><h4 class="pHeading3">
+6.2.1.4	Drawing and Filling Arcs
+</h4>
+<a name="wp442944"> </a><p class="pBody">
+It can be difficult to understanding the contract that the <code class="cCode">drawArc</code> method must fulfill. This section explains its requirements. Note that the methods that draw and fill arcs have the same size difference as that described in <a  href="gui.html#wp447278"><span style="color: #3366CC">Section&#160;6.2.1.3 &quot;Drawing and Filling Rectangles</span></a>.&#8221;
+</p>
+<a name="wp444431"> </a><p class="pBody">
+To draw an arc means to draw all or part of an ellipse. The mathematical definition of an ellipse is:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">x</em><sup class="cSuperscript">2</sup>/<em class="cEmphasis">a</em><sup class="cSuperscript">2</sup> + <em class="cEmphasis">y</em><sup class="cSuperscript">2</sup>/<em class="cEmphasis">b</em><sup class="cSuperscript">2</sup> = 1<a name="wp444193"> </a>
+</pre></div>
+<a name="wp444194"> </a><p class="pBody">
+The value of the variable <em class="cEmphasis">a</em> controls the width of the ellipse, and the value of the variable <em class="cEmphasis">b</em> controls the height. If <em class="cEmphasis">a</em> <code class="cCode">=</code> <code class="cCode">2</code> and <em class="cEmphasis">b</em> <code class="cCode">=</code> <code class="cCode">1</code>, the ellipse is twice as wide as it is high. It looks like this:
+</p>
+<a name="wp444198"> </a><p class="pBody">
+<img src="images/gui2.gif" height="69" width="131" alt="Ellipse" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp444200"> </a><div class="pFigureCaption">
+FIGURE&#160;6&#160;&#160;&#8211;&#160;&#160;Ellipse
+<br /><br />
+</div><a name="wp444204"> </a><p class="pBody">
+If <em class="cEmphasis">a</em> and <em class="cEmphasis">b</em> have the same value, the equation reduces to a circle:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<em class="cEmphasis">(x</em><sup class="cSuperscript">2</sup> + <em class="cEmphasis">y</em><sup class="cSuperscript">2</sup>)/<em class="cEmphasis">r</em><sup class="cSuperscript">2</sup> = 1<a name="wp441310"> </a>
+</pre></div>
+<a name="wp442549"> </a><p class="pBody">
+And it looks like this:
+</p>
+<a name="wp442558"> </a><p class="pBody">
+<img src="images/gui3.gif" height="77" width="78" alt="Circle" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp442559"> </a><div class="pFigureCaption">
+FIGURE&#160;7&#160;&#160;&#8211;&#160;&#160;Circle
+<br /><br />
+</div><a name="wp444361"> </a><p class="pBody">
+The <code class="cCode">drawArc</code> method specification says:
+</p>
+
+<a name="wp442443"> </a><blockquote class="pQuote">
+Angles are interpreted such that 0 degrees is at the 3 o&#39;clock position. A positive value indicates a counter-clockwise rotation while a negative value indicates a clockwise rotation.
+</blockquote>
+<a name="wp442957"> </a><p class="pBody">
+The specification uses the common convention that 0 degrees lies where the circle crosses the positive x axis&#8212;sometimes referred to as 3:00 like in the specification&#8212;and that positive degrees lie with the positive values on the y axis (they go counter-clockwise) and negative degrees lie with the negative values on the y axis (they go clockwise). The following figure shows the angles at 0, 90, and -90:
+</p>
+<a name="wp442595"> </a><p class="pBody">
+<img src="images/gui7.gif" height="171" width="186" alt="Circle showing the angles listed in the text" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp442596"> </a><div class="pFigureCaption">
+FIGURE&#160;8&#160;&#160;&#8211;&#160;&#160;0, 90, and -90 degrees on a circle
+<br /><br />
+</div><a name="wp442641"> </a><p class="pBody">
+The specification then says:
+</p>
+
+<a name="wp442994"> </a><blockquote class="pQuote">
+The center of the arc is the center of the rectangle whose origin is (<em class="cEmphasis">x</em>, <em class="cEmphasis">y</em>) and whose size is specified by the width and height arguments.
+</blockquote>
+<a name="wp443000"> </a><p class="pBody">
+The <code class="cCode">drawArc</code> method has x, y, width, and height as four of its arguments. Remember that the coordinate system of a canvas has its origin (0, 0) at the upper left corner, the numeric values of the x-coordinates monotonically increase from left to right, and the numeric values of the y-coordinates monotonically increase from top to bottom.
+</p>
+<a name="wp444268"> </a><p class="pBody">
+To draw an ellipse, the value of the variable <em class="cEmphasis">a</em> in the ellipse equation must be <em class="cEmphasis">w</em>/2 and the variable <em class="cEmphasis">b</em> must be <em class="cEmphasis">h</em>/2. The center of the ellipse must be at (<em class="cEmphasis">x</em>+(<em class="cEmphasis">w</em>/2), <em class="cEmphasis">y</em> + (<em class="cEmphasis">h</em>/2)). Using these values creates an ellipse that is centered within the rectangle, as specified by the method description. The ellipse is also tangent to the rectangle at four points, which are the minimum and maximum radii of the ellipse; this shows that the size of the ellipse is specified by the rectangle&#8217;s width and height arguments, as specified by the method description.
+</p>
+<a name="wp444420"> </a><p class="pBody">
+The following figure shows a canvas with an arc that meets these requirements; the arc is a full ellipse. The figure shows the ellipse within the rectangle mentioned in the specification. The rectangle is shown with a dashed line because it would not actually be drawn on the canvas. The rectangle&#8217;s width represented by the variable <em class="cEmphasis">w</em>, and its height by the variable <em class="cEmphasis">h</em>.
+</p>
+<a name="wp441655"> </a><p class="pBody">
+<img src="images/guia.gif" height="284" width="368" alt="Ellipse drawn on a canvas" longdesc="images/guia.txt" border="0" hspace="0" vspace="0"/><a href="images/guia.txt" title="Description link for Ellipse drawn on a canvas">[D]</a>    
+</p>
+<a name="wp441656"> </a><div class="pFigureCaption">
+FIGURE&#160;9&#160;&#160;&#8211;&#160;&#160;Boxed Ellipse
+<br /><br />
+</div><a name="wp441701"> </a><p class="pBody">
+The final part of the specification covers what happens when the method is asked to draw only part of the ellipse. It says:
+</p>
+
+<a name="wp443045"> </a><blockquote class="pQuote">
+The angles are specified relative to the non-square extents of the bounding rectangle such that 45 degrees always falls on the line from the center of the ellipse to the upper right corner of the bounding rectangle. As a result, if the bounding rectangle is noticeably longer in one axis than the other, the angles to the start and end of the arc segment will be skewed farther along the longer axis of the bounds.
+</blockquote>
+<a name="wp443048"> </a><p class="pBody">
+In a circle, there is no skewing of the angles, as shown in the 45 and -120 degree angles in the following figure:
+</p>
+<a name="wp441772"> </a><p class="pBody">
+<img src="images/gui6.gif" height="116" width="112" alt="Circle with two angles" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp441773"> </a><div class="pFigureCaption">
+FIGURE&#160;10&#160;&#160;&#8211;&#160;&#160;45 and -120 degrees on a circle
+<br /><br />
+</div><a name="wp441763"> </a><p class="pBody">
+Skewing appears when the circle is stretched into an ellipse, as shown in the following figure. The point that was 45 degrees on the circle gets shifted, so the angle of the line from the center to that point is no longer 45 degrees. Technically, there is 45 &#8220;degrees of arc&#8221; between the x axis and the labeled spot, but on paper the angle of the line from the center to that point is not really 45 degrees.
+</p>
+<a name="wp441799"> </a><p class="pBody">
+<img src="images/gui5.gif" height="108" width="223" alt="Ellipse with 2 angles" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp441800"> </a><div class="pFigureCaption">
+FIGURE&#160;11&#160;&#160;&#8211;&#160;&#160;45 and -120 degrees on an ellipse
+<br /><br />
+</div><a name="wp441393"> </a><p class="pBody">
+A port of this method must work the same way: it must use the start and end points of a partial arc as though the ellipse were a circle. To make sure that the skewing happens correctly, the <em class="cEmphasis">MIDP 2.0 Specification </em>requires that 45 degrees always falls on the line from the center of the ellipse to the upper right corner of the bounding rectangle, as shown by the circle and ellipse in the following figure. (The figure again shows the bounding box with a dashed line. The figure also extends the 45 degree line so that it touches the box.)
+</p>
+<a name="wp441818"> </a><p class="pBody">
+<img src="images/gui4.gif" height="100" width="410" alt="Circle and ellipse, each showing a 45 degree angle" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp441829"> </a><div class="pFigureCaption">
+FIGURE&#160;12&#160;&#160;&#8211;&#160;&#160;Boxed circle and ellipse, both showing the 45 degree angle
+<br /><br />
+</div><a name="wp446038"> </a><p class="pBody">
+The (<em class="cEmphasis">x</em>,<em class="cEmphasis">y</em>) coordinates of a point on a circle are calculated using sine and cosine. The (<em class="cEmphasis">x</em>,<em class="cEmphasis">y</em>) coordinates of the point at <em class="cEmphasis">d</em> degrees on a circle of radius <em class="cEmphasis">r</em> is:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+(<em class="cEmphasis">x</em> = cos(<em class="cEmphasis">d</em>)*<em class="cEmphasis">r</em>, <em class="cEmphasis">y</em> = sin(<em class="cEmphasis">d</em>)*<em class="cEmphasis">r</em>)<a name="wp445984"> </a>
+</pre></div>
+<a name="wp445985"> </a><p class="pBody">
+For example, on a circle where <em class="cEmphasis">r</em> = 1 the (<em class="cEmphasis">x</em>,<em class="cEmphasis">y</em>) coordinates for the point that is at 30 degrees are:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+(<code class="cCode">cos</code>(30), <code class="cCode">sin</code>(30))<a name="wp446078"> </a>
+</pre></div>
+<a name="wp445986"> </a><p class="pBody">
+The equation for the corresponding point at <em class="cEmphasis">d</em> degrees on an ellipse with axes <em class="cEmphasis">a</em> and <em class="cEmphasis">b</em> is:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+(<em class="cEmphasis">x</em> = cos(<em class="cEmphasis">d</em>)*<em class="cEmphasis">a</em>, <em class="cEmphasis">y</em> = sin(<em class="cEmphasis">d</em>)*<em class="cEmphasis">b</em>)<a name="wp445987"> </a>
+</pre></div>
+<a name="wp447207"> </a><h4 class="pHeading3">
+6.2.1.5	Drawing and Filling Rectangles With Rounded Corners
+</h4>
+<a name="wp447482"> </a><p class="pBody">
+Drawing and filling rectangles with rounded corners combines the previous two topics, drawing rectangles and drawing arcs. (The difference between drawing and filling a rectangle with rounded corners is one pixel in height and width, as discussed in <a  href="gui.html#wp447278"><span style="color: #3366CC">Section&#160;6.2.1.3 &quot;Drawing and Filling Rectangles&quot; </span></a>.) A MIDlet draws a rectangle with rounded corners by specifying not only the starting pixel, the height, and the width of the rectangle, but also the width and height of the arc to use to round the corners.
+</p>
+<a name="wp447499"> </a><p class="pBody">
+The following figure shows a rectangle drawn with round corners using the call <code class="cCode">drawRoundRect(0, 0, 30, 40, 4, 3)</code>. That is, the rectangle starts at the upper left corner, and is 30 (+1) pixels wide, 40 (+1) pixels high, with corners rounded with an arc that is four pixels wide and three pixels high.
+</p>
+<a name="wp447525"> </a><p class="pBody">
+<img src="images/draw-round-rectangle11.gif" height="258" width="403" alt="Upper left corner of a rounded rectangle" border="0" hspace="0" vspace="0"/>
+</p>
+<a name="wp447540"> </a><div class="pFigureCaption">
+FIGURE&#160;13&#160;&#160;&#8211;&#160;&#160;Drawing a Rectangle With Rounded Corners
+<br /><br />
+</div><a name="wp441916"> </a><h3 class="pHeading2">
+6.2.2	Porting PNG Transparency
+</h3>
+<a name="wp445333"> </a><p class="pBody">
+The <em class="cEmphasis">MIDP 2.0 Specification</em> supports transparency in Portable Network Graphics (PNG) images. (See <a href="http://www.w3.org/Graphics/PNG/" target="_blank">
+<span class="cWebJump">http://www.w3.org/Graphics/PNG/</span></a> and <br /><a href="http://www.libpng.org/pub/png" target="_blank">
+<span class="cWebJump">http://www.libpng.org/pub/png</span></a> for more information on Portable Network Graphics.) Transparency is useful for creating non-square images. That is, a graphic is a square or rectangular image. If part of that image is opaque and part is transparent, the image can appear to be non-square.
+</p>
+<a name="wp445334"> </a><p class="pBody">
+Transparency may exist only in immutable, off-screen images created from PNG images or created from arrays of ARGB (alpha, red, green, blue) data. Moving an image that contains transparency data into a mutable <code class="cCode">Image</code> instance, (<em class="cEmphasis">rendering</em> it) changes the data into a native, opaque format and the transparency information is lost.
+</p>
+<a name="wp445431"> </a><p class="pBody">
+One way that an image can encode transparency is by providing image data that specifies the color of each pixel, and a chunk that specifies a color (a <em class="cEmphasis">tRNS chunk</em>). All bits of that color in the image are considered transparent. 
+</p>
+<a name="wp445356"> </a><p class="pBody">
+Another way that an image can encode transparency is by including an alpha value with each pixel. This is ARGB (alpha, red, green, blue) data. For a black and white image, eight bits encode a pixel&#8217;s alpha value (<code class="cCode">00000000</code> is transparent and <code class="cCode">11111111</code> is opaque), and eight bits specify its color (<code class="cCode">00000000</code> is black and <code class="cCode">11111111</code> is white). For a color image, some number of bits encode a pixel&#8217;s alpha value (all ones is fully opaque, all zeros is fully transparent, and values in between is semi-transparent) and the same number of bits specify the red, blue, and green elements of each pixel. The number of bits is usually eight or sixteen; the MIDP Reference Implementation uses sixteen.
+</p>
+<a name="wp445360"> </a><p class="pBody">
+An image can also use a <em class="cEmphasis">palette alpha</em> encoding technique, which provides image data that specifies the color of each pixel, and a chunk that specifies alpha values for corresponding RGB values (a <em class="cEmphasis">PLTE chunk</em>).
+</p>
+<a name="wp445456"> </a><p class="pBody">
+A compliant MIDP 2.0 implementation must be able to render full transparency. That is, it must treat pixels with an alpha value of zero (or the color in a tRNS chunk) as fully transparent, and must treat pixels with alpha values greater than zero as non-transparent. The MIDP implementation may choose to treat non-transparent pixels as opaque or to implement <em class="cEmphasis">alpha-blending</em>, a technique that renders non-transparent pixels in a way that shows some of whatever is behind them. 
+</p>
+<a name="wp445530"> </a><p class="pBody">
+A MIDP implementation that supports alpha-blending could use either of two techniques to interpret non-transparent pixels:
+</p>
+<ul class="pBullet1"><a name="wp441929"> </a><div class="pBullet1"><li>It could composite the non-transparent bits against the screen&#8217;s background color. This provides the best looking image, but takes a lot of processing and could be impractical on a small device. The MIDP Reference Implementation does not use this technique.</li></div>
+<a name="wp443646"> </a><div class="pBullet1Last"><li>It could composite the non-transparent bits against some color, such as white. This provides a good looking image, and less processing is required. The MIDP Reference Implementation uses this technique.</li></div>
+</ul>
+<a name="wp442907"> </a><p class="pBody">
+However you support transparency in your port, follow this general rule: process transparency data at decode time. There are two reasons for this rule:
+</p>
+<ul class="pBullet1"><a name="wp442908"> </a><div class="pBullet1"><li>You have all the information at that time, so it&#8217;s easier to make the picture look as its creator intended it.</li></div>
+<a name="wp452405"> </a><div class="pBullet1Last"><li>You might be able to combine processing steps to improve the look of the image while decreasing processing time. </li></div>
+</ul>
+<a name="wp452410"> </a><h2 class="pHeading1">
+6.3	Using Native Widgets for MIDP Screens
+</h2>
+<a name="wp447576"> </a><p class="pBody">
+The MIDP graphical user-interface should be well integrated with the device, so that a MIDlet looks and behaves as much as possible like a native application. Commonly, ports of the MIDP Reference Implementation replace the implementations of the <code class="cCode">Screen</code> classes with implementations that use the native widgets on a device.
+</p>
+<a name="wp452213"> </a><p class="pBody">
+As you replace the MIDP Reference Implementation widgets, keep in mind that <code class="cCode">TextBox</code> and <code class="cCode">List</code> are implemented using <code class="cCode">Form</code>, and all subclasses of <code class="cCode">Item</code> are implemented in the same way as <code class="cCode">CustomItem</code>. The exception to the <code class="cCode">Item</code> subclass implementation is a pop-up choice group. The pop-up choice group is implemented in native code.
+</p>
+<a name="wp447584"> </a><p class="pBody">
+This section covers topics that help you replace the Reference Implementation&#8217;s classes with native widgets:
+</p>
+<ul class="pBullet1"><a name="wp446319"> </a><div class="pBullet1"><li><a  href="gui.html#wp446323"><span style="color: #3366CC">General Instructions</span></a></li></div>
+<a name="wp447592"> </a><div class="pBullet1Plus"><li><a  href="gui.html#wp447593"><span style="color: #3366CC">Example: Replacing Part of </span><span style="color: #3366CC">DateField</span></a></li></div>
+<a name="wp446321"> </a><div class="pBullet1Last"><li><a  href="gui.html#wp446329"><span style="color: #3366CC">Pop-Up Choice Groups</span></a></li></div>
+</ul>
+<a name="wp446323"> </a><h3 class="pHeading2">
+6.3.1	General Instructions
+</h3>
+<a name="wp443759"> </a><p class="pBody">
+To replace a <code class="cCode">Screen</code> subclass with a native widget:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp443760"> </a><li>Remove most of the code for the screen that you want to replace, leaving only empty copies of the public methods.</li>
+<a name="wp443761"> </a><li>Add package-private native methods for <code class="cCode">showNotify</code> and <code class="cCode">hideNotify</code>.</li>
+<div class="pPreformatted"><pre class="pPreformatted">
+native void showNotify();<a name="wp443762"> </a>
+native void hideNotify();<a name="wp443763"> </a>
+</pre></div>
+<a name="wp452223"> </a><p class="pBody">
+Depending on your system, you may also want to handle the <code class="cCode">paint</code> method
+</p>
+<a name="wp452225"> </a><li>Add private native methods for passing data back and forth between your native GUI and the public API</li>
+<a name="wp443767"> </a><li>Fill in the public methods so that they call your natives appropriately.</li>
+<a name="wp443773"> </a><li>Implement the native methods to communicate with your native GUI.</li>
+</ol>
+</div>
+<a name="wp447593"> </a><h3 class="pHeading2">
+6.3.2	Example: Replacing Part of DateField
+</h3>
+<a name="wp447602"> </a><p class="pBody">
+This section is an example of how to replace part of the MIDP Reference Implementation&#8217;s LCDUI code with a native widget. It replaces the time editor for the <code class="cCode">DateField</code> class. The <code class="cCode">DateField</code> class is defined in the <em class="cEmphasis">MIDP 2.0 Specification</em>, which says that the time value, date value, or both can be editable. 
+</p>
+<a name="wp451983"> </a><p class="pBody">
+This section has the topics:
+</p>
+<ul class="pBullet1"><a name="wp447902"> </a><div class="pBullet1"><li><a  href="gui.html#wp447930"><span style="color: #3366CC">Native Time Editor&#8217;s Interface</span></a></li></div>
+<a name="wp447957"> </a><div class="pBullet1Last"><li><a  href="gui.html#wp447627"><span style="color: #3366CC">Changing </span><span style="color: #3366CC">DateField</span><span style="color: #3366CC"> and Its Helper Classes</span></a></li></div>
+</ul>
+<a name="wp447930"> </a><h4 class="pHeading3">
+6.3.2.1	Native Time Editor&#8217;s Interface
+</h4>
+<a name="wp447929"> </a><p class="pBody">
+For this example, assume that there is a built-in editor for time values that has the following C programming interface:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+/* set the time.  timeVal is in seconds since midnight */<a name="wp447612"> </a>
+<span class="cUserType">extern void TimeEditor_setTime(int timeVal);</span><a name="wp447613"> </a>
+<a name="wp447614"> </a>
+/* get the time value (in seconds since midnight) */<a name="wp447615"> </a>
+<span class="cUserType">extern int TimeEditor_getTime();</span><a name="wp447616"> </a>
+<a name="wp447617"> </a>
+/* make the time editor visible.  This gives it control<a name="wp447618"> </a>
+&#160;* over the screen, and causes it to get all user input<a name="wp447619"> </a>
+&#160;* events (except that the keys used for abstract commands<a name="wp447620"> </a>
+&#160;* are still passed through to the application).<a name="wp447621"> </a>
+&#160;*/<a name="wp447622"> </a>
+<span class="cUserType">extern void TimeEditor_setVisible(int shown);</span><a name="wp447623"> </a>
+<a name="wp447624"> </a>
+/* repaint the indicated portion of the screen. */<a name="wp447625"> </a>
+<span class="cUserType">extern void TimeEditor_repaint(int x, int y, int width, int height);</span><a name="wp447626"> </a>
+</pre></div>
+<a name="wp447627"> </a><h4 class="pHeading3">
+6.3.2.2	Changing DateField and Its Helper Classes
+</h4>
+<a name="wp447964"> </a><p class="pBody">
+This section walks through the steps for substituting the native time editor for the one in the MIDP Reference Implementation. The section follows the steps listed in <a  href="gui.html#wp446323"><span style="color: #3366CC">Section&#160;6.3.1 &quot;General Instructions</span></a>.&#8221; It has the topics:
+</p>
+<ul class="pBullet1"><a name="wp448429"> </a><div class="pBullet1"><li><a  href="gui.html#wp448493"><span style="color: #3366CC">Removing MIDP Reference Implementation Code</span></a></li></div>
+<a name="wp448448"> </a><div class="pBullet1Plus"><li><a  href="gui.html#wp448507"><span style="color: #3366CC">Adding Package Private Native Methods</span></a></li></div>
+<a name="wp448466"> </a><div class="pBullet1Plus"><li><a  href="gui.html#wp448537"><span style="color: #3366CC">Adding Private Native Methods</span></a></li></div>
+<a name="wp448477"> </a><div class="pBullet1Plus"><li><a  href="gui.html#wp448327"><span style="color: #3366CC">Filling in the Public Methods</span></a></li></div>
+<a name="wp448486"> </a><div class="pBullet1Last"><li><a  href="gui.html#wp448829"><span style="color: #3366CC">Implementing the Native Methods</span></a></li></div>
+</ul>
+<a name="wp448493"> </a><h5 class="pHeading4">
+Removing MIDP Reference Implementation Code
+</h5>
+<a name="wp448427"> </a><p class="pBody">
+The first step is said to be removing most of the code for the screen that you want to replace. This example is a little more complex, because the MIDP Reference Implementation combines date and time editing into a helper class called <code class="cCode">EditScreen</code>. The example, though, assumes that the device has only a time editor. As a result, the first task is to remove the time-editing code from the <code class="cCode">EditScreen</code> class. You can then create a new helper class that uses the native time editor. The example calls the new class <code class="cCode">TimeEditor</code>. (This example uses only the new class; it does not show the <code class="cCode">EditScreen</code> class with the time editing code removed.)
+</p>
+<a name="wp451581"> </a><p class="pBody">
+The following code example shows the empty <code class="cCode">TimeEditor</code> class. Notice that it extends <code class="cCode">Displayable</code>. As mentioned in the introduction, <code class="cCode">Displayable</code> is the highest level class that can be shown on the device screen. It can have a title and abstract commands; these will be added later.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+<span class="cUserType">class TimeEditor extends Displayable implements CommandListener</span> {<a name="wp448004"> </a>
+<a name="wp448402"> </a>
+&#160;&#160;&#160;&#160;<span class="cUserType">public TimeEditor(Screen returnScreen, DateField df) {</span><a name="wp448011"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp448018"> </a>
+<a name="wp448019"> </a>
+&#160;&#160;&#160;&#160;<span class="cUserType">public void setDateTime(Date currentValue) {</span><a name="wp448020"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp449651"> </a>
+<a name="wp449652"> </a>
+&#160;&#160;&#160;&#160;<span class="cUserType">public void commandAction(Command cmd, Displayable s) {</span><a name="wp449653"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp448054"> </a>
+}<a name="wp447692"> </a>
+</pre></div>
+<a name="wp448507"> </a><h5 class="pHeading4">
+Adding Package Private Native Methods
+</h5>
+<a name="wp448320"> </a><p class="pBody">
+The second step is to add package-private native methods for <code class="cCode">showNotify</code>, <code class="cCode">hideNotify</code>, and <code class="cCode">paint</code>. The class then adds these lines:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+class TimeEditor extends Displayable implements CommandListener {<a name="wp448329"> </a>
+&#160;&#160;&#160;&#160;...<a name="wp448344"> </a>
+&#160;&#160;&#160;&#160;public void commandAction(Command cmd, Displayable s) {<a name="wp451600"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp451601"> </a>
+&#160;&#160;&#160;&#160;<a name="wp451607"> </a>
+<span class="cUserType">&#160;&#160;&#160;&#160;native void paint0(int x, int y, int w, int h);</span><a name="wp448356"> </a>
+<span class="cUserType">&#160;&#160;&#160;&#160;native void showNotify();</span><a name="wp448359"> </a>
+<span class="cUserType">&#160;&#160;&#160;&#160;native void hideNotify();</span><a name="wp448360"> </a>
+}<a name="wp448354"> </a>
+</pre></div>
+<a name="wp448537"> </a><h5 class="pHeading4">
+Adding Private Native Methods
+</h5>
+<a name="wp448609"> </a><p class="pBody">
+The native methods for passing data back and forth between your native GUI and the public API are <code class="cCode">getTime</code> and <code class="cCode">setTime</code>. The following code example shows them in the <code class="cCode">TimeEditor</code> class:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+class TimeEditor extends Displayable implements CommandListener {<a name="wp448560"> </a>
+&#160;&#160;&#160;&#160;...<a name="wp448561"> </a>
+&#160;&#160;&#160;&#160;private native void paint0(int x, int y, int w, int h);<a name="wp448562"> </a>
+&#160;&#160;&#160;&#160;native void showNotify();<a name="wp448563"> </a>
+&#160;&#160;&#160;&#160;native void hideNotify();<a name="wp448564"> </a>
+<span class="cUserType">&#160;&#160;&#160;&#160;native void setTime(int timeVal);</span><a name="wp448571"> </a>
+<span class="cUserType">&#160;&#160;&#160;&#160;native int getTime();</span><a name="wp448572"> </a>
+}<a name="wp448565"> </a>
+</pre></div>
+<a name="wp448327"> </a><h5 class="pHeading4">
+Filling in the Public Methods
+</h5>
+<a name="wp448661"> </a><p class="pBody">
+Step four, filling in the public methods, is where you add the code for the constructor and for handling the abstract commands. The following code example shows the whole <code class="cCode">TimeEditor</code> class. The code uses native methods to get and set the time, to show and hide the screen, and to refresh a portion of the display.
+</p>
+<a name="wp449681"> </a><p class="pBody">
+The <code class="cCode">TimeEditor</code> also has two abstract commands. Their labels are Done and Back. If the native component handled these commands itself (that is, if it already had a way for the user to leave the editor with and without saving the new value), then you would have to find a way to get those commands back to MIDP.
+</p>
+<a name="wp451624"> </a><p class="pBody">
+Finally, note the synchronization done in the <code class="cCode">commandAction</code> method. As noted in <a  href="thread-safety.html#wp512459"><span style="color: #3366CC">Section&#160;5.3.2 &quot;Public Method Conventions&quot; </span></a>, <code class="cCode">LCDUILock</code> must be held whenever there is access to shared data. The method, therefore, takes the <code class="cCode">LCDUILock</code> when it sets a value in the date field. <a  href="thread-safety.html#wp501593"><span style="color: #3366CC">Section&#160;5.3.5 &quot;Application Callout Conventions&quot; </span></a> says that the <code class="cCode">LCDUILock</code> must not be held during any callout, because doing so may give rise to deadlock. The call to the application&#8217;s ItemStateChangedListener, therefore, is done after dropping the <code class="cCode">LCDUILock.</code>
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;<a name="wp452277"> </a>
+class TimeEditor extends Displayable implements CommandListener {<a name="wp452278"> </a>
+&#160;&#160;&#160;&#160;DateField field;<a name="wp452279"> </a>
+&#160;&#160;&#160;&#160;Screen returnScreen;<a name="wp448095"> </a>
+<a name="wp448096"> </a>
+&#160;&#160;&#160;&#160;Command Back = new Command(&quot;Back&quot;, Command.BACK, 0);<a name="wp448097"> </a>
+&#160;&#160;&#160;&#160;Command OK   = new Command(&quot;Done&quot;, Command.OK, 1);<a name="wp448098"> </a>
+<a name="wp448099"> </a>
+&#160;&#160;&#160;&#160;<span class="cUserType">public TimeEditor(Screen returnScreen, DateField df) {</span><a name="wp448100"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;field = df;<a name="wp448101"> </a>
+<a name="wp448102"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;addCommand(OK);<a name="wp448103"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;addCommand(Back);<a name="wp448104"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;setCommandListener(this);<a name="wp448105"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;this.returnScreen = returnScreen;<a name="wp448106"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp448107"> </a>
+<a name="wp448108"> </a>
+&#160;&#160;&#160;&#160;<span class="cUserType">public void setDateTime(Date currentValue) {</span><a name="wp448109"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;System.err.println(&quot;setDateTime : <a name="wp448110"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;currentValue = &quot; + currentValue);<a name="wp449015"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;calendar.setTime(currentValue);<a name="wp448111"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;int timeVal = calendar.get(Calendar.HOUR_OF_DAY)*60<a name="wp448112"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;+ calendar.get(Calendar.MINUTE);<a name="wp448113"> </a>
+<a name="wp448114"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;setTime(timeVal);<a name="wp448115"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp449639"> </a>
+<a name="wp449640"> </a>
+&#160;&#160;&#160;&#160;<span class="cUserType">public void commandAction(Command cmd, Displayable s) {</span><a name="wp449641"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Form form = null;<a name="wp448125"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Item item = null;<a name="wp448126"> </a>
+<a name="wp448127"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;synchronized (Display.LCDUILock) {<a name="wp448128"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if (cmd == OK) {<a name="wp448129"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;field.saveDate(calendar.getTime());<a name="wp448130"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;item = field;<a name="wp448131"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;form = (Form)item.getOwner();<a name="wp448132"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}<a name="wp448133"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;currentDisplay.setCurrent(returnScreen);<a name="wp448134"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;} // synchronized<a name="wp449300"> </a>
+<a name="wp449301"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;// SYNC NOTE: Move the call to the application&#39;s<a name="wp449302"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;// ItemStateChangedListener outside the lock<a name="wp448139"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if (form != null) {<a name="wp448140"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;form.itemStateChanged(item);<a name="wp448141"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}<a name="wp448142"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp448143"> </a>
+<a name="wp448144"> </a>
+&#160;&#160;&#160;&#160;<span class="cUserType">void callPaint(Graphics g, Object target) {</span><a name="wp448145"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;super.callPaint(g, target);<a name="wp448146"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;paint0(g.getClipX() + g.getTranslateX(),<a name="wp448147"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;g.getClipY() + g.getTranslateY(),<a name="wp448148"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;g.getClipWidth(),<a name="wp448149"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;g.getClipHeight());<a name="wp448150"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp448151"> </a>
+<a name="wp448152"> </a>
+&#160;&#160;&#160;&#160;private native void paint0(int x, int y, int w, int h);<a name="wp448153"> </a>
+&#160;&#160;&#160;&#160;native void setTime(int timeVal);<a name="wp448154"> </a>
+&#160;&#160;&#160;&#160;native int getTime();<a name="wp448155"> </a>
+&#160;&#160;&#160;&#160;native void showNotify();<a name="wp448156"> </a>
+&#160;&#160;&#160;&#160;native void hideNotify();<a name="wp448157"> </a>
+<a name="wp448158"> </a>
+&#160;&#160;&#160;&#160;private Calendar calendar =<a name="wp449549"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;Calendar.getInstance(TimeZone.getDefault());<a name="wp449557"> </a>
+}<a name="wp449550"> </a>
+<a name="wp451643"> </a>
+</pre></div>
+<a name="wp447693"> </a><p class="pBody">
+Because the helper classes have been changed, the <code class="cCode">DateField</code> class itself must also be changed. The <code class="cCode">EditScreen</code> class now holds only date editing code. Instead of using only calls to <code class="cCode">EditScreen</code>, the <code class="cCode">DateField</code> class must call methods of <code class="cCode">TimeEditor</code> to enable the user to edit the time. Further, because there is no longer a single editor for changing the date and the time, the code in the <code class="cCode">DateField</code> class that provided this capability through the <code class="cCode">EditScreen</code> class must also be changed. The following code examples will show these changes in the <code class="cCode">DateField</code> class&#8217;s <code class="cCode">callKeyPressed</code> method. The first code example shows the original MIDP Reference Implementation code. Note that the editor is provided by <code class="cCode">EditScreen</code>, and there are cases for <code class="cCode">DATE</code> editing, <code class="cCode">TIME</code> editing, and <code class="cCode">DATE_TIME</code> editing:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;<a name="wp448731"> </a>
+/**<a name="wp448732"> </a>
+&#160;* Called by the system to signal a key press<a name="wp448733"> </a>
+&#160;*<a name="wp448734"> </a>
+&#160;* @param keyCode the key code of the key that has been pressed<a name="wp448735"> </a>
+&#160;*/<a name="wp448736"> </a>
+<span class="cUserType">void callKeyPressed(int keyCode) {</span><a name="wp448737"> </a>
+&#160;&#160;&#160;&#160;if (keyCode != Display.KEYCODE_SELECT) {<a name="wp448738"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;return;<a name="wp448739"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp448740"> </a>
+<a name="wp448741"> </a>
+&#160;&#160;&#160;&#160;Screen returnScreen = getOwner();<a name="wp448742"> </a>
+<a name="wp448743"> </a>
+&#160;&#160;&#160;&#160;if (editor == null) {<a name="wp448744"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="cUserType">editor = new EditScreen</span>(returnScreen, this);<a name="wp448745"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp448746"> </a>
+<a name="wp448747"> </a>
+&#160;&#160;&#160;&#160;switch (mode) {<a name="wp448748"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="cUserType">case DATE:</span><a name="wp448749"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;...<a name="wp449984"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;editor.setDateTime(currentDate.getTime(), DATE);<a name="wp448756"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;break;<a name="wp448757"> </a>
+<a name="wp448758"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="cUserType">case TIME:</span><a name="wp448759"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;editor.setDateTime(initialized ? <a name="wp448760"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;currentDate.getTime() : EPOCH,<a name="wp450085"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;TIME);<a name="wp448761"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;break;<a name="wp448762"> </a>
+<a name="wp448763"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="cUserType">case DATE_TIME:</span><a name="wp448764"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;editor.setDateTime(currentDate.getTime(),<a name="wp448765"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;(highlight &lt; 1) ? TIME : DATE);<a name="wp448766"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}<a name="wp448767"> </a>
+<a name="wp448768"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;returnScreen.resetToTop = false;<a name="wp448769"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;returnScreen.currentDisplay.setCurrent(editor);<a name="wp448770"> </a>
+}<a name="wp448771"> </a>
+</pre></div>
+<a name="wp450925"> </a><p class="pBody">
+The following code example shows the new code. Note that although <code class="cCode">EditScreen</code> still provides a date editor, <code class="cCode">TimeEditor</code> provides the time editor. Also note that there is no longer a <code class="cCode">DATE_TIME</code> editing option.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;<a name="wp448775"> </a>
+/**<a name="wp448776"> </a>
+&#160;* Called by the system to signal a key press<a name="wp448777"> </a>
+&#160;*<a name="wp448778"> </a>
+&#160;* @param keyCode the key code of the key that has been pressed<a name="wp448779"> </a>
+&#160;*/<a name="wp448780"> </a>
+void callKeyPressed(int keyCode) {<a name="wp450979"> </a>
+&#160;&#160;&#160;&#160;if (keyCode != Display.KEYCODE_SELECT) {<a name="wp450980"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;return;<a name="wp450981"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp448784"> </a>
+<a name="wp448785"> </a>
+&#160;&#160;&#160;&#160;Screen returnScreen = getOwner();<a name="wp448786"> </a>
+<a name="wp448787"> </a>
+&#160;&#160;&#160;&#160;int editMode = this.mode;<a name="wp448788"> </a>
+<a name="wp448789"> </a>
+&#160;&#160;&#160;&#160;if (editMode == DATE_TIME) {<a name="wp448790"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;editMode = (highlight &lt; 1) ? TIME : DATE;<a name="wp448791"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp448792"> </a>
+<a name="wp448793"> </a>
+&#160;&#160;&#160;&#160;switch (editMode) {<a name="wp448794"> </a>
+&#160;&#160;&#160;&#160;&#160;<span class="cUserType">case DATE:</span><a name="wp448795"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;...<a name="wp448802"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if ((editor == null) || !(editor instanceof EditScreen)) {<a name="wp448803"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="cUserType">editor = new EditScreen(returnScreen, this);</span><a name="wp448804"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}<a name="wp448805"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;((EditScreen)editor).setDateTime<a name="wp448806"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;(currentDate.getTime(), DATE);<a name="wp451354"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;break;<a name="wp448807"> </a>
+<a name="wp448808"> </a>
+&#160;&#160;&#160;&#160;&#160;<span class="cUserType">case TIME:</span><a name="wp448809"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;if ((editor == null) || !(editor instanceof TimeEditor)) {<a name="wp448810"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;<span class="cUserType">editor = new TimeEditor(returnScreen, this);</span><a name="wp448811"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;}<a name="wp448812"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;((TimeEditor)editor).setDateTime(initialized ? <a name="wp448813"> </a>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;currentDate.getTime() : EPOCH);<a name="wp451518"> </a>
+&#160;&#160;&#160;&#160;}<a name="wp451519"> </a>
+<a name="wp451520"> </a>
+&#160;&#160;&#160;&#160;returnScreen.resetToTop = false;<a name="wp448816"> </a>
+&#160;&#160;&#160;&#160;returnScreen.currentDisplay.setCurrent(editor);<a name="wp448817"> </a>
+}<a name="wp448828"> </a>
+</pre></div>
+<a name="wp448829"> </a><h5 class="pHeading4">
+Implementing the Native Methods
+</h5>
+<a name="wp448830"> </a><p class="pBody">
+The final step in the task list for substituting a native widget is implementing the native methods that you declared in the <a  href="gui.html#wp448507"><span style="color: #3366CC">&quot;Adding Package Private Native Methods</span></a>&#8221; and <a  href="gui.html#wp448537"><span style="color: #3366CC">&quot;Adding Private Native Methods</span></a>&#8221; sections. The following code example shows the C language functions that satisfy the declarations. The functions use the the native time-editor&#8217;s&#8217; interface. (See <a  href="gui.html#wp447930"><span style="color: #3366CC">Section&#160;6.3.2.1 &quot;Native Time Editor&#8217;s Interface&quot; </span></a> for its API.) They also use calls to KNI for getting parameters off of and onto the stack. (See the documentation that came with CLDC for more information on KNI.)
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+&#160;<a name="wp452299"> </a>
+<span class="cUserType">KNIEXPORT KNI_RETURNTYPE_VOID Java_javax_microedition_lcdui_TimeEditor_paint0() </span>{<a name="wp448845"> </a>
+&#160;&#160;&#160;&#160;int clipHeight = KNI_GetParameterAsInt(4);<a name="wp448849"> </a>
+&#160;&#160;&#160;&#160;int clipWidth = KNI_GetParameterAsInt(3);<a name="wp448850"> </a>
+&#160;&#160;&#160;&#160;int clipY = KNI_GetParameterAsInt(2);<a name="wp448851"> </a>
+&#160;&#160;&#160;&#160;int clipX = KNI_GetParameterAsInt(1);<a name="wp448852"> </a>
+<a name="wp448853"> </a>
+&#160;&#160;&#160;&#160;TimeEditor_repaint(clipX, clipY, clipWidth, clipHeight);<a name="wp448854"> </a>
+&#160;&#160;&#160;&#160;KNI_ReturnVoid();<a name="wp448855"> </a>
+}<a name="wp448856"> </a>
+<a name="wp448857"> </a>
+<span class="cUserType">KNIEXPORT KNI_RETURNTYPE_VOID Java_javax_microedition_lcdui_TimeEditor_setTime()</span> {<a name="wp448858"> </a>
+    int timeVal = KNI_GetParameterAsInt(1);<a name="wp448861"> </a>
+<a name="wp448862"> </a>
+    TimeEditor_setTime(timeVal);<a name="wp448863"> </a>
+    KNI_ReturnVoid();<a name="wp448864"> </a>
+}<a name="wp448865"> </a>
+<a name="wp451822"> </a>
+<span class="cUserType">KNIEXPORT KNI_RETURNTYPE_INT Java_javax_microedition_lcdui_TimeEditor_getTime() </span>{<a name="wp451823"> </a>
+&#160;&#160;&#160;&#160;KNI_ReturnInt(TimeEditor_getTime());<a name="wp448870"> </a>
+}<a name="wp448871"> </a>
+<a name="wp448872"> </a>
+<span class="cUserType">KNIEXPORT KNI_RETURNTYPE_VOID Java_javax_microedition_lcdui_TimeEditor_showNotify()</span> {    <a name="wp448873"> </a>
+&#160;&#160;&#160;&#160;TimeEditor_setVisible(TRUE);<a name="wp448876"> </a>
+&#160;&#160;&#160;&#160;KNI_ReturnVoid();<a name="wp448877"> </a>
+}<a name="wp448878"> </a>
+<a name="wp448879"> </a>
+<span class="cUserType">KNIEXPORT KNI_RETURNTYPE_VOID Java_javax_microedition_lcdui_TimeEditor_hideNotify()</span> {<a name="wp448880"> </a>
+&#160;&#160;&#160;&#160;TimeEditor_setVisible(FALSE);<a name="wp448883"> </a>
+&#160;&#160;&#160;&#160;KNI_ReturnVoid();<a name="wp448884"> </a>
+}<a name="wp447600"> </a>
+</pre></div>
+<a name="wp446329"> </a><h3 class="pHeading2">
+6.3.3	Pop-Up Choice Groups
+</h3>
+<a name="wp452317"> </a><p class="pBody">
+In the MIDP Reference Implementation, popup choice groups are implemented differently from other LCDUI items: they are written in native code instead of the Java programming language. (In general, the technique of moving to native code when faced with a problem in the Java programming language layer can be useful.) This section explains why native code is used, so that you can better understand the MIDP Reference Implementation and how to port it. 
+</p>
+<a name="wp452321"> </a><p class="pBody">
+The reasons for using native code for popup choice group stem from the fact that, for maximum code reuse, the MIDP Reference Implementation gives subclasses of <code class="cCode">Item</code> the same capabilities as those given to the <code class="cCode">CustomItem</code> class by the <em class="cEmphasis">MIDP 2.0 Specification</em>. 
+</p>
+<a name="wp446747"> </a><p class="pBody">
+The <em class="cEmphasis">MIDP 2.0 Specification</em> allows a custom item to request repaints within its bounds (the space allotted to it on its form). A MIDP implementation must ensure that the item does not repaint other parts of the screen. A popup choice group, as currently designed, needs to draw its popup window of elements beyond its granted item bounds. Because a custom item cannot do this, the current MIDP Reference Implementation architecture makes it impossible for a pop-up choice group written in the Java programming language to draw its popup window of elements.
+</p>
+<a name="wp446272"> </a><p class="pBody">
+The <em class="cEmphasis">MIDP 2.0 Specification</em> does not give a custom item access to its position on the screen. (A custom item can know its height and width on its form, but there is no API that gives it its location on the screen.) A popup choice group needs access to its location so that it locates its popup correctly. For example, if the choice group is at the bottom of the viewport, the popup should display up from the bottom; if it is at the top of the viewport, the popup should display down from the top. Again, the current MIDP Reference Implementation architecture makes it impossible to write the popup choice group in the Java programming language.
+</p>
+<a name="wp452202"> </a><p class="pBody">
+The native functions that implement the popup choice group are <code class="cCode">LCDUIupdatePopupElement</code> and <code class="cCode">LCDUIinitPopupMenu</code>. These methods are called by the methods <code class="cCode">updatePopupElements</code> and <code class="cCode">getPopupSelection</code> in the <code class="cCode">ChoiceGroup</code> class. If you want to port the native functions to use a menu on your device that allows the user to choose only one element from its list but does not have popup behavior, you may. Your port will still be compliant with the <em class="cEmphasis">MIDP 2.0 Specification</em>. 
+</p>
+<a name="wp452207"> </a><h2 class="pHeading1">
+6.4	Porting the Game Package
+</h2>
+<a name="wp445098"> </a><p class="pBody">
+The <code class="cCode">javax.microedition.lcdui.game</code> package is designed so that it can be implemented using only the functionality provided by the <code class="cCode">javax.microedition.lcdui</code> APIs. For example, methods were added to the <code class="cCode">Graphics</code> and <code class="cCode">Image</code> classes to help develop games. The <code class="cCode">Image.getRBG</code> method is one such addition. Because of this design, the classes in the <code class="cCode">game</code> package need not call native methods directly. If you have ported the LCDUI functionality to your device, you could port the <code class="cCode">game</code> package without changes. (You might want to make changes, however, for better performance.)
+</p>
+<a name="wp445205"> </a><p class="pBody">
+The MIDP Reference Implementation implements the <code class="cCode">game</code> package in the Java programming language using the LCDUI APIs. It relies heavily on the <code class="cCode">javax.microedition.lcdui.Graphics</code> class; the methods <code class="cCode">clipRect</code>, <code class="cCode">setClip</code>, and <code class="cCode">drawRegion</code> are extensively used. It requires LCDUI&#8217;s transparency support for the <code class="cCode">Layer</code> class. The <code class="cCode">GameCanvas</code> class extends the <code class="cCode">javax.microedition.lcdui.Canvas</code> class, adding key latching and an offscreen buffer. The <code class="cCode">Tile</code> and <code class="cCode">Sprite</code> classes are implemented as a predefined series of LCDUI images. 
+</p>
+<a name="wp444979"> </a><p class="pBody">
+Because perceived performance is very important to games, you might want to enhance your MIDP port by using any available hardware capabilities to speed up portions of the game API. Hardware capabilities that are meant to accelerate gaming content may include:
+</p>
+<ul class="pBullet1"><a name="wp444980"> </a><div class="pBullet1"><li>Hardware sprites</li></div>
+<a name="wp444981"> </a><div class="pBullet1Plus"><li>Collision detection (bounding box and pixel-level)</li></div>
+<a name="wp444982"> </a><div class="pBullet1Plus"><li>Tiling</li></div>
+<a name="wp444983"> </a><div class="pBullet1Last"><li>Image compositing</li></div>
+</ul>
+<a name="wp444984"> </a><p class="pBody">
+In addition to the hardware capabilities aimed at games developers, your MIDP port might get performance improvements from accelerating the underlying graphics APIs. For example, if your device can do a fast bitblit, you could use this functionality to improvement the speed of rendering <code class="cCode">Sprite</code> and <code class="cCode">TiledLayer</code> objects. In addition, if your device does not have collision detection in hardware, you might want to move the pixel-level collision detection to native code. 
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="thread-safety.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="security.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Porting MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

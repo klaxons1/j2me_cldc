@@ -1,0 +1,57 @@
+#
+# %W% %E% %Z%
+#
+# Copyright (c) 1999-2001 Sun Microsystems, Inc.  All rights reserved.
+# PROPRIETARY/CONFIDENTIAL
+# Use is subject to license terms.
+#
+#########
+#
+# Makefile fragment to compile and install TestBeans unit test
+# Programs into an existing MIDP TestBeans runtime workspace.
+
+TESTBEANSDIR = $(MIDP_DIR)/../midp_nonui_tests
+
+AGENT_JAR=$(TESTBEANSDIR)/testbeans/agent.jar
+TESTAPI_JAR=$(TESTBEANSDIR)/testbeans/testapi.jar
+TESTBEAN_TARGET_DIR=$(TESTBEANSDIR)/bin/client/verified
+
+TESTBEAN_SOURCEFILES=$(shell find \
+  ../../testbeans/src/ \
+  -name '*.java' | egrep -v "SCCS|WidgetTest")
+
+TESTBEAN_CARDS=$(shell cd  ../../testbeans/src/client; \
+  find * -name '*.card' | egrep -v "SCCS")
+
+testbeanclasses :
+	@echo $(TESTBEAN_SOURCEFILES)  >> .filelist
+
+define compiletestbeans
+	@if [ '!' -d $(VERIFYDIR) ]; then rm -rf $(VERIFYDIR); mkdir $(VERIFYDIR); fi;
+	@if [ -f .filelist ]; then \
+		chmod +x $(PREVERIFY_CMD); \
+		num=`wc -l .filelist`; \
+		num=`echo $$num | cut -f1 -d' '` ; \
+		echo ... compiling $$num .java files; \
+		if [ $$num -lt 20 ]; then echo `cat .filelist`; fi; \
+		$(JAVAC) -g:none -d $(VERIFYDIR) -bootclasspath $(CLASSBINDIR) \
+		      -classpath $(CLASSBINDIR)$(PATHSEP)$(AGENT_JAR)$(PATHSEP)$(TESTAPI_JAR) `cat .filelist` || exit 1; \
+		num=`find $(VERIFYDIR) -type f -print | wc -l`; \
+		num=`echo $$num | cut -f1 -d' '` ; \
+		echo ... preverifying $$num .class files; \
+		$(PREVERIFY_CMD) -classpath \
+			$(VERIFYDIR)$(PATHSEP)classes$(PATHSEP)$(AGENT_JAR)$(PATHSEP)$(TESTAPI_JAR)\
+			 -d $(TESTBEAN_TARGET_DIR) $(VERIFYDIR) || exit 1; \
+		rm -rf $(VERIFYDIR); \
+	else \
+		echo no need to recompile .java files; \
+	fi
+endef
+
+testbeans : eraselists testbeanclasses
+	@echo ... $@
+	$(compiletestbeans)
+	@rm -f .filelist
+	@for i in $(TESTBEAN_CARDS) ; do \
+	    cp -f ../../testbeans/src/client/$$i  $(TESTBEAN_TARGET_DIR)/$$i ; \
+        done

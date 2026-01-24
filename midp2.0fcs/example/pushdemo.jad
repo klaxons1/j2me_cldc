@@ -1,0 +1,27 @@
+MIDlet-1: HttpView,, example.http.HttpView
+MIDlet-2: HttpTest,, example.http.HttpTest
+MIDlet-Data-Size: 0
+MIDlet-Description: This midlet is ....
+MIDlet-Name: HttpView
+MIDlet-Vendor: Sun Microsystems, Inc.
+MIDlet-Version: 2.0
+MicroEdition-Configuration: CLDC-1.0
+MicroEdition-Profile: MIDP-2.0
+MIDlet-Push-1: socket://:40079, example.http.HttpView, *
+MIDlet-Permissions: javax.microedition.io.PushRegistry, javax.microedition.io.Connector.serversocket, javax.microedition.io.Connector.socket, javax.microedition.io.Connector.datagramreceiver
+ViewURL-1: http://java.sun.com/
+ViewURL-2: http://www.sun.com/
+ViewURL-3: foo://abc/
+ViewTitle-3: foo://abc/ (bad protocol)
+ViewURL-4: http://badhost.sun.com/index.html
+ViewURL-5: http://java.sun.com/abc.html
+ViewTitle-5: http://java.sun.com/abc.html (no such file)
+ViewURL-6: http://jse.east/Telco/HttpTest.txt?test#home
+ViewURL-7: http://www.sun.com/products
+ViewTitle-7: http://www.sun.com/products (Redirect)
+ViewURL-8: http://dhcp-70-219:8080/examples/servlet/HelloWorldExample
+ViewURL-9: http://dhcp-70-219:8080/examples/servlet/httpdbexport
+MIDlet-Jar-URL: pushdemo.jar
+MIDlet-Jar-Size: 14396
+MIDlet-Certificate-1-1: MIIDPTCCAiUCBD0+zoowDQYJKoZIhvcNAQEEBQAwYzEQMA4GA1UEAxMHdGhlaG9zdDEMMAoGA1UECxMDSkNUMREwDwYDVQQKEwhkdW1teSBDQTEUMBIGA1UEBxMLU2FudGEgQ2xhcmExCzAJBgNVBAgTAkNBMQswCQYDVQQGEwJVUzAeFw0wMjA3MjQxNTU4MDJaFw0xMjA3MjExNTU4MDJaMGMxEDAOBgNVBAMTB3RoZWhvc3QxDDAKBgNVBAsTA0pDVDERMA8GA1UEChMIZHVtbXkgQ0ExFDASBgNVBAcTC1NhbnRhIENsYXJhMQswCQYDVQQIEwJDQTELMAkGA1UEBhMCVVMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDg4p/CdUwQU7tIy1Qj5JEXouxZn29Xf5tqH5NeafHUVrllnhQnuLG1nerW78IDTpsoHhsIGgVN97Xnks06Wdi2tiDzyCv4HjjZtPQjwAPJAnF6rEAlZ/7CatI7JRQp9ZmM71ElpDfasWW2SfedHlo0DhfyUJKFuxxsrmrk4Cnl/c0QGqsHx6Qy171wJMZTczOVYoSZtTuDkA68kVjwlZYVD+1oukYFIplVHjm+9TTNuUPeHOvwee6dYKVQeOA4+SiWrweZ1s58vDsE/Q0JcLGtz6VGyEFcB9iby9fLXMSWDkGEOyiRB8XcnnF4EEGNBT02P3ihnLM3gSql0CWt/nEHAgMBAAEwDQYJKoZIhvcNAQEEBQADggEBABONM0NK4JjU4Um6xICWqKHf/pzQntWSKwRNwfV3xHlb1uTDjGg6eKjkDECuoiQb2vxs7GCiYFIojrC/H6DLpsklZrH0fVtm+AqhGq71U+FmoI7YAGP33nAVNmmkeWUFWkz2iXWpQcoR+j7cxE6yLQkb2LKlSo9QiutHWBgntthW6bFE/WMkehq4Wzdx2eNUsVVko3YaLqrdnWRxn7+iL3PVURDpzDRYyoh75yFyURhDcSlpgmRLpse7S2BvWHHuoj8+lwU56t6vOayH2UF6ZLXqu6TDDtx+Vtdz50AsH4T59ItTbYOq0k9y22tg8q1lNXgbNC6soOtdLAIhFVmjgOE=
+MIDlet-Jar-RSA-SHA1: b7RC+UIxERJuOMcKVuDu6IpI9LgePSbJkR5IB3xpGbTrqTN9DlBWyM6h6YE6kUYBfTsxEt/uP1anBfWA/F54tzB9fjUylCesGUMmvi9Hcz6/vTLCsBS+ZWMESlUqWqcL5JUvUo8NmM+FsUAKVG9TzwgvQtsRnmYyAjuQDh3/57Y8kYUj7h2QA7lNQZx1AQg2TMgh9+BJF4fFYS7ahaVl9X6GJu+FWcFNVhCQt+NWuxF59EmQZzbwF6amo0Tq+d3gPNbRldyzrV4DJtKVyY90mtlUA36oz0gh7QGkroOzqj5qrQL4RZ4NJNp897aA8UollLu149rYFpcAaow7EP1tRg==

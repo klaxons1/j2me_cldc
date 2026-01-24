@@ -1,0 +1,410 @@
+#
+# @(#)Example.gmk	1.30 02/09/10 @(#)
+#
+# Copyright (c) 1999-2002 Sun Microsystems, Inc.  All rights reserved.
+# PROPRIETARY/CONFIDENTIAL
+# Use is subject to license terms.
+#
+#########
+#
+# Makefile for building the MID Profile examples.
+#
+# Most frequently used targets:
+#
+
+$(EXAMPLE_CLASS_FILES): classes/%.class : $(MIDP_DIR)/src/%.java
+	@echo $< >> .filelist
+
+$(TEST_CLASS_FILES): classes/%.class : $(MIDP_DIR)/%.java
+	@echo $< >> .filelist
+
+#######################################################################
+# Example jar's and jad's
+# Single MIDlet suites:
+# 	PushPuzzle
+#	Ticket Auction
+#	Stock
+#	Many Balls
+#
+# Multiple MIDlet suites:
+# 	Games: TilePuzzle, WormGame
+# 	Demos: Colors, HTTP Test, Properties
+
+ABOUT_SCREEN=example/About.class icons/JavaPowered*
+
+ABOUTBOX_CLASS_FILES = $(filter classes/example/About.class \
+				, $(EXAMPLE_CLASS_FILES))
+
+GAMES_SUITE_CLASS_FILES = $(filter classes/example/tilepuzzle/% \
+				classes/example/wormgame/% \
+				, $(EXAMPLE_CLASS_FILES))
+GAMES_SUITE_CLASS_FILES += $(ABOUTBOX_CLASS_FILES)
+
+DEMOS_SUITE_CLASS_FILES = $(filter classes/example/chooser/% \
+				classes/example/http/% \
+				classes/example/PropExample.class \
+				, $(EXAMPLE_CLASS_FILES))
+DEMOS_SUITE_CLASS_FILES += $(ABOUTBOX_CLASS_FILES)
+
+PONG_SUITE_CLASS_FILES = $(filter classes/example/pong/% \
+				, $(EXAMPLE_CLASS_FILES))
+PONG_SUITE_CLASS_FILES += $(ABOUT_CLASS_FILES)
+
+STARCRUISER_SUITE_CLASS_FILES = $(filter classes/example/starcruiser/% \
+				, $(EXAMPLE_CLASS_FILES))
+STARCRUISER_SUITE_CLASS_FILES += $(ABOUT_CLASS_FILES)
+
+SPACEINV_SUITE_CLASS_FILES = $(filter classes/example/spaceinv/% \
+				, $(EXAMPLE_CLASS_FILES))
+SPACEINV_SUITE_CLASS_FILES += $(ABOUTBOX_CLASS_FILES)
+
+AUCTION_SUITE_CLASS_FILES = $(filter classes/example/auction/% \
+				, $(EXAMPLE_CLASS_FILES))
+AUCTION_SUITE_CLASS_FILES += $(ABOUTBOX_CLASS_FILES)
+
+MANYBALLS_SUITE_CLASS_FILES = $(filter classes/example/manyballs/% \
+				, $(EXAMPLE_CLASS_FILES))
+MANYBALLS_SUITE_CLASS_FILES += $(ABOUTBOX_CLASS_FILES)
+
+AUDIODEMO_SUITE_CLASS_FILES = $(filter classes/example/audiodemo/% \
+				, $(EXAMPLE_CLASS_FILES))
+
+PUSHDEMO_SUITE_CLASS_FILES = $(filter classes/example/http/HttpView.class \
+				      classes/example/http/HttpTest.class \
+				, $(EXAMPLE_CLASS_FILES))
+NEWSHOUNDPUSHDEMO_SUITE_CLASS_FILES = $(filter classes/example/http/PushExample.class \
+				, $(EXAMPLE_CLASS_FILES))
+
+PUSHPUZZLE_SUITE_CLASS_FILES = $(filter classes/example/pushpuzzle/% \
+				, $(EXAMPLE_CLASS_FILES))
+PUSHPUZZLE_SUITE_CLASS_FILES += $(ABOUTBOX_CLASS_FILES)
+
+STOCK_SUITE_CLASS_FILES = $(filter classes/example/stock/% \
+				, $(EXAMPLE_CLASS_FILES))
+STOCK_SUITE_CLASS_FILES += $(ABOUTBOX_CLASS_FILES)
+
+FONTS_SUITE_CLASS_FILES = $(filter classes/example/fonts/% \
+				, $(EXAMPLE_CLASS_FILES))
+
+HANOI_SUITE_CLASS_FILES = $(filter classes/example/hanoi/% \
+				, $(EXAMPLE_CLASS_FILES))
+
+PHOTOALBUM_SUITE_CLASS_FILES = $(filter classes/example/photoalbum/% \
+				, $(EXAMPLE_CLASS_FILES))
+PHOTOALBUM_SUITE_CLASS_FILES += $(ABOUTBOX_CLASS_FILES)
+
+#
+# a new .jad and .jar file must be created 
+# add the target name (without extension) to this list or create own target
+# be sure to include the name in the common .jad builder as well
+#
+example examples: games demos auction manyballs pushpuzzle stock fonts photoalbum audiodemo pushdemo newshound hanoi
+
+#
+# common .jad builder
+# first build the .jar files then refresh the .jad file with the new
+# .jar file size.
+#
+
+games demos: %: %.jar
+	@echo ... $@.jad
+	@(cat $(MIDP_DIR)/src/example/$@.jad; 			\
+		echo "MIDlet-Jar-URL: $(EX_SERVER_URL)$@.jar"; 	\
+		echo "MIDlet-Jar-Size:" `wc -c < $@.jar`) > $@.jad
+
+auction manyballs pushpuzzle stock fonts photoalbum spaceinv starcruiser pong audiodemo hanoi: %: %.jar
+	@echo ... $@.jad
+	@(cat $(MIDP_DIR)/src/example/$@/$@.jad; 			\
+		echo "MIDlet-Jar-URL: $(EX_SERVER_URL)$@.jar"; 	\
+		echo "MIDlet-Jar-Size:" `wc -c < $@.jar`) > $@.jad
+
+pushdemo : %: %.jar jadtool keystore
+	@echo ... $@.jad
+	@(cat $(MIDP_DIR)/src/example/http/HttpView.jad; \
+		echo "MIDlet-Jar-URL: $@.jar"; 	\
+		echo "MIDlet-Jar-Size:" `wc -c < $@.jar`) > $@.jad
+	@$(JAVA) -jar $(JADTOOLJAR) -addcert -alias dummyca \
+		-keystore $(BINDIR)/j2se_test_keystore.bin \
+		-storepass keystorepwd \
+		-inputjad $@.jad -outputjad $@.jad
+	@$(JAVA) -jar $(JADTOOLJAR) -addjarsig -alias dummyca \
+		-keystore $(BINDIR)/j2se_test_keystore.bin \
+		-storepass keystorepwd -keypass keypwd -jarfile $@.jar \
+		-inputjad $@.jad -outputjad $@.jad
+
+newshound : %: %.jar
+	@echo ... $@.jad
+	@(cat $(MIDP_DIR)/src/example/http/PushExample.jad; 			\
+		echo "MIDlet-Jar-URL: $(EX_SERVER_URL)$@.jar"; 	\
+		echo "MIDlet-Jar-Size:" `wc -c < $@.jar`) > $@.jad
+
+#
+# create a new .jar target
+# be sure to specify the dependency _CLASS_FILES and to list all of the files
+# that need to be included in the .jar
+#
+
+games.jar: icons eraselists $(GAMES_SUITE_CLASS_FILES)
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/src/example/games.jad $(CLASSBINDIR)/manifest
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest	\
+			example/tilepuzzle example/wormgame 		\
+			icons/TilePuzzle.* icons/App.*		\
+			$(ABOUT_SCREEN))
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+demos.jar: icons eraselists $(DEMOS_SUITE_CLASS_FILES)
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/src/example/demos.jad $(CLASSBINDIR)/manifest
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest		\
+			example/chooser example/PropExample.class 	\
+			example/http 					\
+			icons/ColorChooser.* 				\
+			icons/App.* 					\
+			$(ABOUT_SCREEN))
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+auction.jar: icons eraselists $(AUCTION_SUITE_CLASS_FILES)
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/src/example/auction/auction.jad $(CLASSBINDIR)/manifest
+	-@mkdir -p $(CLASSBINDIR)/example/auction/images
+	-@cp -f  $(MIDP_DIR)/src/example/auction/images/*.png \
+		 $(CLASSBINDIR)/example/auction/images
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest	\
+			example/auction 			\
+			example/auction/images/*.png		\
+			icons/Auction.* 			\
+			$(ABOUT_SCREEN))
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+manyballs.jar: icons eraselists $(MANYBALLS_SUITE_CLASS_FILES)
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/src/example/manyballs/manyballs.jad $(CLASSBINDIR)/manifest
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest 	\
+			example/manyballs 				\
+			icons/ManyBalls.* 				\
+			$(ABOUT_SCREEN))
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+audiodemo.jar: icons audio eraselists $(AUDIODEMO_SUITE_CLASS_FILES)
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/src/example/audiodemo/audiodemo.jad $(CLASSBINDIR)/manifest
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest 	\
+			example/audiodemo 		\
+			icons/logo.* 			\
+			icons/App.png			\
+			audio/*)
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+pushdemo.jar: icons audio eraselists $(PUSHDEMO_SUITE_CLASS_FILES)
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/src/example/http/HttpView.mf \
+	  $(CLASSBINDIR)/manifest
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest 	\
+			example/http/HttpView.class     \
+			example/http/HttpTest.class     \
+			icons/logo.* 			\
+			icons/App.png			\
+			)
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+newshound.jar: icons audio eraselists $(NEWSHOUNDPUSHDEMO_SUITE_CLASS_FILES)
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/src/example/http/PushExample.jad $(CLASSBINDIR)/manifest
+	-@mkdir -p $(CLASSBINDIR)/example/http/images
+	-@cp -f  $(MIDP_DIR)/src/example/http/images/*.png \
+		 $(CLASSBINDIR)/example/http/images
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest 	\
+			example/http/PushExample.class  \
+			icons/logo.* 			\
+			icons/App.png			\
+			example/http/images/*.png       \
+			)
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+pong.jar: icons eraselists $(PONG_SUITE_CLASS_FILES)
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/src/example/pong/pong.jad $(CLASSBINDIR)/manifest
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest	\
+			example/pong 			\
+			icons/Pong.* 			\
+			$(ABOUT_SCREEN))
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+starcruiser.jar: icons eraselists $(STARCRUISER_SUITE_CLASS_FILES)
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/src/example/starcruiser/starcruiser.jad $(CLASSBINDIR)/manifest
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest	\
+			example/starcruiser 			\
+			icons/StarCruiser.* 			\
+			$(ABOUT_SCREEN))
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+spaceinv.jar: icons eraselists $(SPACEINV_SUITE_CLASS_FILES)
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/src/example/spaceinv/spaceinv.jad $(CLASSBINDIR)/manifest
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest	\
+			example/spaceinv 			\
+			icons/SpaceInvaders.* 			\
+			$(ABOUT_SCREEN))
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+pushpuzzle.jar: icons eraselists $(PUSHPUZZLE_SUITE_CLASS_FILES)
+	@echo ... $@
+	@$(UNZIP) -q -u $(MIDP_DIR)/src/example/pushpuzzle/pushpuzzle.zip -d $(CLASSBINDIR)
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/src/example/pushpuzzle/pushpuzzle.jad $(CLASSBINDIR)/manifest
+	@mkdir -p $(CLASSBINDIR)/example/pushpuzzle/images
+	-@cp -f  $(MIDP_DIR)/src/example/pushpuzzle/images/*.png \
+		 $(CLASSBINDIR)/example/pushpuzzle/images
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest	\
+			example/pushpuzzle 		\
+			icons/PushPuzzle.* 		\
+			$(ABOUT_SCREEN))
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+stock.jar: icons eraselists $(STOCK_SUITE_CLASS_FILES)
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/src/example/stock/stock.jad $(CLASSBINDIR)/manifest
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest	\
+			example/stock 				\
+			icons/Stock.* 				\
+			$(ABOUT_SCREEN))
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+fonts.jar: icons eraselists $(FONTS_SUITE_CLASS_FILES)
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f $(MIDP_DIR)/src/example/fonts/fonts.jad $(CLASSBINDIR)/manifest
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest example/fonts)
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+photoalbum.jar: icons eraselists $(PHOTOALBUM_SUITE_CLASS_FILES)
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/src/example/photoalbum/photoalbum.jad \
+		$(CLASSBINDIR)/manifest
+	-@mkdir -p $(CLASSBINDIR)/example/photoalbum/images
+	-@cp -f $(MIDP_DIR)/src/example/photoalbum/images/*.png \
+		$(CLASSBINDIR)/example/photoalbum/images
+	@$(UNZIP) -q -u $(MIDP_DIR)/src/example/photoalbum/jc_frame.zip \
+		-d $(CLASSBINDIR) 
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest	\
+			example/photoalbum 		\
+			icons/Duke.png 			\
+			$(ABOUT_SCREEN))
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+hanoi.jar: icons eraselists $(HANOI_SUITE_CLASS_FILES)
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/src/example/hanoi/hanoi.jad \
+		$(CLASSBINDIR)/manifest
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest	\
+			example/hanoi)
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+#######################################################################
+
+icons: $(CLASSBINDIR)/icons
+	@echo ... $@
+	@rm -rf $(CLASSBINDIR)/icons/*
+	-@cp $(MIDP_DIR)/src/example/icons/*.png $(CLASSBINDIR)/icons
+	-@cp $(MIDP_DIR)/src/example/icons/*.gif $(CLASSBINDIR)/icons
+
+#######################################################################
+audio: $(CLASSBINDIR)/audio
+	@echo ... $@
+	@rm -rf $(CLASSBINDIR)/audio/*
+	-@cp $(MIDP_DIR)/src/example/audio/*.wav $(CLASSBINDIR)/audio
+	-@cp $(MIDP_DIR)/src/example/audio/*.dat $(CLASSBINDIR)/audio
+
+#######################################################################
+
+tests: tests.jad i18n.jad
+
+tests.jad: tests.jar $(MIDP_DIR)/tests/ui.jad
+	@echo ... $@
+	@(cat $(MIDP_DIR)/tests/ui.jad; \
+		echo "MIDlet-Jar-URL: http://$(EX_WEB_SERVER)/tests.jar"; \
+		echo "MIDlet-Jar-Size:" `wc -c < tests.jar`) > $(BUILD_DIR)/$@
+
+tests.jar: eraselists $(TEST_CLASS_FILES) $(MIDP_DIR)/tests/ui.jad
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/tests/ui.jad $(CLASSBINDIR)/manifest
+	-@mkdir -p $(CLASSBINDIR)/tests/ui/gamedemo/images
+	-@cp -f  $(MIDP_DIR)/tests/ui/gamedemo/images/*.png \
+		 $(CLASSBINDIR)/tests/ui/gamedemo/images
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest \
+                 tests \
+		 tests/ui/gamedemo/images/*.png)
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+i18n.jad: i18n.jar $(MIDP_DIR)/tests/i18n/i18n.jad
+	@echo ... $@
+	@(cat $(MIDP_DIR)/tests/i18n/i18n.jad; \
+		echo "MIDlet-Jar-URL: http://$(EX_WEB_SERVER)/i18n.jar"; \
+		echo "MIDlet-Jar-Size:" `wc -c < i18n.jar`) > $(BUILD_DIR)/$@
+
+i18n.jar: eraselists $(TEST_CLASS_FILES) $(MIDP_DIR)/tests/i18n/i18n.jad
+	@echo ... $@
+	$(compilefiles)
+	-@cp -f  $(MIDP_DIR)/tests/i18n/i18n.jad $(CLASSBINDIR)/manifest
+	@(cd $(CLASSBINDIR);\
+		$(BOOTDIR)/bin/jar cfm ../$@ manifest \
+                 tests/i18n )
+	@rm -f $(CLASSBINDIR)/manifest
+	@rm -f .filelist
+
+classes/HelloMIDlet.class: $(MIDP_DIR)/src/example/HelloMIDlet.java
+	@echo $< >> .filelist
+
+clean ::
+	-@rm -fr auction.ja? fonts.ja? manyballs.ja? pushpuzzle.ja? demos.ja? \
+		games.ja? photoalbum.ja? stock.ja? spaceinv.ja? \
+		pong.ja? starcruiser.ja? tests.ja? audiodemo.ja? \
+		pushdemo.ja? newshound.ja? hanoi.ja? i18n.ja?

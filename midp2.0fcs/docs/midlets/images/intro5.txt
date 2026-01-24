@@ -1,0 +1,1 @@
+This image shows the life cycle of a MIDlet, as described in the text.  The MIDlet enters the Paused state upon being instantiated; it is eligible to be garbage collected after entering the destroyed state.

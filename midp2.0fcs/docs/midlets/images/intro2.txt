@@ -1,0 +1,1 @@
+This image shows the MIDP stack: the device operating system at the bottom, followed by the VM, Java class libraries, MID Profile, and finally MIDlet suites that contain MIDlets.

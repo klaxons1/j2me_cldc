@@ -1,0 +1,155 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 16:27:00" />
+    <title>Persistent Storage</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="events.html" />
+    <link rel="Next" href="thread-safety.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="events.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="thread-safety.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="portIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp427639"> </a><h2 class="pChapNum">
+Chapter &#160; 4
+</h2>
+<a name="wp431760"> </a><h2 class="pNewHTMLPage">
+Persistent Storage
+</h2>
+<hr class="pHr"/>
+<a name="wp438616"> </a><p class="pBody">
+This chapter discusses how to port and customize the persistent storage functionality. Persistent storage enables data to be kept on a device both across uses of a MIDlet suite and across shut downs and restarts of the device. The functionality is used by the Record Management System (RMS), by the application management system (AMS), by the native code that manages system configuration, by the security module, and can also be used by MIDlet suites.
+</p>
+<a name="wp440552"> </a><p class="pBody">
+The persistent storage implementation provides a <em class="cEmphasis">flat file system</em>, which is a file system that puts its files in a single directory. Because there are no subdirectories, each file must have a unique name.
+</p>
+<a name="wp438645"> </a><p class="pBody">
+The persistent storage implementation has both a native layer and a Java&#8482; programming language layer (Java layer). The files in the native layer are <code class="cCode">RandomAccessStream.c</code>, <code class="cCode">storageFile.c</code>, <code class="cCode">storage.h</code>, and <code class="cCode">storage.c</code> in the <code class="cCode">src/share/native/</code> directory. The classes in the Java layer are <code class="cCode">RandomAccessStream</code> and <code class="cCode">File</code> in the <code class="cCode">com.sun.midp.io.j2me.storage</code> package. 
+</p>
+<a name="wp440627"> </a><p class="pBody">
+To port persistent storage, you must make the native layer run on your device. To customize persistent storage, you also modify the Java layer.
+</p>
+<a name="wp438614"> </a><p class="pBody">
+This chapter contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp438560"> </a><div class="pBullet1"><li><a  href="storage.html#wp433919"><span style="color: #3366CC">Porting the Native Layer</span></a></li></div>
+<a name="wp438568"> </a><div class="pBullet1Last"><li><a  href="storage.html#wp440587"><span style="color: #3366CC">Customizing the Java Layer</span></a></li></div>
+</ul>
+<a name="wp433919"> </a><h2 class="pHeading1">
+4.1	Porting the Native Layer
+</h2>
+<a name="wp433920"> </a><p class="pBody">
+The native layer of the persistent storage implementation is in the <br /><code class="cCode">src/share/native/</code> directory, in the files <code class="cCode">storage.h</code>, <code class="cCode">storage.c</code> and <code class="cCode">storageFile.c</code>:
+</p>
+<ul class="pBullet1"><a name="wp441153"> </a><div class="pBullet1"><li><code class="cCode">storage.h</code> &#8212; defines the macros and declares the functions for the persistent storage implementation. You should not need to change this file.</li></div>
+<a name="wp441154"> </a><div class="pBullet1Plus"><li><code class="cCode">storage.c</code> &#8212; defines the functions that interact with the persistent storage of the device, including opening, reading, and writing files. This file requires porting.</li></div>
+<a name="wp440769"> </a><div class="pBullet1Last"><li><code class="cCode">storageFile.c</code> &#8212; defines the functions that mediate between the Java and native layers. The functions in this file use KNI; you should not need to change them. (For more information on KNI, see your CLDC documentation.)</li></div>
+</ul>
+<a name="wp434162"> </a><p class="pBody">
+The way that you port <code class="cCode">storage.c</code> depends on the capabilities of your device. If your device has a file system interface that supports directory hierarchies, you could customize the existing code. To do this, start with the code between these lines:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+#ifdef UNIX<a name="wp438965"> </a>
+#endif /* UNIX */<a name="wp438977"> </a>
+</pre></div>
+<a name="wp439018"> </a><p class="pBody">
+It uses the following system APIs for file manipulation:
+</p>
+<ul class="pBullet1"><a name="wp440778"> </a><div class="pBullet1"><li><code class="cCode">open</code></li></div>
+<a name="wp440779"> </a><div class="pBullet1Plus"><li><code class="cCode">close</code></li></div>
+<a name="wp440780"> </a><div class="pBullet1Plus"><li><code class="cCode">read</code></li></div>
+<a name="wp440781"> </a><div class="pBullet1Plus"><li><code class="cCode">write</code></li></div>
+<a name="wp440782"> </a><div class="pBullet1Plus"><li><code class="cCode">stat</code></li></div>
+<a name="wp440783"> </a><div class="pBullet1Plus"><li><code class="cCode">lseek</code></li></div>
+<a name="wp440784"> </a><div class="pBullet1Plus"><li><code class="cCode">ftruncate</code></li></div>
+<a name="wp440785"> </a><div class="pBullet1Plus"><li><code class="cCode">fstat</code></li></div>
+<a name="wp440820"> </a><p class="pBody">
+Note that <code class="cCode">fstat</code> is used only to get file size; if your device has another call that returns a file&#8217;s size, that call is sufficient.
+</p>
+<a name="wp440786"> </a><div class="pBullet1Plus"><li><code class="cCode">unlink</code></li></div>
+<a name="wp440787"> </a><div class="pBullet1Last"><li><code class="cCode">rename</code></li></div>
+</ul>
+<a name="wp440788"> </a><p class="pBody">
+It also includes the following directory operations:
+</p>
+<ul class="pBullet1"><a name="wp440789"> </a><div class="pBullet1"><li><code class="cCode">mkdir</code></li></div>
+<a name="wp440790"> </a><div class="pBullet1Plus"><li><code class="cCode">opendir</code></li></div>
+<a name="wp440791"> </a><div class="pBullet1Plus"><li><code class="cCode">readdir</code></li></div>
+<a name="wp440792"> </a><div class="pBullet1Last"><li><code class="cCode">closedir</code></li></div>
+</ul>
+<a name="wp440951"> </a><p class="pBody">
+If your platform has another type of interface, such as record-oriented file system or a flat-file interface, reimplement <code class="cCode">storage.c</code> to use it. (In these cases, you might also change the Java layer.)
+</p>
+<a name="wp440587"> </a><h2 class="pHeading1">
+4.2	Customizing the Java Layer
+</h2>
+<a name="wp440588"> </a><p class="pBody">
+The Java layer runs without changes on a new device. You might want to customize it if your device has an alternate storage mechanism. For example, if the device has a record-based storage system (such as a database), the RMS APIs might map directly or nearly directly to native methods. Using native methods (instead of the RI&#8217;s Java layer) would not only give MIDlets RMS performance that is similar to a native application, you could probably also remove much of the record handling code. 
+</p>
+<a name="wp440941"> </a><p class="pBody">
+Note, though, that not all devices provide fast native storage operations. If your device does not, you should try to minimize the memory access operations done by your port by using caching. 
+</p>
+<a name="wp441022"> </a><p class="pBody">
+Another example of an alternate storage mechanism is a device that has a full-featured file system. For this type of device, you might decide to map record stores to directories and records to files. (In the RI, a record store is a file and the records within them are blocks of data in the file.) This would allow the file system to handle most of the metadata maintained in each record store now (such as the modification time, version information, and so on) and therefore to remove much of the code in the <code class="cCode">RecordStore</code> class.
+</p>
+<a name="wp441005"> </a><p class="pBody">
+As you customize the RMS, pay attention to any system storage limitations on your device. RMS gives record stores names that are case sensitive and can be up to 32 Unicode characters in length. If your device is case insensitive, or requires shorter names, you will have to use a different mechanism (such as a map table) to map a MIDlet suite&#39;s RMS record store name to a name on your device. 
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="events.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="thread-safety.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Porting MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

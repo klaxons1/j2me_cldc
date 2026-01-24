@@ -1,0 +1,329 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 11:35:10" />
+    <title>Managing Public Keys of Certificate Authorities</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="security.html" />
+    <link rel="Next" href="appx-jadtool.html" />
+    <link rel="Index" href="useIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="security.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="appx-jadtool.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="useIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp9095"> </a><h2 class="pChapNum">
+Chapter &#160; 4
+</h2>
+<a name="wp9178"> </a><h2 class="pNewHTMLPage">
+Managing Public Keys of Certificate Authorities
+</h2>
+<hr class="pHr"/>
+<a name="wp1000351"> </a><p class="pBody">
+This chapter describes how to manage the certificate authority (CA) keys that your MIDP implementation uses to ensure that you access secure, valid web sites and to ensure that it properly accepts and classifies signed MIDlet suites.
+</p>
+<a name="wp1003072"> </a><p class="pBody">
+This chapter contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp997775"> </a><div class="pBullet1"><li><a  href="ca-keys.html#wp997777"><span style="color: #3366CC">Overview</span></a></li></div>
+<a name="wp997776"> </a><div class="pBullet1Plus"><li><a  href="ca-keys.html#wp1002370"><span style="color: #3366CC">General Instructions for </span><span style="color: #3366CC">MEKeyTool</span></a></li></div>
+<a name="wp999891"> </a><div class="pBullet1Plus"><li><a  href="ca-keys.html#wp1002351"><span style="color: #3366CC">Working With Multiple ME Keystores</span></a></li></div>
+<a name="wp999895"> </a><div class="pBullet1Plus"><li><a  href="ca-keys.html#wp997862"><span style="color: #3366CC">Importing a Key</span></a></li></div>
+<a name="wp999899"> </a><div class="pBullet1Plus"><li><a  href="ca-keys.html#wp999456"><span style="color: #3366CC">Listing Available Keys</span></a></li></div>
+<a name="wp999903"> </a><div class="pBullet1Plus"><li><a  href="ca-keys.html#wp1003307"><span style="color: #3366CC">Deleting a Key</span></a></li></div>
+<a name="wp999907"> </a><div class="pBullet1Plus"><li><a  href="ca-keys.html#wp999715"><span style="color: #3366CC">Replacing a Key</span></a></li></div>
+<a name="wp1001348"> </a><div class="pBullet1Last"><li><a  href="ca-keys.html#wp1000907"><span style="color: #3366CC">Handling Certificate Exceptions When Running MIDP</span></a></li></div>
+</ul>
+<a name="wp1001642"> </a><p class="pBody">
+See <a  href="appx-mekeytool.html#wp1004021"><span style="color: #3366CC">Appendix&#160;B,  &quot;The </span><span style="color: #3366CC">MEKeyTool</span><span style="color: #3366CC"> Utility</span></a>&#8221; for information in a manpage format on managing certificate authority keys.
+</p>
+<a name="wp997777"> </a><h2 class="pHeading1">
+Overview
+</h2>
+<a name="wp1003073"> </a><p class="pBody">
+The MIDP Reference Implementation uses the public keys of CAs for two reasons. One is to check the validity of web sites, and the other is to check the validity of a signed MIDlet suite. (See <a  href="security.html#wp1016913"><span style="color: #3366CC">Chapter&#160;3, &quot;Using MIDP Security Features</span></a>&#8221; for more information on checking the validity of signed MIDlet suites.)
+</p>
+<a name="wp997711"> </a><p class="pBody">
+When you use a secure protocol to access a web site, the site provides a certificate. The certificate is typically signed by a CA. By signing the certificate, the CA is saying that the web site is being run by the owners of the certificate. (It is not, for example, a look-alike web site set up by hackers to collect information.)
+</p>
+<a name="wp1001405"> </a><p class="pBody">
+MIDP Reference Implementation checks the web site&#8217;s certificate using the public key of the CA that signed it. If the certificate is valid, you are permitted to visit the site. If there is a problem with the web site&#8217;s certificate, or you do not have the public key of the CA that signed the certificate, you will not be permitted to access the site. For example, if you try to connect to a test site with a self-signed certificate, and you do not have access to that site&#8217;s public key, you will receive a certificate error.
+</p>
+<a name="wp1003132"> </a><p class="pBody">
+To manage public keys for the MIDP Reference Implementation, you use the <code class="cCode">MEKeyTool</code> utility. The utility is functionally similar to the <code class="cCode">keytool</code> utility that comes with the Java&#8482; 2 Platform, Standard Edition (J2SE&#8482;). The <code class="cCode">MEKeyTool</code> utility enables you to:
+</p>
+<ul class="pBullet1"><a name="wp999798"> </a><div class="pBullet1"><li>See which CA public keys are available to MIDP Reference Implementation.</li></div>
+<a name="wp999799"> </a><div class="pBullet1Plus"><li>Add new CA public keys to those available to MIDP Reference Implementation.</li></div>
+<a name="wp999800"> </a><div class="pBullet1Plus"><li>Replace expired CA public keys that MIDP Reference Implementation was trying to use.</li></div>
+<a name="wp999801"> </a><div class="pBullet1Last"><li>Remove CA public keys that you no longer want MIDP Reference Implementation to use.</li></div>
+</ul>
+<a name="wp1002368"> </a><p class="pBody">
+The <code class="cCode">MEKeyTool</code> utility keeps the CA public keys in an <em class="cEmphasis">ME keystore</em>, a file that holds the keys in a format that Java 2 Platform, Micro Edition (J2ME&#8482;) can use. By contrast, a file that holds the keys in a format that the J2SE platform can use is a <em class="cEmphasis">JCA keystore</em>.
+</p>
+<a name="wp1003615"> </a><p class="pBody">
+Note that JCA and ME keystores have different formats. You cannot use the <code class="cCode">MEKeytool</code> utility on a JCA keystore. If you do (for example, to try to see its public keys), you will receive an error message that the keystore is corrupted. The message means that the JCA keystore is not in a format that the <code class="cCode">MEKeyTool</code> utility can read. The JCA keystore is in the correct format for the J2SE platform tools.
+</p>
+<a name="wp1002370"> </a><h2 class="pHeading1">
+General Instructions for MEKeyTool
+</h2>
+<a name="wp1002371"> </a><p class="pBody">
+The MEKeyTool utility is packaged in a JAR file, <code class="cCode">MEKeyTool.jar</code>, in the <em class="cEmphasis">midpInstallDir</em><code class="cCode">\bin</code> directory. To use the utility:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp998638"> </a><li>Open a command prompt or terminal window.</li>
+<a name="wp998774"> </a><li>Change your current directory to <em class="cEmphasis">midpInstallDir</em>.</li>
+<a name="wp997932"> </a><p class="pBody">
+For example, if MIDP Reference Implementation was installed in the directory <code class="cCode">c:\midp2.0fcs</code>:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\&gt; <span class="cUserType">cd midp2.0fcs</span><a name="wp997933"> </a>
+</pre></div>
+<a name="wp997934"> </a><li>Run <code class="cCode">MEKeyTool</code> with the <code class="cCode">java</code> command, the <code class="cCode">-jar</code> option, and any commands or options to <code class="cCode">MEKeyTool</code>.</li>
+<a name="wp999846"> </a><p class="pBody">
+The commands and options to the <code class="cCode">MEKeyTool</code> utility are described below. Using no options provides help on MEKeyTool. For example, if the <code class="cCode">java</code> command were on your <code class="cCode">PATH</code>, you could get help with the command:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">java -jar bin/MEKeyTool.jar</span><a name="wp1002349"> </a>
+</pre></div>
+</ol>
+</div>
+<a name="wp1002351"> </a><h2 class="pHeading1">
+Working With Multiple ME Keystores
+</h2>
+<a name="wp1002355"> </a><p class="pBody">
+When you use a secure protocol, the MIDP Reference Implementation expects its ME keystore to be the file <em class="cEmphasis">midpInstallDir</em><code class="cCode">\appdb\_main.ks</code>. The file is included with MIDP Reference Implementation, and contains the key of one popular CA. By default the <code class="cCode">MEKeyTool</code> utility uses this file when you add, delete, or list keys.
+</p>
+<a name="wp1001889"> </a><p class="pBody">
+You can also use the <code class="cCode">MEKeyTool</code> utility to manage other ME keystores. For example, during testing you might want to have multiple keystores to run against: one might have all the keys that you need, another might be missing one or more keys, another might have an expired key. You would use the <code class="cCode">MEKeyTool</code> utility to manage all of them.
+</p>
+<a name="wp1002002"> </a><p class="pBody">
+This section has the following topics:
+</p>
+<ul class="pBullet1"><a name="wp1002003"> </a><div class="pBullet1"><li><a  href="ca-keys.html#wp1001973"><span style="color: #3366CC">Creating Alternate ME Keystores</span></a></li></div>
+<a name="wp1002011"> </a><div class="pBullet1Plus"><li><a  href="ca-keys.html#wp1002251"><span style="color: #3366CC">Managing Alternate ME Keystores</span></a></li></div>
+<a name="wp1002339"> </a><div class="pBullet1Last"><li><a  href="ca-keys.html#wp1002307"><span style="color: #3366CC">Running MIDP and Alternate Keystores</span></a></li></div>
+</ul>
+<a name="wp1001973"> </a><h3 class="pHeading2">
+Creating Alternate ME Keystores
+</h3>
+<a name="wp1001974"> </a><p class="pBody">
+Importing a key is a one way to create a new ME keystore: if you import a key into a keystore that does not exist, the <code class="cCode">MEKeyTool</code> utility creates it. See <a  href="ca-keys.html#wp997862"><span style="color: #3366CC">&quot;Importing a Key&quot; </span></a> for instructions on how to import a key. Another way to create an ME keystore is to copy the keystore provided with MIDP Reference Implementation.
+</p>
+<a name="wp1002251"> </a><h3 class="pHeading2">
+Managing Alternate ME Keystores
+</h3>
+<a name="wp1002252"> </a><p class="pBody">
+To manage a keystore other than the default, use the -<code class="cCode">MEkeystore</code> option to <code class="cCode">MEKeyTool</code>. That is, the command will begin like this:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+java -jar bin/MEKeyTool.jar -MEkeystore <em class="cEmphasis">keystoreName</em> ...<a name="wp1002253"> </a>
+</pre></div>
+<a name="wp1002254"> </a><p class="pBody">
+For example, assume you have created an ME keystore that contains the keys that you need for a particular set of tests, <code class="cCode">c:\myKeys\set2_test_keys.ks</code>. The command to run the <code class="cCode">MEKeyTool</code> utility to manage that keystore would begin like this:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+java -jar bin/MEKeyTool.jar <span style="font-weight: bold" class="cUserType">-MEkeystore c:/myKeys</span>/<span class="cUserType">set2_test_keys.ks</span> ...<a name="wp1002255"> </a>
+</pre></div>
+<a name="wp1002256"> </a><p class="pBody">
+For most <code class="cCode">MEKeyTool</code> commands, if the file that you provide as an argument to <br />-<code class="cCode">MEkeystore</code> does not exist you will receive an error message. The one exception is importing a key. In this case <code class="cCode">MEKeyTool</code> creates a new ME keystore with the name that you supply.
+</p>
+<a name="wp1002307"> </a><h3 class="pHeading2">
+Running MIDP and Alternate Keystores
+</h3>
+<hr class="pHr"/><div class="note">
+<a name="wp1002311"> </a>
+<b>Note &#8211;</b>  The MIDP Reference Implementation executable uses only the ME keystore <em class="cEmphasis">midpInstallDir</em><code class="cCode">\appdb\_main.ks</code>.
+<hr class="pHr"/></div>
+<a name="wp1002312"> </a><p class="pBody">
+Because the MIDP executable uses only the ME keystore <em class="cEmphasis">midpInstallDir</em><code class="cCode">\appdb\_main.ks</code>, you need to do the following steps <em class="cEmphasis">before</em> running MIDP if you want to use an alternate keystore:
+</p>
+<div class="pStep1">
+<ol class="pStep1"><a name="wp1002313"> </a><li>Back up the existing <em class="cEmphasis">midpInstallDir</em><code class="cCode">\appdb\_main.ks</code>, if necessary.</li>
+<a name="wp1002314"> </a><p class="pBody">
+If you already have a copy of this file, go to the next step.
+</p>
+<a name="wp1002318"> </a><p class="pBody">
+For example, assuming that <em class="cEmphasis">midpInstallDir</em> is <code class="cCode">c:\midp2.0fcs</code>, you would run a command such as this:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">cp appdb/_main.ks c:/myKeys/orig_main.ks</span><a name="wp1002322"> </a>
+</pre></div>
+<a name="wp1002323"> </a><li>Copy your alternate keystore to <em class="cEmphasis">midpInstallDir</em><code class="cCode">\appdb\_main.ks</code>.</li>
+<a name="wp1002324"> </a><p class="pBody">
+For example, if you want to use the keys in the file <code class="cCode">c:\myKeys\set2_test_keys.ks</code> for this run of the MIDP Reference Implementation executable you would execute a command like the following one:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">cp c:/myKeys/set2_test_keys.ks appdb/_main.ks</span><a name="wp1002331"> </a>
+</pre></div>
+</ol>
+</div>
+<a name="wp997862"> </a><h2 class="pHeading1">
+Importing a Key
+</h2>
+<a name="wp1001412"> </a><p class="pBody">
+Because the ME keystore comes with few keys, you might find that you cannot visit some web sites or install some MIDlets until you add more keys to the keystore. You will also have to add keys to the keystore as time passes and keys expire. (You would first delete the expired key, then add the new one.)
+</p>
+<a name="wp998011"> </a><p class="pBody">
+You add a key to an ME keystore by importing it from a JCA keystore. You can import keys from the JCA keystore that comes with the J2SE platform or from a JCA keystore that you create. For more information on the keystore that comes with the J2SE platform, see:
+</p>
+<a name="wp1001590"> </a><p class="pBody">
+<a href="http://java.sun.com/j2se/1.3/docs/tooldocs/win32/keytool.html" target="_blank">
+<span class="cWebJump">http://java.sun.com/j2se/1.3/docs/tooldocs/win32/keytool.html</span></a>
+</p>
+<a name="wp1003206"> </a><p class="pBody">
+The default JCA keystore for the <code class="cCode">MEKeyTool</code> utility is <em class="cEmphasis">userHome</em><code class="cCode">\.keystore</code>. Whatever keystore you use, if it requires a passwords, you must provide it.
+</p>
+<a name="wp1003183"> </a><p class="pBody">
+When you add a key to an ME keystore, you can also associate a security domain with it. The MIDP Reference Implementation can assign that domain to any MIDlet suite for which the owner of the public key was a signer. (See <a  href="security.html#wp1019372"><span style="color: #3366CC">&quot;Protection Domains&quot; </span></a> for more information.) If you don&#8217;t provide a domain, the public key is associated with the <code class="cCode">untrusted</code> domain.
+</p>
+<a name="wp999004"> </a><p class="pBody">
+The option that imports a key is <code class="cCode">-import</code>. For example, assume that you want to add a key with an alias <code class="cCode">dummyca</code> from the JCA keystore <br /><code class="cCode">../bin/j2se_test_keystore.bin</code> to the ME keystore <code class="cCode">c:\myKeys\set2_test_keys.ks</code>. Further assume that the JCA keystore has a password, <code class="cCode">keystorepwd</code>, and that you want to assign the public key to the trusted domain. You would do this with the command:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">java -jar bin/MEKeyTool.jar -import-alias dummyca -keystore ../bin/j2se_test_keystore.bin -storepass keystorepwd -MEkeystore c:/myKeys/set2_test_keys.ks -domain trusted</span><a name="wp1003549"> </a>
+</pre></div>
+<a name="wp999456"> </a><h2 class="pHeading1">
+Listing Available Keys
+</h2>
+<a name="wp999479"> </a><p class="pBody">
+An ME keystore organizes the keys that it contains by giving each one a number. The keystore also holds, for each key, the name of the entity to whom the public key belongs, the time over which the key is valid, and the domain associated with the key. The <code class="cCode">-list</code> command to the <code class="cCode">MEKeyTool</code> utility shows you all this information for each key in a particular keystore. 
+</p>
+<a name="wp999488"> </a><p class="pBody">
+The following example lists the contents of the ME keystore <code class="cCode">c:\myKeys\set1_test_keys.ks:</code>
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">java -jar bin/MEKeyTool.jar -list -MEkeystore c:/myKeys/set1_test_keys.ks</span><a name="wp1003303"> </a>
+Key 1<a name="wp1003312"> </a>
+  Owner: C=US;O=RSA Data Security, Inc.;OU=Secure Server Certification Authority<a name="wp1003313"> </a>
+  Valid from Tue Nov 08 16:00:00 PST 1994 to Thu Jan 07 15:59:59 PST 2010<a name="wp1003315"> </a>
+  Security Domain: untrusted<a name="wp1003316"> </a>
+Key 2<a name="wp1003317"> </a>
+  Owner: O=Sun Microsystems;C=myserver<a name="wp1003318"> </a>
+  Valid from Sat Aug 03 00:43:51 PDT 2002 to Tue Jul 31 00:43:51 PDT 2012<a name="wp1003319"> </a>
+  Security Domain: trusted<a name="wp1003305"> </a>
+</pre></div>
+<a name="wp1003307"> </a><h2 class="pHeading1">
+Deleting a Key
+</h2>
+<a name="wp1003308"> </a><p class="pBody">
+As keys expire, you will have to delete them from the keystore so that you can add their replacements. You might also want to delete keys that you will no longer be using. (For example, if you add the public key of a test site with a self-signed certificate, you might want to remove that key when testing is over.)
+</p>
+<a name="wp1001385"> </a><p class="pBody">
+The <code class="cCode">-delete</code> command to the MEKeyTool utility removes a key from an ME keystore. The command requires one of the following options:
+</p>
+<ul class="pBullet1"><a name="wp999663"> </a><div class="pBullet1"><li><code class="cCode">-owner</code><code class="cCode"> </code><em class="cEmphasis">ownerName</em></li></div>
+<a name="wp999677"> </a><p class="pIndented1">
+String that describes the owner of the public key. The string must match the one that is printed when you use the <code class="cCode">-list</code> command to the <code class="cCode">MEKeyTool</code> utility. (See the previous section, <a  href="ca-keys.html#wp999456"><span style="color: #3366CC">&quot;Listing Available Keys</span></a>&#8221; for more information.)
+</p>
+<a name="wp999699"> </a><div class="pBullet1Last"><li><code class="cCode">-number</code> <em class="cEmphasis">keyNumber</em></li></div>
+<a name="wp999703"> </a><p class="pIndented1">
+Number greater than or equal to one. The <code class="cCode">-list</code> command prints the number that a given keystore has assigned to each of its keys. (See the previous section, <a  href="ca-keys.html#wp999456"><span style="color: #3366CC">&quot;Listing Available Keys</span></a>&#8221; for more information.)
+</p>
+</ul>
+<a name="wp997866"> </a><p class="pBody">
+The following examples show the two ways to delete a key from the ME keystore <code class="cCode">c:\myKeys\set1_test_keys.ks</code> used in the previous section, <a  href="ca-keys.html#wp999456"><span style="color: #3366CC">&quot;Listing Available Keys</span></a>.&#8221; The first example deletes the key using its key number:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">java -jar bin/MEKeyTool.jar -delete -number 1 -MEkeystore c:/myKeys/set1_test_keys.ks</span><a name="wp999737"> </a>
+</pre></div>
+<a name="wp999732"> </a><p class="pBody">
+The second example deletes the key using its owner name:
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+c:\midp2.0fcs&gt; <span class="cUserType">java -jar bin/MEKeyTool.jar -delete -owner &#8220;OU=Secure Server Certification Authority;O=RSA Data Security, Inc.;C=US&#8220; -MEkeystore c:/myKeys/set1_test_keys.ks</span><a name="wp999752"> </a>
+</pre></div>
+<a name="wp999715"> </a><h2 class="pHeading1">
+Replacing a Key
+</h2>
+<a name="wp997867"> </a><p class="pBody">
+Replacing keys is necessary in some situations, such as when a key expires. (See <a  href="ca-keys.html#wp1000907"><span style="color: #3366CC">&quot;Handling Certificate Exceptions When Running MIDP</span></a>,&#8221; next, for other situations where key replacement is in order.)
+</p>
+<a name="wp999940"> </a><p class="pBody">
+To replace a key you must first delete the old key, then import the new key. (If you try to import the new key before deleting the old one, you will receive an error message telling you that the owner of the key already has a key in the ME keystore.)
+</p>
+<a name="wp999774"> </a><p class="pBody">
+See <a  href="ca-keys.html#wp1003307"><span style="color: #3366CC">&quot;Deleting a Key&quot; </span></a> for instructions on how to delete a key, and <a  href="ca-keys.html#wp997862"><span style="color: #3366CC">&quot;Importing a Key&quot; </span></a> for instructions on how to import the new one.
+</p>
+<a name="wp1000907"> </a><h2 class="pHeading1">
+Handling Certificate Exceptions When Running MIDP
+</h2>
+<a name="wp1002415"> </a><p class="pBody">
+When you run MIDP, you could encounter errors with certificates. When methods that authenticate a certificate encounter such a problem, they throw a <code class="cCode">CertificateException</code>. Each <code class="cCode">CertificateException</code> contains a reason code that indicates the nature of the problem. If you receive a <code class="cCode">CertificateException</code>, you can get its reason code by calling it&#8217;s <code class="cCode">getReason</code> method. 
+</p>
+<a name="wp1002441"> </a><p class="pBody">
+The following list contains the reason codes followed by their corrective actions and descriptions.
+</p>
+<ul class="pBullet1"><a name="wp1001816"> </a><div class="pBullet1"><li><code class="cCode">BAD_EXTENSIONS</code> &#8212; Replace the end entity&#8217;s certificate. The certificate has a field that specifies additional critical information that the system does not recognize. (The system must reject certificates that contain unrecognized critical extensions.)</li></div>
+<a name="wp1001822"> </a><div class="pBullet1Plus"><li><code class="cCode">BROKEN_CHAIN</code> &#8212; Replace the end entity&#8217;s certificate chain. The chain has a certificate that was not issued by the next authority in the chain.</li></div>
+<a name="wp1001828"> </a><div class="pBullet1Plus"><li><code class="cCode">CERTIFICATE_CHAIN_TOO_LONG</code> &#8212; Replace the end entity&#8217;s certificate chain with a shorter one. (The CA specifies the maximum length of the end entity&#8217;s certificate chain.)</li></div>
+<a name="wp1000972"> </a><div class="pBullet1Plus"><li><code class="cCode">EXPIRED</code> &#8212; Replace the certificate because the current date is past the last date on which the certificate is valid.</li></div>
+<a name="wp1001834"> </a><div class="pBullet1Plus"><li><code class="cCode">INAPPROPRIATE_KEY_USAGE</code> &#8212; Replace the end entity&#8217;s certificate. The certificate has an invalid value in a field that indicates the purposes for which the certificate can be used. (The field names are <code class="cCode">keyUsage</code> or <code class="cCode">extendedKeyUsage</code>. They are typically critical extensions.)</li></div>
+<a name="wp1001840"> </a><div class="pBullet1Plus"><li><code class="cCode">MISSING_SIGNATURE</code> &#8212; Replace the end entity&#8217;s certificate with one that has a signature; the current certificate is unsigned.</li></div>
+<a name="wp1000978"> </a><div class="pBullet1Plus"><li><code class="cCode">NOT_YET_VALID</code> &#8212; Replace the certificate because the current date is before the date that the certificate can be used.</li></div>
+<a name="wp1001846"> </a><div class="pBullet1Plus"><li><code class="cCode">ROOT_CA_EXPIRED</code> &#8212; Replace the CA&#8217;s public key on the device using the MEKeyTool utility. The current date is past the last date on which the CA&#8217;s public key is valid.</li></div>
+<a name="wp1001852"> </a><div class="pBullet1Plus"><li><code class="cCode">SITENAME_MISMATCH</code> &#8212; Replace the end entity&#8217;s certificate with one that has the same site name as the common name attribute of subject name.</li></div>
+<a name="wp1001866"> </a><div class="pBullet1Plus"><li><code class="cCode">UNAUTHORIZED_INTERMEDIATE_CA</code> &#8212; Replace certificate chain because an intermediate certificate in the chain does not have the authority to be a intermediate CA.</li></div>
+<a name="wp1001872"> </a><div class="pBullet1Plus"><li><code class="cCode">UNRECOGNIZED_ISSUER</code> &#8212; Import the public key of the end entity&#8217;s CA into the device using the <code class="cCode">MEKeyTool</code> utility. The system can&#8217;t recognize the end entity without that key.</li></div>
+<a name="wp1001878"> </a><div class="pBullet1Plus"><li><code class="cCode">UNSUPPORTED_PUBLIC_KEY_TYPE</code> &#8212; Replace the end entity&#8217;s certificate because its public key is not supported by the device.</li></div>
+<a name="wp1001884"> </a><div class="pBullet1Plus"><li><code class="cCode">UNSUPPORTED_SIGALG</code> &#8212; Replace the end entity&#8217;s certificate with one that was signed using RSA. The signature of the current certificate uses another algorithm that this system does not support.</li></div>
+<a name="wp1001861"> </a><div class="pBullet1Last"><li><code class="cCode">VERIFICATION_FAILED</code> &#8212; Replace the certificate because the system cannot confirm that the certificate is valid.</li></div>
+</ul>
+<a name="wp1001330"> </a><p class="pBody">
+The exception&#8217;s detail message, returned by the <code class="cCode">getMessage</code> method, provides additional information.
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="security.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="appx-jadtool.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="useIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Using MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

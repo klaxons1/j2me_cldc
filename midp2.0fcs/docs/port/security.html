@@ -1,0 +1,178 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 16:27:05" />
+    <title>Security</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="gui.html" />
+    <link rel="Next" href="network.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="gui.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="network.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="portIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp434413"> </a><h2 class="pChapNum">
+Chapter &#160; 7
+</h2>
+<a name="wp442099"> </a><h2 class="pNewHTMLPage">
+Security
+</h2>
+<hr class="pHr"/>
+<a name="wp445334"> </a><p class="pBody">
+This chapter describes the security functionality of the MIDP Reference Implementation. It is implemented in the Java&#8482; programming language, and should therefore run without changes on a new device.
+</p>
+<a name="wp445348"> </a><p class="pBody">
+The document <em class="cEmphasis">Security for MIDP Applications</em>, which is part of the <em class="cEmphasis">MIDP 2.0 Specification</em>, gives MIDP implementations freedom in implementing the security functionality. (The document is available from &#160;<br /><a href="http://jcp.org/jsr/detail/118.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/118.jsp</span></a>.) The MIDP Reference Implementation demonstrates just one way. You may decide, given the requirements of a collaborator such as a service provider or network operator, to use a different approach and replace this implementation.
+</p>
+<a name="wp444051"> </a><p class="pBody">
+This chapter contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp444052"> </a><div class="pBullet1"><li><a  href="security.html#wp444047"><span style="color: #3366CC">Overview</span></a></li></div>
+<a name="wp444357"> </a><div class="pBullet1Plus"><li><a  href="security.html#wp443147"><span style="color: #3366CC">Permissions</span></a></li></div>
+<a name="wp444744"> </a><div class="pBullet1Last"><li><a  href="security.html#wp444386"><span style="color: #3366CC">Key Storage</span></a></li></div>
+</ul>
+<a name="wp444047"> </a><h2 class="pHeading1">
+7.1	Overview
+</h2>
+<a name="wp444352"> </a><p class="pBody">
+The <em class="cEmphasis">MIDP 2.0 Specification</em>, available at <a href="http://jcp.org/jsr/detail/118.jsp" target="_blank">
+<span class="cWebJump">http://jcp.org/jsr/detail/118.jsp</span></a>, defines a security model that requires MIDlets to have permission to use security-sensitive APIs. This is different from the MIDP 1.0 security model, which had all MIDlet suites operate in a sandbox that prevented access to sensitive APIs or functions of the device.
+</p>
+<a name="wp444038"> </a><p class="pBody">
+The highlights of the MIDP Reference Implementation&#8217;s implementation of the security policy are:
+</p>
+<ul class="pBullet1"><a name="wp444039"> </a><div class="pBullet1"><li>A protection domain defines a set of permissions that can be granted to its MIDlet suites. The domains used by the MIDP Reference Implementation are defined in the <em class="cEmphasis">midpInstallDir</em><code class="cCode">\appdb\_policy.txt</code> file, where <em class="cEmphasis">midpInstallDir</em> is the directory that holds your MIDP installation. This file is editable.</li></div>
+<a name="wp444040"> </a><div class="pBullet1Plus"><li>A domain is associated with each public key in the ME keystore, <em class="cEmphasis">midpInstallDir</em><code class="cCode">\appdb\_main.ks</code>. When the <code class="cCode">MEKeyTool</code> utility imports the key, the domain is either provided or the default domain, untrusted, is associated with the key.</li></div>
+<a name="wp444041"> </a><div class="pBullet1Plus"><li>A MIDlet suite&#8217;s JAR file can be signed, and the digital signature stored in the JAD file. The <code class="cCode">JadTool</code> utility creates a digital signature for the JAR file with a private key specified by the MIDlet implementor. The utility uses the EMSA-PKCS1-v1_5 encoding method of PKCS #1, version 2.0. (See RFC 2437 at <br /><a href="http://www.ietf.org/rfc/rfc2437.txt" target="_blank">
+<span class="cWebJump">http://www.ietf.org/rfc/rfc2437.txt</span></a>.)</li></div>
+<a name="wp444042"> </a><div class="pBullet1Last"><li>A MIDlet suite is assigned to a domain when it is installed. The assignment is done one of two ways:</li></div>
+</ul>
+<ul class="pBullet2"><a name="wp444043"> </a><div class="pBullet2"><li>Manually, by users installing unsigned MIDlet suites from the command line. (This capability is not available from within the device emulator)</li></div>
+<a name="wp444095"> </a><div class="pBullet2Last"><li>Automatically by the MIDP Reference Implementation when users install signed MIDlet suites. The MIDP Reference Implementation assigns the MIDlet suite to the domain associated with the first public key in the ME keystore that it needs to check digital signature. (If the MIDP Reference Implementation does not find the public keys of a signer, it does not install the MIDlet suite.)</li></div>
+</ul>
+<a name="wp444044"> </a><p class="pBody">
+See <em class="cEmphasis">Using MIDP</em> for more information on the MIDP Reference Implementation security policy and tools.
+</p>
+<a name="wp443147"> </a><h2 class="pHeading1">
+7.2	Permissions
+</h2>
+<a name="wp445041"> </a><p class="pBody">
+MIDlet-suite developers using the MIDP Reference Implementation use the <code class="cCode">JadTool</code> utility to sign a MIDlet suite. (See <em class="cEmphasis">Using MIDP</em> for more information on the <code class="cCode">JadTool</code> utility.) Signing a MIDlet suite involves adding certificates to the JAD file, creating the digital signature of the JAR file, and adding the digital signature to the JAD file. The <code class="cCode">JadTool</code> utility is in the <code class="cCode">com.sun.midp.jadtool</code> package, which is in the <em class="cEmphasis">midpInstallDir</em><code class="cCode">\</code><code class="cCode">tools</code> directory.
+</p>
+<a name="wp445535"> </a><p class="pBody">
+When a user attempts to install a MIDlet suite, the MIDP Reference Implementation must determine whether the MIDlet suite can be trusted. The <code class="cCode">com.sun.midp.midletsuite.Installer</code> class makes this determination by looking for and verifying a digital signature of the JAR file and certificates supporting the signature. If the JAR file is signed, the MIDP Reference Implementation expects the signature to be based on X.509 Public Key Infrastructure so that it can verify the signer and trust the MIDlet suite. The functionality supporting the PKI-secured permissions on signed jar files is the same functionality used in HTTPS certificate authentication (This is the <code class="cCode">com.sun.midp.ssl</code> package; its reference documentation is reproduced in <a  href="appx-ssl.html#wp1035128"><span style="color: #3366CC">Appendix&#160;C</span></a>.)
+</p>
+<a name="wp445541"> </a><p class="pBody">
+If a signed MIDlet suite can be trusted, it is installed and assigned a domain. If a signed MIDlet suite cannot be trusted, then it is not installed. (Note that an unsigned MIDlet suite can be installed and, if installed on the command-line, manually assigned a domain, as described in the previous section. See <em class="cEmphasis">Using MIDP</em> for more information.)
+</p>
+<a name="wp445051"> </a><p class="pBody">
+The MIDP Reference Implementation associates permissions with domains by reading and parsing the <em class="cEmphasis">midpInstallDir</em><code class="cCode">\appdb\_policy.txt</code> file. This is done in the classes:
+</p>
+<ul class="pBullet1"><a name="wp445052"> </a><div class="pBullet1"><li><code class="cCode">com.sun.midp.security.PermissionProperties</code></li></div>
+<a name="wp445053"> </a><div class="pBullet1Last"><li><code class="cCode">com.sun.midp.security.Permissions</code></li></div>
+</ul>
+<a name="wp444197"> </a><p class="pBody">
+As a MIDlet suite runs, the MIDP Reference Implementation must be able to determine which permissions it has. Protected APIs get the name of the currently running MIDlet from the <code class="cCode">com.sun.midp.midlet.Scheduler</code> class when a MIDlet calls them, and uses the <code class="cCode">com.sun.midp.security.SecurityToken</code> class to see whether the MIDlet has permission to run the method. When you port the MIDP Reference Implementation, ensure that all paths through security-sensitive APIs perform permission checks.
+</p>
+<a name="wp444225"> </a><p class="pBody">
+At times, the user must explicitly give or deny a MIDlet suite permission to access a protected API. The classes that query the user for permission are:
+</p>
+<ul class="pBullet1"><a name="wp444232"> </a><div class="pBullet1"><li><code class="cCode">com.sun.midp.security.PermissionDialog</code></li></div>
+<a name="wp444238"> </a><div class="pBullet1Last"><li><code class="cCode">com.sun.midp.security.RadioButtonSet</code></li></div>
+</ul>
+<a name="wp444248"> </a><p class="pBody">
+In addition to granting MIDlet suites the permissions to which they are entitled (and keeping them from using protected APIs for which they do not have permission) the MIDP Reference Implementation must also enable internal classes to perform their duties, including calling security-sensitive APIs when necessary. The security tokens for the internal classes are provided by the <code class="cCode">com.sun.midp.security.ImplicitlyTrustedClass</code> interface. The class <code class="cCode">com.sun.midp.Main</code>, being the first class running in the virtual machine (VM), uses the <code class="cCode">ImplicitlyTrustedClass</code> interface to create and issue <code class="cCode">SecurityToken</code> objects to the internal classes that need them. When you port the MIDP Reference Implementation, you must ensure that these security tokens are not available to applications.
+</p>
+<a name="wp445496"> </a><p class="pBody">
+
+</p>
+<a name="wp444386"> </a><h2 class="pHeading1">
+7.3	Key Storage
+</h2>
+<a name="wp443064"> </a><p class="pBody">
+To change the way public keys are stored, replace the <code class="cCode">com.sun.midp.publickeystore</code> package. The following classes define a simple serialization mechanism (that is, a simple form of the mechanism defined by the <code class="cCode">java.io.Serializable</code> interface in the Java 2 Standard Edition (J2SE&#8482;) platform) for storing and retrieving the public keys in the keystore:
+</p>
+<ul class="pBullet1"><a name="wp443065"> </a><div class="pBullet1"><li><code class="cCode">com.sun.midp.publickeystore.Storage</code></li></div>
+<a name="wp444773"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.publickeystore.InputStorage</code></li></div>
+<a name="wp444777"> </a><div class="pBullet1Last"><li><code class="cCode">com.sun.midp.publickeystore.OutputStorage</code></li></div>
+</ul>
+<a name="wp444778"> </a><p class="pBody">
+The <code class="cCode">com.sun.midp.publickeystore.PublicKeyInfo</code> class contains the information serialized for a public key.
+</p>
+<a name="wp444818"> </a><p class="pBody">
+The <code class="cCode">com.sun.midp.publickeystore.PublicKeyStore</code> class defines a read-only ME keystore. It uses the <code class="cCode">PublicKeyInfo</code> and <code class="cCode">InputStorage</code>, above.
+</p>
+<a name="wp444836"> </a><p class="pBody">
+The following classes extend <code class="cCode">PublicKeyStore</code> to create a read/write ME keystore so that keys can be managed:
+</p>
+<ul class="pBullet1"><a name="wp444832"> </a><div class="pBullet1"><li><code class="cCode">com.sun.midp.publickeystore.PublicKeyStoreBuilder</code></li></div>
+<a name="wp443071"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.publickeystore.PublicKeyStoreBuilderBase</code></li></div>
+<a name="wp444866"> </a><div class="pBullet1Last"><li><code class="cCode">com.sun.midp.publickeystore.WebPublicKeyStore</code></li></div>
+</ul>
+<a name="wp444868"> </a><p class="pBody">
+If you change the key storage classes, you might also need to change the utility, <code class="cCode">MEKeyTool</code>, that manages the keystore. The classes that comprise the <code class="cCode">MEKeyTool</code> utility are in the <code class="cCode">com.sun.midp.mekeytool</code> package. The classes are <code class="cCode">MEKeyTool </code>and its inner classes:
+</p>
+<ul class="pBullet1"><a name="wp444990"> </a><div class="pBullet1"><li><code class="cCode">TLV</code> &#8212; A type, length, value trio.</li></div>
+<a name="wp445583"> </a><div class="pBullet1Last"><li><code class="cCode">UsageException</code> &#8212; Error made by the user when calling the utility.</li></div>
+</ul>
+<a name="wp445022"> </a><p class="pBody">
+The <code class="cCode">com.sun.midp.mekeytool </code>package is in the <em class="cEmphasis">midpInstallDir</em><code class="cCode">\</code><code class="cCode">tools</code> directory. 
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="gui.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="network.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Porting MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

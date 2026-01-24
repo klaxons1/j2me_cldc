@@ -1,0 +1,104 @@
+#
+# @(#)Defs-pre.gmk	1.25 02/09/16 @(#)
+#
+# Copyright (c) 1999-2002 Sun Microsystems, Inc.  All rights reserved.
+# PROPRIETARY/CONFIDENTIAL
+# Use is subject to license terms.
+#
+#########
+#
+# PLATFORM specific defines. This file should not contain rules.
+#
+
+PATHSEP=:
+CC_OUTPUT     = -o 
+LINKER_OUTPUT = -o 
+OBJ_SUFFIX    = o
+
+# `uname -p` doesn't work on all x86 Linux boxes. So, unless we get
+# a value of 'sparc' from uname, we default to i386.
+#
+ifeq ($(findstring sparc,$(shell uname -a)), sparc)
+ARCH       = sparc
+else
+ARCH       = i386
+endif
+WHOAMI     = /usr/bin/whoami
+ROMJAVA    = ROMjavaUnix
+
+GCC=true
+EXTRA_INCLUDES += -I/usr/X11R6/include
+
+ifeq ($(GCC), true)
+   CC = gcc
+   LD = gcc
+   EXTRA_CFLAGS += -Wunused \
+		-DHAVE_ALIGNED_LONGLONGS \
+		-DHAVE_ALIGNED_DOUBLES \
+	        -DARCH='"$(ARCH)"'
+
+   ifeq ($(DEBUG), true)
+      EXTRA_CFLAGS += -g
+   else
+      EXTRA_CFLAGS += -O2 -Wuninitialized
+   endif
+
+   ifeq ($(SRCPROFILING), true)
+        EXTRA_CFLAGS += -pg
+   endif
+
+else
+   CC = cc
+   LD = cc
+   ifeq ($(DEBUG), true)
+      EXTRA_CFLAGS +=  -g
+   else
+      EXTRA_CFLAGS += -O
+   endif
+endif
+
+
+ifeq ($(INCLUDE_I18N), false) 
+   MIDP_DEF_SRC +=
+else
+   MIDP_DEF_SRC += lcWin.c lcWinJa.c sjis.c eucjp.c
+endif
+
+KVM_EXCLUDE_CLASSES 	 := SCCS
+MIDP_EXCLUDE_CLASSES     := SCCS
+EXAMPLE_EXCLUDE_CLASSES  := SCCS
+TEST_EXCLUDE_CLASSES     := SCCS
+PLATFORM_EXCLUDE_CLASSES := SCCS
+
+EXTRA_CFLAGS += -D$(ARCH) -DLINUX -DUNIX
+
+# Linux uses the same java and c files as Solaris
+#
+PLATFORM_SRC_DIR = $(MIDP_DIR)/src/solaris
+PLATFORM_CLASS_DIR = $(MIDP_DIR)/src/solaris/classes
+PLATFORM_CONFIG_DIR = $(MIDP_DIR)/build/linux/config
+
+LIBS = -L/usr/X11R6/lib -lXpm -lXt -lX11 -lm -lnsl -lICE -lSM -lpthread
+
+ifeq ($(SRCPROFILING), true) 
+        LIBS += -pg
+endif
+
+# Set default BOOTDIR; This can be overridden by setting the build-time
+# variable ALT_BOOTDIR
+#
+ifeq ($(ARCH), sparc)
+_BOOTDIR = /usr/local/java/jdk1.3/solaris
+endif
+ifeq ($(ARCH), i386)
+_BOOTDIR = /usr/local/java/jdk1.3/x86
+endif
+
+# executable suffix
+#
+EXE = 
+
+# system tools
+#
+SYMLINK_CMD	= ln -s
+

@@ -1,0 +1,199 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 16:27:07" />
+    <title>The Application Management System</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="network.html" />
+    <link rel="Next" href="push.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="network.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="push.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="portIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp427639"> </a><h2 class="pChapNum">
+Chapter &#160; 9
+</h2>
+<a name="wp433637"> </a><h2 class="pNewHTMLPage">
+The Application Management System
+</h2>
+<hr class="pHr"/>
+<a name="wp433693"> </a><p class="pBody">
+This chapter describes how to port and customize the application management system (AMS), which manages MIDlet suites on a device or device emulator. AMS loads, installs, lists, updates, and removes MIDlet suites. On development platforms it performs these functions either from a command line or from a graphical user interface.
+</p>
+<a name="wp442497"> </a><p class="pBody">
+The AMS implementation has both a native layer and a Java&#8482; programming language layer (Java layer). The files for the native layer are in the <br /><code class="cCode">src/share/native/kvm</code> directory and include the files <code class="cCode">main.c</code>, <code class="cCode">midpServices.c</code>, <code class="cCode">JarReader.c</code>, and <code class="cCode">ResourceInputStream.c</code>. The Java layer includes the packages <code class="cCode">com.sun.midp.dev</code>, and <code class="cCode">com.sun.midp.midletsuite</code>.
+</p>
+<a name="wp442546"> </a><p class="pBody">
+In addition to its own files, the AMS implementation requires persistent storage. This chapter assumes that you have ported it as described in <a  href="storage.html#wp431760"><span style="color: #3366CC">Chapter&#160;4, &quot;Persistent Storage</span></a>.&#8221; The AMS implementation also depends the modules <code class="cCode">com.sun.midp.security</code>, <code class="cCode">com.sun.midp.publickeystore</code>, and <code class="cCode">com.sun.midp.midlet</code>.
+</p>
+<a name="wp443469"> </a><p class="pBody">
+This chapter contains the sections:
+</p>
+<ul class="pBullet1"><a name="wp443473"> </a><div class="pBullet1"><li><a  href="ams.html#wp442035"><span style="color: #3366CC">Porting </span><span style="color: #3366CC">main.c</span></a></li></div>
+<a name="wp443474"> </a><div class="pBullet1Last"><li><a  href="ams.html#wp442739"><span style="color: #3366CC">Customizing AMS</span></a></li></div>
+</ul>
+<a name="wp442035"> </a><h2 class="pHeading1">
+9.1	Porting main.c
+</h2>
+<a name="wp441826"> </a><p class="pBody">
+The start up and initialization of the AMS runtime environment is implemented in the <code class="cCode">src/share/native/kvm/main.c</code> file. The functions in the file parse the command line and initialize the command state structure that holds internal information. It sets up a command loop for the Java program <code class="cCode">com.sun.midp.Main</code>, and then starts and stops the virtual machine (VM). (The VM is restarted between AMS commands.) The functions in <code class="cCode">main.c</code> also clean up and reset the classpath between VM invocations.
+</p>
+<a name="wp443942"> </a><p class="pBody">
+The command state structure that <code class="cCode">main.c</code> uses for its initialization is updated within <code class="cCode">Main.java</code>, in order to save state between successive launches of the virtual machine. (For example, <code class="cCode">Main.java</code> saves information for the push functionality. See <a  href="push.html#wp450115"><span style="color: #3366CC">Section&#160;10.2 &quot;Porting the Native Layer&quot; </span></a> for more information on push.)
+</p>
+<a name="wp442355"> </a><p class="pBody">
+As <code class="cCode">main.c</code> carries out its tasks, its functions use the native storage interface. See <a  href="storage.html#wp431760"><span style="color: #3366CC">Chapter&#160;4, &quot;Persistent Storage</span></a>&#8221; if you have not yet ported the storage module. If you have changed the native calls for persistent storage, you must update <code class="cCode">main.c</code> to match it.
+</p>
+<a name="wp442836"> </a><p class="pBody">
+If your implementation has a different way of specifying command line parameters, change <code class="cCode">main.c</code> so that it can parse the new command line syntax.
+</p>
+<a name="wp442822"> </a><p class="pBody">
+Other changes, such as adding or removing commands or command options are part of customizing the AMS. Customization is covered in the next section.
+</p>
+<a name="wp442739"> </a><h2 class="pHeading1">
+9.2	Customizing AMS
+</h2>
+<a name="wp442740"> </a><p class="pBody">
+There are many ways to customize AMS. For example you could:
+</p>
+<ul class="pBullet1"><a name="wp442887"> </a><div class="pBullet1"><li>Remove one or more commands or command options from the <code class="cCode">midp</code> command</li></div>
+<ul class="pBullet2"><a name="wp442918"> </a><div class="pBullet2"><li>To make the smallest number of code changes, remove the commands or command options from <code class="cCode">main.c</code>.</li></div>
+<a name="wp442890"> </a><div class="pBullet2Last"><li>To make the MIDP executable as small as possible, remove the commands or command options from both <code class="cCode">main.c</code> and <code class="cCode">Main.java</code>.</li></div>
+</ul>
+<a name="wp442741"> </a><div class="pBullet1Plus"><li>Change the way the <code class="cCode">midp</code> executable processes commands (for example, to enable users of the emulator to do part of a MIDlet installation on the command line and part using the graphical user interface on the emulator)</li></div>
+<a name="wp442985"> </a><p class="pIndented1">
+To do this, replace the <code class="cCode">com.sun.midp.main.CommandProcessor</code> class. In addition, you might also change parts of the <code class="cCode">com.sun.midp.midletsuite</code> package, such as the <code class="cCode">Installer</code> class, or the <code class="cCode">com.sun.midp.dev</code> package, such as the Graphical<code class="cCode">Installer</code> class.
+</p>
+<a name="wp442744"> </a><div class="pBullet1Plus"><li>Incorporate native functionality into the user experience for over-the-air provisioning (for example, to use a native browser for fetching documents using HTTP connections, checking for appropriate MIME types of returned resources, and so on)</li></div>
+<a name="wp442997"> </a><p class="pIndented1">
+To do this, rewrite the MIDlet that provides the functionality. The MIDlet is implemented in the <code class="cCode">com.sun.midp.dev.GraphicalInstaller.java</code> class. (You might do this work as part of changing the way that MIDP processes commands, described previously.)
+</p>
+<a name="wp443668"> </a><div class="pBullet1Plus"><li>Change the network protocol used to download MIDlets onto the device from HTTP to some other protocol</li></div>
+<a name="wp443674"> </a><p class="pIndented1">
+To do this, modify the <code class="cCode">com.sun.midp.midletsuite.Installer</code> class. It implements the MIDlet suite interface the scheduler uses. 
+</p>
+<a name="wp443576"> </a><div class="pBullet1Plus"><li>Incorporate native functionality into the user experience for AMS. (for example, to have MIDP provide data on the installed MIDlets to the device operating system, which could then display the MIDlets with its native applications; in this scenario, if the user launched a MIDlet, MIDP could accept the storage name from the device operating system and use it to launch the MIDlet)</li></div>
+<a name="wp443287"> </a><p class="pIndented1">
+To do this, change <code class="cCode">main.c</code> and <code class="cCode">Main.java</code>.
+</p>
+<a name="wp442746"> </a><div class="pBullet1Plus"><li>Replace one or more graphical application management screens (such as the one shown in <em class="cEmphasis">Using MIDP</em> that lists the MIDlets installed on the device)</li></div>
+<a name="wp443109"> </a><p class="pIndented1">
+To do this, change the MIDlet that provides the functionality. The MIDlet is implemented in the <code class="cCode">com.sun.midp.dev.Manager</code> class.
+</p>
+<a name="wp443322"> </a><div class="pBullet1Plus"><li>Replace AMS with a new Java layer to provide a different user experience with portable code that can be used in multiple devices</li></div>
+<a name="wp443912"> </a><p class="pIndented1">
+To do this, consider providing a new <code class="cCode">com.sun.midp.midlet.Selector</code> class, which provides the user experience for selecting a MIDlet or MIDlet suite to run when using the GUI, or a new <code class="cCode">com.sun.midp.midlet.GraphicalInstaller</code> class, which provides the user experience for downloading and installing a MIDlet suite when using the GUI.
+</p>
+<a name="wp442749"> </a><div class="pBullet1Plus"><li>Replace AMS with native code (for example for a resource constrained device, as suggested in <a  href="storage.html#wp431760"><span style="color: #3366CC">Chapter&#160;4, &quot;Persistent Storage</span></a>.&#8221;)</li></div>
+<a name="wp443147"> </a><p class="pIndented1">
+To do this, replace the following packages with native code:
+</p>
+<ul><ul class="pBullet2"><a name="wp442750"> </a><div class="pBullet2"><li><code class="cCode">com.sun.midp.midlet</code></li></div>
+<a name="wp442751"> </a><div class="pBullet2Plus"><li><code class="cCode">com.sun.midp.dev</code></li></div>
+<a name="wp443929"> </a><div class="pBullet2Last"><li><code class="cCode">com.sun.midp.midletsuite</code></li></div>
+</ul></ul>
+<a name="wp444029"> </a><div class="pBullet1Plus"><li>Change the user experience when the push functionality launches a MIDlet.</li></div>
+<a name="wp444030"> </a><p class="pIndented1">
+Update the <code class="cCode">com.sun.midp.io.j2me.PushRegistryImpl</code> class, or, to update the messages shown to the user, update the <code class="cCode">com.sun.midp.main.Main</code> class.
+</p>
+<a name="wp444089"> </a><div class="pBullet1Plus"><li>Change the text or presentation of the security questions that users might be asked when they install a MIDlet suite.</li></div>
+<a name="wp444055"> </a><p class="pIndented1">
+To update the text, change the strings in the <code class="cCode">com.sun.midp.security.Permissions</code> class. To change the layout of the messages to the user, or the text of the answers to the security questions, update the <code class="cCode">com.midp.security.SecurityToken</code> class.
+</p>
+<a name="wp444171"> </a><div class="pBullet1Last"><li>Completely remove the Java Application Manager (JAM)</li></div>
+<a name="wp444178"> </a><p class="pIndented1">
+Removing JAM means removing the command-line interface, the graphical user interface code, the installer, and MIDlet suite storage, to replace it with device-specific functionality. In other words, it means removing all of the application management system except the scheduler. To do this you would remove:
+</p>
+<ul><ul class="pBullet2"><a name="wp444182"> </a><div class="pBullet2"><li><code class="cCode">main.c</code></li></div>
+<a name="wp444186"> </a><div class="pBullet2Plus"><li><code class="cCode">midpStartup.c</code></li></div>
+<a name="wp444190"> </a><div class="pBullet2Plus"><li><code class="cCode">commandState.*</code></li></div>
+<a name="wp444191"> </a><div class="pBullet2Plus"><li><code class="cCode">com.sun.midp.main.*</code></li></div>
+<a name="wp444192"> </a><div class="pBullet2Plus"><li><code class="cCode">com.sun.midp.dev.*</code></li></div>
+<a name="wp444193"> </a><div class="pBullet2Plus"><li><code class="cCode">com.sun.midp.midletsuite.*</code></li></div>
+<a name="wp444194"> </a><div class="pBullet2Last"><li><code class="cCode">com.sun.midp.midlet.Selector</code></li></div>
+</ul></ul>
+<a name="wp444195"> </a><p class="pIndented1">
+The following classes will have code that is no longer used. You should remove the unused code but not the entire class.
+</p>
+<ul><ul class="pBullet2"><a name="wp444199"> </a><div class="pBullet2"><li><code class="cCode">com.sun.midp.security.SecurityToken</code></li></div>
+<a name="wp444203"> </a><div class="pBullet2Plus"><li><code class="cCode">com.su.midp.security.Permissions</code></li></div>
+<a name="wp444204"> </a><div class="pBullet2Last"><li><code class="cCode">com.sun.midp.io.j2me.push.PushRegistryImpl</code></li></div>
+</ul></ul>
+<a name="wp444214"> </a><p class="pIndented1">
+The following classes rely on being initialized by the first class started in the virtual machine (<code class="cCode">com.sun.midp.main.Main</code>). You should make sure to that your new implementation also initializes them.
+</p>
+<ul><ul class="pBullet2"><a name="wp444220"> </a><div class="pBullet2"><li><code class="cCode">com.sun.midp.rms.RecordStoreFile</code></li></div>
+<a name="wp444224"> </a><div class="pBullet2Plus"><li><code class="cCode">com.sun.midp.publickeystore.WebPublicKeyStore</code></li></div>
+<a name="wp444225"> </a><div class="pBullet2Plus"><li><code class="cCode">com.sun.midp.io.j2me.http.Protocol</code></li></div>
+<a name="wp444227"> </a><div class="pBullet2Plus"><li><code class="cCode">com.sun.midp.io.j2me.https.Protocol</code></li></div>
+<a name="wp444235"> </a><div class="pBullet2Plus"><li><code class="cCode">com.sun.midp.io.j2me.ssl.Protocol</code></li></div>
+<a name="wp444239"> </a><div class="pBullet2Plus"><li><code class="cCode">com.sun.midp.io.j2me.datagram.Protocol</code></li></div>
+<a name="wp444244"> </a><div class="pBullet2Plus"><li><code class="cCode">com.sun.midp.lcdui.DisplayManagerFactory</code></li></div>
+<a name="wp444245"> </a><div class="pBullet2Last"><li><code class="cCode">com.sun.midp.midlet.MIDletState</code></li></div>
+</ul></ul>
+</ul>
+<a name="wp444001"> </a><p class="pBody">
+Whatever customizations you make, you should also remove code you are no longer using. Concentrate your search in the following packages:
+</p>
+<ul class="pBullet1"><a name="wp444002"> </a><div class="pBullet1"><li><code class="cCode">com.sun.midp.midletsuite</code></li></div>
+<a name="wp444347"> </a><div class="pBullet1Plus"><li><code class="cCode">com.sun.midp.midlet</code></li></div>
+<a name="wp444011"> </a><div class="pBullet1Last"><li><code class="cCode">com.sun.midp.dev </code></li></div>
+</ul>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="network.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="push.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Porting MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

@@ -1,0 +1,211 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <meta name="GENERATOR" content="Quadralay WebWorks Publisher Professional Edition 7.0.2.1206" />
+    <meta name="TEMPLATEBASE" content="book-w-index" />
+    <meta name="LASTUPDATED" content="10/31/02 16:27:07" />
+    <title>Push Functionality</title>
+    <link rel="StyleSheet" href="document.css" type="text/css" />
+    <link rel="StyleSheet" href="catalog.css" type="text/css" />
+    <link rel="Table of Contents" href="index.html" />
+    <link rel="Previous" href="ams.html" />
+    <link rel="Next" href="sound.html" />
+    <link rel="Index" href="portIX.html" />
+  </head>
+
+  <body>
+
+    <table class="full-width" id="SummaryNotReq1">
+      <tr><td class="sun-darkblue">&#160;</td></tr>
+      <tr><td class="sun-lightblue">&#160;</td></tr>
+      <tr><td class="go-right">
+        <a accesskey="c" href="index.html">
+          <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+            alt="Contents" /></a>
+	<a accesskey="p" href="ams.html">
+	  <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+            alt="Previous" /></a>
+        <a accesskey="n" href="sound.html">
+	  <img id="LongDescNotReq3" src="images/next.gif" border="0"
+            alt="Next" /></a>
+        <a accesskey="i" href="portIX.html">
+	  <img id="LongDescNotReq4" src="images/index.gif" border="0"
+            alt="Index" /></a>
+        </td>
+      </tr>
+    </table>
+
+<a name="wp434413"> </a><h2 class="pChapNum">
+Chapter &#160; 10
+</h2>
+<a name="wp442099"> </a><h2 class="pNewHTMLPage">
+Push Functionality
+</h2>
+<hr class="pHr"/>
+<a name="wp450158"> </a><p class="pBody">
+Push starts a MIDlet in response to receiving an inbound connection for that MIDlet. For a MIDlet to use this functionality, it must add an entry in the Push Registry for the port that it will use and, optionally, the entities from which it will accept a request. (If a MIDlet will use more than one port, it must put multiple entries into the Push Registry.) There are two ways that a MIDlet can add the entry for its inbound connections. One is with an attribute-value pair in the application descriptor file; the other is by adding the entry at runtime. 
+</p>
+<a name="wp450189"> </a><p class="pBody">
+The push implementation has a native layer and a Java&#8482; programming language layer (Java layer). This chapter discusses how to port and customize the push implementation. Because you could implement push in a number of ways, the chapter begins by covering some design decisions that will affect your port.
+</p>
+<a name="wp450165"> </a><p class="pBody">
+The push functionality depends on persistent storage, AMS, security, and networking. The porting of these components was described in earlier chapters.
+</p>
+<a name="wp448484"> </a><p class="pBody">
+This chapter has the sections:
+</p>
+<ul class="pBullet1"><a name="wp449138"> </a><div class="pBullet1"><li><a  href="push.html#wp448486"><span style="color: #3366CC">Design Considerations</span></a></li></div>
+<a name="wp450134"> </a><div class="pBullet1Plus"><li><a  href="push.html#wp450115"><span style="color: #3366CC">Porting the Native Layer</span></a></li></div>
+<a name="wp449141"> </a><div class="pBullet1Last"><li><a  href="push.html#wp449187"><span style="color: #3366CC">Customizing the Java Layer</span></a></li></div>
+</ul>
+<a name="wp448486"> </a><h2 class="pHeading1">
+10.1	Design Considerations
+</h2>
+<a name="wp448499"> </a><p class="pBody">
+There are many ways that a device could provide the push functionality. Issues that will affect your design include the protocols that you will accept, how MIDP will listen for messages, buffering, whether the device supports running multiple MIDlets concurrently, and how to handle user interaction. This section covers those decisions.
+</p>
+<a name="wp448526"> </a><h3 class="pHeading2">
+10.1.1	Protocols
+</h3>
+<a name="wp449989"> </a><p class="pBody">
+From the protocols that you have supported in your networking port, you can choose which will be available for push functionality. You can have a protocol that accepts messages in your MIDP implementation (for example, a MIDlet might use server sockets if they are supported on your device) but you do not have to use that protocol as a reason to launch a MIDlet. You can also support additional protocols, such as the Bluetooth protocols specified in &#8220;Java&#8482; APIs for Bluetooth&#8221; (JSR 000082), the short message service (SMS) and cell broadcast service (CBS) specified in &#8220;Wireless Messaging API&#8221; (JSR 000120), and so on. (For more information on these Java specification requests, see <a href="http://jcp.org" target="_blank">
+<span class="cWebJump">http://jcp.org</span></a>
+</p>
+<a name="wp449961"> </a><p class="pBody">
+The MIDP Reference Implementation supports datagram and server socket connections for push functionality. 
+</p>
+<a name="wp448626"> </a><h3 class="pHeading2">
+10.1.2	Listening for Incoming Data
+</h3>
+<a name="wp449385"> </a><p class="pBody">
+MIDP must listen for inbound connection notifications, so that it can launch a MIDlet to handle the incoming message. It can listen using native callbacks or a polling mechanism. Using native callbacks to implement asynchronous I/O is a better technical solution if the device has multithreading or interrupt callback capability. Comparatively, polling uses more resources because it periodically checks for new input, and it is not as timely if the polling cycle is too large. 
+</p>
+<a name="wp449366"> </a><p class="pBody">
+The MIDP Reference Implementation uses polling.
+</p>
+<a name="wp448506"> </a><h3 class="pHeading2">
+10.1.3	Message Buffering
+</h3>
+<a name="wp448507"> </a><p class="pBody">
+The requirements for message buffering are protocol-specific. A MIDP implementation must support buffering for some protocols, but it is not required for all protocols. What is required, however, is that if your MIDP implementation buffers messages, it must provide them to the MIDlet when the MIDlet is launched and opens the push connection.
+</p>
+<a name="wp448508"> </a><p class="pBody">
+When your MIDP implementation supports datagram connections for push, it must buffer at least the first message. MIDP must be able to give the launched MIDlet at least the datagram that caused it to start when the MIDlet opens the <code class="cCode">UDPDatagramConnection</code>.
+</p>
+<a name="wp448509"> </a><p class="pBody">
+When your MIDP implementation supports socket connections for push, it does not have to buffer any messages. MIDP must only ensure that the launched MIDlet can open the <code class="cCode">ServerSocketConnection</code> and accept the connection, if the connection hasn&#39;t timed out.
+</p>
+<a name="wp449624"> </a><p class="pBody">
+If your device has limited space resources, you might decide to limit message buffering for some protocols. For example, if you support SMS messaging, you might be able to cache only a certain number of messages.
+</p>
+<a name="wp449452"> </a><p class="pBody">
+The MIDP Reference Implementation buffers the first message and the inbound connection sent to a MIDlet using the datagram protocol. It also accepts the inbound connection for a server socket. MIDP uses the data from these operations to check whether the MIDlet registered to receive data from the message&#8217;s source. It does this check before disturbing any running application.
+</p>
+<a name="wp448891"> </a><h3 class="pHeading2">
+10.1.4	User Interaction
+</h3>
+<a name="wp449573"> </a><p class="pBody">
+When a message arrives for a MIDlet, the push functionality cannot launch the MIDlet without the user&#8217;s acknowledgement. Users need to be in control so that applications don&#39;t randomly disrupt what they are doing. You must decide how to present the request to interrupt the currently running MIDlet for the push. That is, will your users have to allow the interruption each time, or will you give them the ability to allow the MIDlet to be launched on future occasions? Requiring users to agree to launching the MIDlet each time burdens them with more frequent interruptions to which they must respond. On the other hand, if you give them the ability to agree to future launching, you must develop and support a way to let them change their mind at a later date.
+</p>
+<a name="wp448924"> </a><p class="pBody">
+The MIDP Reference Implementation gives users the ability to allow future launches of the MIDlet. It also has a preference that users can set so that they can again be asked each time before they are interrupted (or to allow future launches if they had chosen to be asked each time).
+</p>
+<a name="wp448852"> </a><h3 class="pHeading2">
+10.1.5	MIDlet Concurrency
+</h3>
+<a name="wp448853"> </a><p class="pBody">
+Some devices can run multiple MIDlets concurrently, while others can run only one MIDlet at a time. Which type of device you have might effect the behavior of your push functionality.
+</p>
+<a name="wp448861"> </a><p class="pBody">
+When MIDP starts a MIDlet because of a push message, it must do something with whatever MIDlet is currently running. If your device can run only one MIDlet at a time, MIDP will have to exit the currently running MIDlet so that it can launch the MIDlet receiving a message. If your device can run multiple MIDlets concurrently, you can choose whether MIDP will pause or exit the currently running MIDlet.
+</p>
+<a name="wp448872"> </a><p class="pBody">
+Choosing to pause the currently running MIDlet may be easier on the user: when the MIDlet is resumed, the user might be able to pick up from the point where the MIDlet was paused. In addition, pausing a well-behaved MIDlet should give the launched MIDlet access to the full resources of the device because a paused MIDlet should have released its shared resources (such as its network connections, cached images, open record stores, and so on). If you choose to exit the currently running MIDlet, the user will have to start over with it after the launched MIDlet exits.
+</p>
+<a name="wp450223"> </a><p class="pBody">
+Exiting the MIDlet, though, has the advantage of forcing the MIDlet to release its resources. Your users will not have failures due to resource shortages caused by a MIDlet that did not release its resources when it was paused.
+</p>
+<a name="wp448932"> </a><p class="pBody">
+The MIDP Reference Implementation exits a currently running MIDlet before launching the MIDlet receiving a message.
+</p>
+<a name="wp450115"> </a><h2 class="pHeading1">
+10.2	Porting the Native Layer
+</h2>
+<a name="wp450589"> </a><p class="pBody">
+The push mechanism listens for inbound connections on all ports entered into the push registry, and must continue to listen even across restarts of the virtual machine (VM). To listen continuously, the low level implementation must interact with the device to intercept requests to open and close network connections. It must also be able to access and manage the push registry. 
+</p>
+<a name="wp450117"> </a><p class="pBody">
+To enable this persistence, the native code called JAM (Java application manager) in CLDC that is run prior to launching the VM must open and read the push registry, and open all the inbound connections. This happens in the general start up of the system, as the following pseudo-code for <code class="cCode">main.c</code> shows. The file descriptors can then remain open even when the VM is stopped and restarted.
+</p>
+<div class="pPreformatted"><pre class="pPreformatted">
+...<a name="wp450118"> </a>
+<span class="cUserType">pushopen()</span><a name="wp450119"> </a>
+<a name="wp450120"> </a>
+do {<a name="wp450121"> </a>
+&#160;&#160;Launch VM<a name="wp450122"> </a>
+} until done<a name="wp450123"> </a>
+</pre></div>
+<a name="wp450124"> </a><p class="pBody">
+Native code checks the open connections for new messages and manages the push registry. The native code is in the <code class="cCode">src/share/native/pushregistry.c</code> file. (When the VM is running, the class <code class="cCode">PushRegistryImpl</code> uses the functions in the <code class="cCode">pushregistry.c</code> file to check for new connections, and when it adds, deletes, and lists entries in the Push Registry.)
+</p>
+<a name="wp450125"> </a><p class="pBody">
+In addition to its own native code the push implementation uses native code for socket and datagram. When the push implementation opens a connection to receive an inbound message, the native code for the message&#8217;s protocol checks out an open file descriptor. The push mechanism passes the open file descriptor to the MIDlet when it launches the MIDlet. When the MIDlet exits, the native code for the message&#8217;s protocol checks in the open file descriptor. (For more information on the native code for the network protocols, see <a  href="network.html#wp445115"><span style="color: #3366CC">Chapter&#160;8, &#8220;Networking</span></a>.&#8221;)
+</p>
+<a name="wp450302"> </a><p class="pBody">
+The MIDP Reference Implementation can easily pass a file descriptor to a MIDlet because CLDC, the push functionality, and the launched MIDlet are in a single process. If your device uses separate processes for the MIDlets and the push functionality the file descriptors may not be as easy to share. You may need to use some form of interprocess communication to achieve the check-in/check-out behavior.
+</p>
+<a name="wp449187"> </a><h2 class="pHeading1">
+10.3	Customizing the Java Layer
+</h2>
+<a name="wp449192"> </a><p class="pBody">
+The MIDP Reference Implementation implements the push registry in the Java programming language. It uses the following interface and class:
+</p>
+<ul class="pBullet1"><a name="wp450390"> </a><div class="pBullet1"><li><code class="cCode">javax.microedition.io.PushRegistry</code></li></div>
+<a name="wp450391"> </a><div class="pBullet1Last"><li><code class="cCode">com.sun.midp.io.j2me.push.PushRegistryImpl</code></li></div>
+</ul>
+<a name="wp450392"> </a><p class="pBody">
+The <code class="cCode">PushRegistryImpl</code> class handles:
+</p>
+<ul class="pBullet1"><a name="wp450420"> </a><div class="pBullet1"><li>Polling for inbound connection notifications</li></div>
+<a name="wp450427"> </a><div class="pBullet1Plus"><li>Launching the appropriate MIDlet when an inbound connection is received</li></div>
+<a name="wp450428"> </a><div class="pBullet1Last"><li>Providing the methods required by the <em class="cEmphasis">MIDP 2.0 Specification</em> for registry maintenance.</li></div>
+</ul>
+<a name="wp449010"> </a><p class="pBody">
+The number of changes that you need to make to the <code class="cCode">PushRegistryImpl</code> class to customize the push functionality depends on the decisions you made on the issues in section <a  href="push.html#wp448486"><span style="color: #3366CC">Section&#160;10.1 &#8220;Design Considerations</span></a>. If your platform is very different (for example, it supports concurrently running MIDlets and you have decided not to exit the currently running MIDlet), you will have to replace some or all of the code.
+</p>
+<a name="wp449482"> </a><p class="pBody">
+If you do make major changes to the MIDP Reference Implementation&#8217;s push code, make sure that your implementation has at most once semantics for launching a MIDlet to receive a message. Never notify the application twice for the same message. 
+</p>
+
+    <p>&#160;</p>
+    <hr class="pHr" />
+
+    <table class="full-width" id="SummaryNotReq2">
+      <tr>
+        <td class="go-left">
+          <a accesskey="c" href="index.html">
+	    <img id="LongDescNotReq1" src="images/toc.gif" border="0"
+              alt="Contents" /></a>
+	  <a accesskey="p" href="ams.html">
+	    <img id="LongDescNotReq2" src="images/prev.gif" border="0"
+              alt="Previous" /></a>
+	  <a accesskey="n" href="sound.html">
+	    <img id="LongDescNotReq3" src="images/next.gif" border="0"
+              alt="Next" /></a>
+	  <a accesskey="i" href="portIX.html">
+	    <img id="LongDescNotReq4" src="images/index.gif" border="0"
+              alt="Index" /></a>
+        </td>
+        <td class="go-right">
+          <span class="copyright">Porting MIDP <br /> MIDP Reference Implementation, Version 2.0 FCS</span>
+        </td>
+      </tr>
+    </table>
+
+    <p>&#160;</p>
+    <p class="copyright"><a 
+       href="copyright.html">Copyright</a> &#169;
+       2002 Sun Microsystems, Inc. All rights reserved.</p>	
+  </body>
+</html>

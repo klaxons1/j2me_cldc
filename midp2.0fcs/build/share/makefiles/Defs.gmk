@@ -1,0 +1,408 @@
+#
+# @(#)Defs.gmk	1.90 02/09/17 @(#)
+#
+# Copyright (c) 1999-2002 Sun Microsystems, Inc.  All rights reserved.
+# PROPRIETARY/CONFIDENTIAL
+# Use is subject to license terms.
+#
+#########
+#
+# GLOBAL defines. This file should not contain rules.
+#
+# The following variables must be defined prior to including this file:
+#
+#	KVM_DIR   - Top of kVM tree
+#	MIDP_DIR  - Top of MIDP tree
+#	BUILD_DIR - Directory `make` was executed in
+#
+#	KVM_EXCLUDE_CLASSES      - .class files to exclude from kVM tree
+#	MIDP_EXCLUDE_CLASSES     - .class files to exclude from MIDP tree
+#	PLATFORM_EXCLUDE_CLASSES - .class files to exclude from platform
+#	EXAMPLE_EXCLUDE_CLASSES  - .class files to exclude from examples
+#	TEST_EXCLUDE_CLASSES     - .class files to exclude from tests 
+#
+#	PLATFORM_SRC_DIR   - dir containing platform-specific .c files
+#	PLATFORM_CLASS_DIR - dir containing platform-specific classes
+#			      This must _NOT_ have a trailing slash (/)
+#
+# Other variables that must be defined elsewhere:
+#
+#	KVM_EXCLUDE_SRC      - .c files to exclude from kVM tree
+#	KVM_INCLUDE_SRC      - .c files to include from kVM tree
+#	MIDP_EXCLUDE_SRC     - .c files to exclude from MIDP tree
+#	MIDP_INCLUDE_SRC     - .c files to include from MIDP tree
+#	PLATFORM_INCLUDE_SRC - platform-specific .c files to include
+#	PLATFORM_EXCLUDE_SRC - platform-specific .c files to exclude
+#
+#	KVM_INCLUDE_CLASSES      - .class files to include from kVM tree
+#	MIDP_INCLUDE_CLASSES     - .class files to include from MIDP tree
+#	PLATFORM_INCLUDE_CLASSES - .class files to include from platform
+#	EXAMPLE_INCLUDE_CLASSES  - .class files to include from examples
+#	TEST_INCLUDE_CLASSES     - .class files to include from tests
+#	EXTRA_CLASS_FILES        - .class files to include from some other
+#				   tree. Whomever defines this must also
+#				   define the proper target(s) to build all
+#				   classes in this list.
+#
+#	PLATFORM      - Platform to build
+#	PATHSEP       - Path separator for '-classpath' argument
+#	CC_OUTPUT     - Argument used w/ compiler to generate .o file
+#	LINKER_OUTPUT - Argument used w/ linker to generate executable
+#	OBJ_SUFFIX    - Suffix of object files
+#	g             - Suffix of debug-enabled object directory
+#	EXE           - Suffix of executable programs
+#	LIBS          - Libraries to append at link stage
+#	LD            - Linker command
+#	CC            - Compiler command
+#	KDP_CMD       - Command for the KVM Debug Proxy
+#	ROMJAVA       - Name of ROMJava file
+#
+# Other variables that may be defined elsewhere:
+#
+#	ALT_BOOTDIR    - Alternate directory of Java commands
+#	EXTRA_INCLUDES - Additional search directories for .h files
+#	EXTRA_CFLAGS   - Additional arguments for compiler
+#	CMDLINE_CFLAGS - Compiler arguments that are defined on the 
+#			  makefile command-line. This must not be set
+#			  or modified directly within the makefiles.
+#	EX_SERVER_URL  - URL prefix to use for MIDlet-JAR-URL tag when
+#			  creating the example MIDlets. The .jar file
+#			  will be appended to this string.
+#	ARCH_DIR       - Additional sub-directory to store object files.
+#			  This is useful when attempting to build binaries
+#			  for the same platform but two different CPU
+#			  architectures. (For instance Solaris/X86 and
+#			  Solaris/SPARC). This variable must start with
+#			  path separator.
+#	DEBUG_COLLECTOR  - Include the KVM debug version of the collector.
+#			   (default value is false)
+#       USE_MIDP_MALLOC  - Use internal memory management for native
+#                          heap allocations
+#			   (default value is false)
+#       ENABLE_MALLOC_TRACE - Trace memory usage and print warnings for
+#                             memory leaks or corruption. This is only
+#                             valid when USE_MIDP_MALLOC is true.
+#			      (default value is false)
+#	ENABLEPROFILING  - Include kvm gathering of performance staistics
+#			   (default value is false)
+#	ENABLE_DEBUGGER  - Include the KVM debugger hooks to communicate
+#                  	   with an external proxy agent.
+#			   (default value is false)
+#	ENABLE_SCREEN_CAPTURE  - Include the code used for screen capture
+#			   used by the QA team for verifying non interactive
+#			   user interface tests 
+#			   (default is true)
+#	INCLUDEDEBUGCODE - Include debugging code used for KVM traces
+#	                   and C-level debugger symbols
+#                          (default is false)
+#	INCLUDE_I18N     - Include support for internationalization.
+#			   (default is true)
+#	ROMIZING         - Convert core classes to a native included
+#                          file.
+#			   (default is true)
+#	SOUND_SUPPORTED  - Include calls to augment button pushes with
+#                          sound queues
+#                          (default is false)
+#       SRCPROFILING     - Compile MIDP so that it is profiler enabled
+#                          currently for GCC only (default is false )
+
+# This default is redefined during a release build.
+#
+RELEASE      := $(shell echo `$(WHOAMI)`:`date '+%m.%d.%y-%H:%M'`)
+FULL_VERSION := $(shell echo `$(WHOAMI)`:`date '+%m.%d.%y-%H:%M'`)
+
+# prepend any platform-specific definitions
+#
+-include $(MIDP_DIR)/build/$(PLATFORM)/makefiles/Defs-pre.gmk
+
+# prepend any VM-specific definitions for this platform
+#
+-include $(MIDP_DIR)/build/$(PLATFORM)/$(VM)/makefiles/Defs-pre.gmk
+
+# include global VM-specific definitions
+#
+-include $(MIDP_DIR)/build/share/makefiles/$(VM)/Defs.gmk
+
+# variable definitions -- need to define prior to 'vpath'
+#
+VERIFYDIR     = $(BUILD_DIR)/tmpclasses
+STORAGEDIR    = $(BUILD_DIR)/appdb
+SHARE_SRC_DIR = $(MIDP_DIR)/src/share
+CLASSBINDIR   = $(BUILD_DIR)/classes
+
+# vpath entries
+#
+vpath % $(PLATFORM_SRC_DIR)/native
+vpath % $(PLATFORM_SRC_DIR)/native/$(VM)
+vpath % $(SHARE_SRC_DIR)/native
+vpath % $(SHARE_SRC_DIR)/native/$(VM)
+vpath % $(SHARE_SRC_DIR)/native/crypto
+
+#
+# Set BOOTDIR: Use ALT_BOOTDIR if it's set, otherwise use the default
+# from _BOOTDIR.
+#
+BOOTDIR = $(_BOOTDIR$(ALT_BOOTDIR))$(ALT_BOOTDIR)
+
+BINDIR       = $(BUILD_DIR)/bin$(ARCH_DIR)
+LIBDIR       = $(BUILD_DIR)/lib
+OBJ_DIR      = obj$(g)$(ARCH_DIR)
+
+# main keystore for HTTPS and secure provisioning
+#
+CA_KEYSTORE=$(STORAGEDIR)/_main.ks
+
+# java tools
+#
+JAR	    = $(BOOTDIR)/bin/jar$(EXE)
+JAVA	    = $(BOOTDIR)/bin/java$(EXE)
+JAVAC	    = $(BOOTDIR)/bin/javac$(EXE)
+JAVADOC	    = $(BOOTDIR)/bin/javadoc$(EXE)
+
+# MIDP tools
+#
+ZIP           = zip
+UNZIP         = unzip
+PREVERIFY_CMD = $(BINDIR)/preverify$(EXE)
+
+ifndef MIDP_CMD
+MIDP_CMD      = midp
+endif
+
+# make options
+#
+ifneq ($(INCLUDE_I18N), false) 
+   EXTRA_INCLUDES += -I$(SHARE_SRC_DIR)/native/i18n \
+		     -I$(PLATFORM_SRC_DIR)/native/i18n
+   EXTRA_CFLAGS += -DINCLUDE_I18N
+   MIDP_DEF_SRC += localeMethod.c conv.c locale.c genConv.c
+   vpath %.c $(SHARE_SRC_DIR)/native/i18n
+   vpath %.c $(PLATFORM_SRC_DIR)/native/i18n
+endif
+
+ifeq ($(INCLUDEDEBUGCODE), true)
+   EXTRA_CFLAGS += -DINCLUDEDEBUGCODE=1
+endif
+
+ifeq ($(USE_MIDP_MALLOC), true)
+   EXTRA_CFLAGS += -DUSE_MIDP_MALLOC=1
+   MIDP_DEF_SRC += midpMalloc.c
+ifeq ($(ENABLE_MALLOC_TRACE), true)
+   EXTRA_CFLAGS += -DMIDP_MALLOC_TRACE=1
+endif
+endif
+
+ifeq ($(ENABLE_DEBUGGER), true)
+   EXTRA_CFLAGS += -DENABLE_JAVA_DEBUGGER=1
+   JAVAC_DEBUG =
+else
+   JAVAC_DEBUG = :none
+endif
+
+ifeq ($(DEBUG_COLLECTOR), true)
+   EXTRA_CFLAGS += -DUSE_DEBUG_COLLECTOR=1
+   EXTRA_CFLAGS += -DEXCESSIVE_GARBAGE_COLLECTION
+else
+   EXTRA_CFLAGS += -DUSE_DEBUG_COLLECTOR=0
+endif
+
+ifeq ($(SOUND_SUPPORTED), true) 
+   EXTRA_CFLAGS +=  -DSOUND_SUPPORTED
+endif
+
+SSL_TARGET = $(SSL_CLASS_FILES) $(SSL_OBJ_DIR)
+KEYSTORE_TARGET = keystore
+
+ifeq ($(ENABLEPROFILING), true)
+   EXTRA_CFLAGS += -DENABLEPROFILING=1
+   MIDP_DEF_SRC += perfmon.c
+else
+   EXTRA_CFLAGS += -DENABLEPROFILING=0
+   MIDP_EXCLUDE_CLASSES := $(MIDP_EXCLUDE_CLASSES)|perfmon
+endif
+
+
+
+# Code for automated UI testing. 
+#
+ifeq ($(ENABLE_SCREEN_CAPTURE), false)
+   MIDP_EXCLUDE_CLASSES := $(MIDP_EXCLUDE_CLASSES)|ScreenGrabber
+   MIDP_EXCLUDE_CLASSES := $(MIDP_EXCLUDE_CLASSES)|AutomatedEventHandler
+   MIDP_EXCLUDE_CLASSES := $(MIDP_EXCLUDE_CLASSES)|AutomationHandler
+   MIDP_EXCLUDE_CLASSES := $(MIDP_EXCLUDE_CLASSES)|EventSequence
+   MIDP_EXCLUDE_CLASSES := $(MIDP_EXCLUDE_CLASSES)|RecordedEvent
+   MIDP_EXCLUDE_CLASSES := $(MIDP_EXCLUDE_CLASSES)|SequenceHandler
+else
+   MIDP_DEF_SRC += screengrab.c crc32.c screenGrabber.c  
+endif
+
+ifeq ($(SRCPROFILING), true)
+   g = _p
+   ifeq ($(DEBUG), true)
+      g := $(g)g
+   endif
+else
+   ifeq ($(DEBUG), true)
+      g = _g
+   else
+      g = 
+   endif
+endif
+
+ifndef EX_SERVER_URL
+EX_SERVER_URL = http://localhost/
+endif
+
+# Default compile flags
+#
+EXTRA_CFLAGS += -DRELEASE='"$(RELEASE)"' \
+		-DIMPL_VERSION='"$(VERSION)"' \
+		-DFULL_VERSION='"$(FULL_VERSION)"'
+
+EXTRA_CFLAGS += -DPLATFORMNAME='"j2me"'
+
+EXTRA_INCLUDES += \
+		  -I$(PLATFORM_SRC_DIR)/native \
+		  -I$(PLATFORM_SRC_DIR)/native/$(VM) \
+                  -I$(SHARE_SRC_DIR)/native \
+		  -I$(SHARE_SRC_DIR)/native/$(VM) \
+		  -I$(SHARE_SRC_DIR)/native/crypto \
+		  -I$(PLATFORM_SRC_DIR)/native/xpm/include \
+		  -I$(PLATFORM_SRC_DIR)/native/png/include \
+		  $(VM_INCLUDES)
+
+# use 'override' to prevent setting CFLAGS in another makefile
+#
+override CFLAGS = $(DEBUG_CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_INCLUDES) \
+		  $(CMDLINE_CFLAGS)
+
+# default MIDP c source
+#
+MIDP_DEF_SRC += property.c configuration.c imageDecode.c pngDecode.c \
+		defaultLCDUI.c menus.c popup.c nativeGUI.c images.c text.c \
+		graphics.c commandState.c exitInternal.c main.c midpStartup.c \
+		SystemOutputStream.c ResourceInputStream.c \
+		JarReader.c storage.c RandomAccessStream.c storageFile.c \
+		socketProtocol.c socketProtocol_md.c \
+		datagramProtocol.c datagramProtocol_md.c \
+		commProtocol.c commProtocol_md.c \
+		phonesim.c staticGraphics.c midpEvents.c \
+		pushregistry.c midlet.c midlet_md.c \
+		audiornd.c mmatone.c mmaevt.c waveout.c vibrate.c pvibrate.c
+
+MIDP_SRC_FILES = $(filter-out $(MIDP_EXCLUDE_SRC),$(MIDP_DEF_SRC))
+MIDP_SRC_FILES += $(MIDP_INCLUDE_SRC)
+# Add .c files
+MIDP_OBJ_FILES = $(patsubst %.c,$(OBJ_DIR)/%.o,$(filter %.c,$(MIDP_SRC_FILES)))
+# Add .cpp files
+MIDP_OBJ_FILES += $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(filter %.cpp,$(MIDP_SRC_FILES)))
+MIDP_LINT_FILES = $(patsubst %.c,%.ln,$(filter, %.c,$(MIDP_SRC_FILES)))
+
+PLATFORM_SRC_FILES = $(filter-out $(PLATFORM_EXCLUDE_SRC),$(PLATFORM_DEF_SRC))
+PLATFORM_SRC_FILES += $(PLATFORM_INCLUDE_SRC)
+PLATFORM_OBJ_FILES = $(patsubst %.c,$(OBJ_DIR)/%.o,$(filter %.c, $(PLATFORM_SRC_FILES)))
+PLATFORM_OBJ_FILES += $(patsubst %.rc,$(OBJ_DIR)/%.res,$(filter %.rc, $(PLATFORM_SRC_FILES)))
+
+SSL_OBJ_DIR = ssl_obj$(g)$(ARCH_DIR)
+SSL_SRC_FILES = nativecrypto.c MD5.c SHA.c bnlib.c MD2.c messagedigest.c
+SSL_OBJ_FILES = $(patsubst %.c,$(SSL_OBJ_DIR)/%.o,$(SSL_SRC_FILES))
+
+# generate OBJ_FILES list; we need to sort the files due to a linker
+#  bug in Visual Studio
+#
+OBJ_FILES=$(shell echo \
+  $(MIDP_OBJ_FILES) $(PLATFORM_OBJ_FILES) $(VM_OBJ_FILES) $(SSL_OBJ_FILES) | \
+  tr ' ' '\n' | sort -f | tr -d '\r' | tr '\n' ' ')
+
+# default MIDP java source
+#
+MIDP_EXCLUDE_CLASSES     := $(MIDP_EXCLUDE_CLASSES)|KSImpl.java|j2se
+EXAMPLE_EXCLUDE_CLASSES  := $(EXAMPLE_EXCLUDE_CLASSES)|HelloMIDlet|i18n
+TEST_EXCLUDE_CLASSES     := $(TEST_EXCLUDE_CLASSES)|perf|j2se
+
+MIDP_DEF_SOURCE:=$(shell find \
+  $(MIDP_DIR)/src/share/classes/java \
+  $(MIDP_DIR)/src/share/classes/javax \
+  $(MIDP_DIR)/src/share/classes/com/sun/mmedia \
+  $(MIDP_DIR)/src/share/classes/com/sun/midp \
+  -name '*.java' | egrep -v 'midp/ssl|$(MIDP_EXCLUDE_CLASSES)')
+
+SSL_DEF_SOURCE:=$(shell \
+  if [ -x $(MIDP_DIR)/src/share/classes/com/sun/midp/ssl ]; then \
+  find $(MIDP_DIR)/src/share/classes/com/sun/midp/ssl \
+   -name '*.java' | egrep -v 'SCCS|KSImpl'; \
+  fi)
+
+PLATFORM_DEF_SOURCE:=$(shell \
+  if [ -x $(PLATFORM_CLASS_DIR) ]; then \
+    find $(PLATFORM_CLASS_DIR) \
+     -name '*.java' | egrep -v '$(PLATFORM_EXCLUDE_CLASSES)'; \
+  fi)
+
+EXAMPLE_DEF_SOURCE:=$(shell \
+  if [ -x $(MIDP_DIR)/src/example ]; then \
+  find $(MIDP_DIR)/src/example \
+   -name '*.java' | egrep -v '$(EXAMPLE_EXCLUDE_CLASSES)'; \
+  fi)
+
+TEST_DEF_SOURCE:=$(shell \
+  if [ -x $(MIDP_DIR)/tests ]; then \
+  find $(MIDP_DIR)/tests \
+   -name '*.java' | egrep -v '$(TEST_EXCLUDE_CLASSES)'; \
+  fi)
+
+ifneq ($(INCLUDE_I18N), false) 
+   MIDP_DEF_SOURCE := $(MIDP_DEF_SOURCE) $(shell find \
+       $(MIDP_DIR)/src/share/classes/com/sun/cldc/i18n \
+       -name '*.java' | egrep -v '$(MIDP_EXCLUDE_CLASSES)')
+else
+   MIDP_DEF_SOURCE := $(MIDP_DEF_SOURCE) $(shell find \
+       $(MIDP_DIR)/src/share/classes/com/sun/cldc/i18n/j2me \
+       -name 'UTF_8*.java' | egrep -v "SCCS")
+endif
+
+MIDP_SOURCE_FILES     = $(MIDP_DEF_SOURCE) $(MIDP_INCLUDE_CLASSES)
+PLATFORM_SOURCE_FILES = $(PLATFORM_DEF_SOURCE) $(PLATFORM_INCLUDE_CLASSES)
+EXAMPLE_SOURCE_FILES  = $(EXAMPLE_DEF_SOURCE) $(EXAMPLE_INCLUDE_CLASSES)
+TEST_SOURCE_FILES     = $(TEST_DEF_SOURCE) $(TEST_INCLUDE_CLASSES)
+SSL_SOURCE_FILES      = $(SSL_DEF_SOURCE)
+
+MIDP_CLASS_FILES = $(subst $(MIDP_DIR)/src/share/,,$(MIDP_SOURCE_FILES:java=class))
+SSL_CLASS_FILES = $(subst $(MIDP_DIR)/src/share/,,$(SSL_SOURCE_FILES:java=class))
+PLATFORM_CLASS_FILES = $(subst $(PLATFORM_CLASS_DIR),classes,$(PLATFORM_SOURCE_FILES:java=class))
+EXAMPLE_CLASS_FILES = $(subst $(MIDP_DIR)/src,classes,$(EXAMPLE_SOURCE_FILES:java=class))
+TEST_CLASS_FILES = $(subst $(MIDP_DIR),classes,$(TEST_SOURCE_FILES:java=class))
+
+# macro to compile java source with preverifier
+#
+define compilefiles
+	@if [ '!' -d $(VERIFYDIR) ]; then \
+		rm -rf $(VERIFYDIR); \
+		mkdir $(VERIFYDIR); \
+	fi
+	@if [ -f .filelist ]; then \
+		chmod +x $(PREVERIFY_CMD); \
+		num=`wc -l .filelist`; \
+		num=`echo $$num | cut -f1 -d' '` ; \
+		echo ... compiling $$num .java files; \
+		$(JAVAC) -g$(JAVAC_DEBUG) -d $(VERIFYDIR) \
+			-bootclasspath $(CLASSBINDIR) \
+			-classpath $(CLASSBINDIR) `cat .filelist` || exit 1; \
+		num=`find $(VERIFYDIR) -type f -print | wc -l`; \
+		num=`echo $$num | cut -f1 -d' '` ; \
+		echo ... preverifying $$num .class files; \
+		$(PREVERIFY_CMD) -classpath $(VERIFYDIR)$(PATHSEP)$(CLASSBINDIR)\
+			 -d $(CLASSBINDIR) $(VERIFYDIR) || exit 1; \
+	        rm -rf $(VERIFYDIR); \
+	else \
+		echo no need to recompile .java files; \
+	fi
+endef
+
+# append any platform-specific definitions
+#
+-include $(MIDP_DIR)/build/$(PLATFORM)/makefiles/Defs-post.gmk
+
+# append any VM-specific definitions for this platform
+#
+-include $(MIDP_DIR)/build/$(PLATFORM)/${VM}/makefiles/Defs-post.gmk

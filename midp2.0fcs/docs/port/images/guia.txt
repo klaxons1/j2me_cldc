@@ -1,0 +1,1 @@
+Ellipse drawn on a canvas. The image points out the canvas origin, the bounding box for the ellipse, the corner points of the box, the center of the box and ellipse, and the radii of the ellipse.
