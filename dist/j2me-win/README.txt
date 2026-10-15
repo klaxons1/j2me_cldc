@@ -7,8 +7,18 @@ midp.exe is a 32-bit Windows build of the KVM-based J2ME virtual machine
 (CLDConfig 1.1 + MIDP 2.0) from the j2me_cldc source tree.
 
 * 32-bit PE executable (machine type i386 / 0x14C).
-* Runs natively on 32-bit Windows, and on 64-bit Windows via WoW64
-  (which is enabled by default on all modern x64 Windows versions).
+* Runs natively on 32-bit Windows, and on 64-bit (x64) Windows via
+  WoW64, which is enabled by default on all modern Windows releases.
+  This is the standard way 32-bit Windows applications ship for x64.
+* Why not a native x64 (AMD64) binary? The KVM core is a 32-bit
+  "cell"-based VM: kvm/VmCommon/h/global.h declares
+      typedef unsigned long cell;  /* Must be 32 bits long! */
+  and object references (heap pointers) are stored in these 32-bit
+  cells - operand stack slots, instance fields, KNI handles
+  (see pushStack() in global.h and KNI_SETHAND() in kni.c). In a
+  true 64-bit process the heap pointers would be truncated to 32
+  bits, silently corrupting memory. Making the VM 64-bit is a VM
+  port, not a build flag. Hence: i386 PE + WoW64.
 * Statically linked - no runtime DLLs or installers required.
 * Built cross-compiled with the Zig C compiler (target x86-windows-gnu).
 
