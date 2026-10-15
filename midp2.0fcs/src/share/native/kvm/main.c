@@ -83,6 +83,10 @@ midpCommandName(int cmd) {
  *=======================================================================*/
 #define MIDP_MAIN "com.sun.midp.main.Main"
 
+#ifndef MAXIMUMHEAPSIZE
+#define MAXIMUMHEAPSIZE (1000L * 1000L)
+#endif
+
 /* midp_home saved for the startup banner (freed earlier) */
 static char midpHomeLog[1024];
 
@@ -169,11 +173,19 @@ main(int argc, char* argv[]) {
     }
     midpFree(midp_home);
     
-    /* 
-     * Now parse the command line arguments targetted at the 
+    /*
+     * Default Java heap size. The original build initialized
+     * RequestedHeapSize with MAXIMUMHEAPSIZE; the -heapsize command
+     * line argument (parsed below) overrides this. Without an
+     * explicit default the VM would start with a zero-sized heap.
+     */
+    RequestedHeapSize = MAXIMUMHEAPSIZE;
+
+    /*
+     * Now parse the command line arguments targetted at the
      * native implementation. The rest will be handled by the
      * Java AMS Main routine.
-     */ 
+     */
     midpParseArgs(argc, argv);
 
     {

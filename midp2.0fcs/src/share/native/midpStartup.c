@@ -22,6 +22,9 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <stdio.h>
+#ifdef WIN32
+#include <windows.h>
+#endif
 
 #include <kni.h>
 
@@ -188,6 +191,20 @@ midpFixMidpHome(char *cmd) {
      */
     if (!getenv("MIDP_HOME")) {
         filesep = getFileSeparator();
+#ifdef WIN32
+        /*
+         * argv[0] is often a bare file name (the program was started
+         * from its own directory); in that case anchor the search on
+         * the real module path so that midp_home does not degenerate
+         * to "." and depend on the current working directory.
+         */
+        {
+            char exePath[MAX_PATH];
+            if (GetModuleFileNameA(NULL, exePath, MAX_PATH) > 0) {
+                cmd = exePath;
+            }
+        }
+#endif
         /* Look for the last slash in the pathanme. */
     if ((lastsep = strrchr(cmd, (int) *filesep)) != 0) {
             *lastsep = '\0';
