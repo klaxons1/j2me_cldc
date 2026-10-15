@@ -28,6 +28,18 @@ DIST="$TOP/dist/j2me-win"
 
 ZIG="${1:-}"
 TARGET="${2:-x86-windows-gnu}"
+EXENAME="${3:-midp.exe}"
+
+# 32-bit targets need -m32; 64-bit (x86_64-windows-gnu) does not.
+M32_FLAGS=()
+case "$TARGET" in
+    x86-*) M32_FLAGS=(-m32) ;;
+esac
+
+# keep object files separate per target
+if [ "$TARGET" != "x86-windows-gnu" ]; then
+    OBJDIR="$BUILD/obj-$TARGET"
+fi
 
 if [ -z "$ZIG" ]; then
     if [ -x "$HOME/.tools/zigvenv/lib/python3.11/site-packages/ziglang/zig" ]; then
@@ -90,7 +102,7 @@ cc() {
     local name
     name="$(basename "$src" .c)"
     name="${name%.cpp}"
-    "$ZIG" cc -target "$TARGET" -m32 "${CFLAGS[@]}" -c "$src" -o "$OBJDIR/$name.o"
+    "$ZIG" cc -target "$TARGET" "${M32_FLAGS[@]}" "${CFLAGS[@]}" -c "$src" -o "$OBJDIR/$name.o"
 }
 
 KVM_SRC="$TOP/kvm/VmCommon/src"
@@ -159,11 +171,11 @@ done
 # ---------------------------------------------------------------------
 # 3. Link
 # ---------------------------------------------------------------------
-"$ZIG" cc -target "$TARGET" -m32 -O2 \
-    -o "$DIST/midp.exe" \
+"$ZIG" cc -target "$TARGET" "${M32_FLAGS[@]}" -O2 \
+    -o "$DIST/$EXENAME" \
     "$OBJDIR"/*.o \
     -luser32 -lgdi32 -lwinmm -lwsock32 -limm32 -lcomdlg32 -lkernel32 -static
-echo "Built $DIST/midp.exe"
+echo "Built $DIST/$EXENAME"
 
 # ---------------------------------------------------------------------
 # 4. Assemble the distribution

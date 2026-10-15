@@ -3,5 +3,6 @@
 .vscode
 # intermediate build objects only (the dist/ build output is committed)
 build/emulator/obj/
+build/emulator/obj-*/
 __pycache__/
 dist/j2me-win/*.pdb
