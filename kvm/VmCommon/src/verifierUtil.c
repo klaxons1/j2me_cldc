@@ -543,8 +543,10 @@ bool_t checkNewObject(IPINDEX this_ip, IPINDEX target_ip) {
  *                fails.
  *=======================================================================*/
 
+static int Vfy_verifyMethod(METHOD vMethod);
+static bool_t Vfy_checkNewInstructions(METHOD vMethod);
+
 int verifyClass(INSTANCE_CLASS thisClass) {
-    static int Vfy_verifyMethod(METHOD vMethod);
     int i;
     int result = 0;
 #if USESTATIC
@@ -1595,7 +1597,6 @@ void Vfy_trace1(char *msg, long p1) {
  static int Vfy_verifyMethod(METHOD vMethod) {
 
     void Vfy_verifyMethodOrAbort(const METHOD vMethod);
-    static bool_t Vfy_checkNewInstructions(METHOD vMethod);
     int res;
 
 #if INCLUDEDEBUGCODE

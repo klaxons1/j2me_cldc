@@ -34,7 +34,7 @@ typedef struct asynciocb {
 
 #define ASYNC_FUNCTION(x)                                               \
 void x(void) {                                                          \
-    static void internal ## x (ASYNCIOCB *);                            \
+    void internal ## x (ASYNCIOCB *);                            \
     ASYNCIOCB anaiocb;                                                  \
     ASYNCIOCB *aiocb = &anaiocb;                                        \
     aiocb->thread       = CurrentThread;                                \
@@ -43,7 +43,7 @@ void x(void) {                                                          \
     aiocb->exception    = 0;                                            \
     internal ## x (aiocb);                                              \
 }                                                                       \
-static void internal ## x (ASYNCIOCB *aiocb)
+void internal ## x (ASYNCIOCB *aiocb)
 
 #define ASYNC_popStack            popStack
 #define ASYNC_pushStack           pushStack
@@ -86,11 +86,11 @@ void       AbortAsyncIOCB(ASYNCIOCB *);
 
 #define ASYNC_FUNCTION(x)                                               \
 void x(void) {                                                          \
-    static void internal ## x (ASYNCIOCB *);                            \
+    void internal ## x (ASYNCIOCB *);                            \
     ASYNCIOCB *aiocb = AcquireAsyncIOCB();                              \
     CallAsyncNativeFunction_md(aiocb, internal ## x);                   \
 }                                                                       \
-static void internal ## x (ASYNCIOCB *aiocb)
+void internal ## x (ASYNCIOCB *aiocb)
 
 #define ASYNC_popStack()                      popStackForThread(aiocb->thread)
 #define ASYNC_pushStack(x)                    pushStackForThread(aiocb->thread,x)

@@ -47,6 +47,7 @@ extern void  midpPrintUsage(char *progname);
 extern void  midpParseArgs(int argc, char* argv[]);
 extern int   midpSetClassPath(char* storageName, char** userClassPath);
 extern char* midpFixMidpHome(char *cmd);
+extern void  midpAddBaseClassPath(char* midp_home);
 
 
 /*=========================================================================
@@ -107,6 +108,7 @@ main(int argc, char* argv[]) {
     midp_home = midpFixMidpHome(argv[0]);
     initializeConfig(midp_home);
     initializeStorage(midp_home);
+    midpAddBaseClassPath(midp_home);
     midpFree(midp_home);
     
     /* 

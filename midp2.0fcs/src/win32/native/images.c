@@ -36,6 +36,13 @@ typedef struct _imgDst {
     jboolean        hasTransMap;
 } _imageDstData, *_imageDstPtr;
 
+/* forward declarations */
+static int makeImagePixel(int rgb);
+BOOL customAlphaBlend(HDC hdcDest, int nXOriginDest, int nYOriginDest,
+                      HDC hdcSrc,  int nXOriginSrc,  int nYOriginSrc,
+                      int nWidth,  int nHeight,
+                      int transform, jboolean processAlpha);
+
 
 /*
  * Draw the given image data, locating its anchor point at x, y

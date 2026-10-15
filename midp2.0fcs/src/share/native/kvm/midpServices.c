@@ -15,7 +15,7 @@
 /*=========================================================================
  * global variables
  *=======================================================================*/
-long  RequestedHeapSize = MAXIMUMHEAPSIZE;      /* Defined by kVM */
+extern long  RequestedHeapSize;      /* Defined by kVM (global.c) */
 
 /*=========================================================================
  * local variables

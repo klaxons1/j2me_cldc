@@ -51,7 +51,7 @@
 #define SO_EXCLUSIVEADDRUSE ((int)(~SO_REUSEADDR))
 #endif
 
-WSADATA wsaData;
+extern WSADATA wsaData;
 int netError(void);
 
 #ifndef ulong_t

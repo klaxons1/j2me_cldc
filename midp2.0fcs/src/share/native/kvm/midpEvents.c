@@ -155,25 +155,28 @@ instantiateStringFromUnicode(const unicode* str, int len)
 
 #endif
 
+/* forward declarations of the KVM event queue entry points (VmCommon/src/events.c) */
+extern void JVM_EventsReadInt(void);
+extern void JVM_EventsReadUTF(void);
+
 /*=========================================================================
  * Native methods implementation for com.sun.midp.lcdui.Events class
  *
- * These functions call the native methods of 
- * com.sun.cldc.io.j2me.events.PrivateInputStream because the needed 
- * function calls and variables in events.c are static. To avoid modifying
- * the CLDC files, we just "wrapped" our implemention around those native
- * functions.
+ * These functions call into the KVM event queue directly because the
+ * corresponding CLDC PrivateInputStream natives are not present in this
+ * source tree. To avoid modifying the CLDC files, we just "wrap" our
+ * implementation around the KVM event functions.
  *=======================================================================*/
 
 void Java_com_sun_midp_lcdui_Events_open(void) {
-    Java_com_sun_cldc_io_j2me_events_PrivateInputStream_open();
+    /* no-op: mirrors Java_com_sun_cldc_io_j2me_events_PrivateInputStream_open */
 }
 
 void Java_com_sun_midp_lcdui_Events_readInt(void) {
-    Java_com_sun_cldc_io_j2me_events_PrivateInputStream_readInt();
+    JVM_EventsReadInt();
 }
 
 void Java_com_sun_midp_lcdui_Events_readUTF(void) {
-    Java_com_sun_cldc_io_j2me_events_PrivateInputStream_readUTF();
+    JVM_EventsReadUTF();
 }
 

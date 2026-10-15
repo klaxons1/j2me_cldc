@@ -36,6 +36,25 @@
  *=======================================================================*/
 static char* MidpCommandLineClassPath;
 
+/*
+ * Additional classpath entries contributed by the MIDlet suite
+ * picker (the suite jar), plus the base MIDP classes directory.
+ * Prepend order matters: base classes first, then user/suite jars.
+ */
+static char* MidpExtraClassPath;
+
+/* from midpJarPicker.c */
+extern int midpPickerIsMIDletFilePublic(const char* path);
+extern int midpPickerHandleSuiteFile(const char* path,
+                                     char** classNameOut,
+                                     char** descriptorOut,
+                                     char** classpathEntryOut);
+extern int midpPickerShowAndSelect(char** classNameOut,
+                                   char** descriptorOut,
+                                   char** classpathEntryOut);
+void midpAddExtraClassPath(char* entry);
+void midpAddBaseClassPath(char* midp_home);
+
 
 /*=========================================================================
  * local variables
@@ -380,12 +399,27 @@ midpParseArgs(int argc, char* argv[]) {
                 currentArg += (cldcArgs - 1);
             }
         } else if (NULL == *ppTarget) {
-            *ppTarget = midpStrdup(argv[currentArg]);
-            if (*ppTarget == NULL) {
-                puts("Out of Memory: could not allocate command target");
-                exit(-1);
-            }
+            if (midpPickerIsMIDletFilePublic(argv[currentArg])) {
+                char* cls = NULL;
+                char* desc = NULL;
+                char* jar = NULL;
 
+                if (midpPickerHandleSuiteFile(argv[currentArg],
+                                              &cls, &desc, &jar) != 0) {
+                    exit(-1);
+                }
+                MidpCommandState.initialCommand = RUN_CLASS;
+                MidpCommandState.midletClassName = cls;
+                MidpCommandState.descriptorName = desc;
+                MidpCommandState.suiteURL = NULL;
+                midpAddExtraClassPath(jar);
+            } else {
+                *ppTarget = midpStrdup(argv[currentArg]);
+                if (*ppTarget == NULL) {
+                    puts("Out of Memory: could not allocate command target");
+                    exit(-1);
+                }
+            }
         } else if (NULL == MidpCommandState.midletName) {
             /*
              * assume if there is a non-option parameter after the target
@@ -410,10 +444,23 @@ midpParseArgs(int argc, char* argv[]) {
             MidpCommandState.midletClassName == NULL &&
             MidpCommandState.descriptorName == NULL) {
         /*
-         * Running with no target and no descriptor,
-         * means to run the Graphical Manager
+         * No target on the command line: let the user pick a
+         * .jar/.jad file. If the user cancels the picker, fall
+         * back to the Graphical Manager.
          */
-        MidpCommandState.initialCommand = MANAGE;
+        char* cls = NULL;
+        char* desc = NULL;
+        char* jar = NULL;
+
+        if (midpPickerShowAndSelect(&cls, &desc, &jar) == 0) {
+            MidpCommandState.initialCommand = RUN_CLASS;
+            MidpCommandState.midletClassName = cls;
+            MidpCommandState.descriptorName = desc;
+            midpAddExtraClassPath(jar);
+        } else {
+            /* cancelled (or unavailable): run the Graphical Manager */
+            MidpCommandState.initialCommand = MANAGE;
+        }
     }
 
     MidpCommandState.nextCommand = MidpCommandState.initialCommand;
@@ -453,6 +500,78 @@ midpParseArgs(int argc, char* argv[]) {
 
 
 /*=========================================================================
+ * FUNCTION:      midpAddExtraClassPath
+ * OVERVIEW:      Append an extra classpath entry (the picked suite
+ *                jar) to the picker classpath list.
+ *=======================================================================*/
+void
+midpAddExtraClassPath(char* entry) {
+    if (entry == NULL) {
+        return;
+    }
+    if (MidpExtraClassPath == NULL) {
+        MidpExtraClassPath = midpStrdup(entry);
+        if (MidpExtraClassPath == NULL) {
+            puts("Out of Memory: could not store classpath entry");
+            exit(-1);
+        }
+    } else {
+        char* temp = (char*)midpMalloc(strlen(MidpExtraClassPath) +
+                                       strlen(getPathSeparator()) +
+                                       strlen(entry) + 1);
+        if (temp == NULL) {
+            puts("Out of Memory: could not store classpath entry");
+            exit(-1);
+        }
+        strcpy(temp, MidpExtraClassPath);
+        strcat(temp, getPathSeparator());
+        strcat(temp, entry);
+        midpFree(MidpExtraClassPath);
+        MidpExtraClassPath = temp;
+    }
+}
+
+/*=========================================================================
+ * FUNCTION:      midpAddBaseClassPath
+ * OVERVIEW:      Prepend the base MIDP 2.0 classes directory
+ *                (<midp_home>/lib/classes) to the classpath so that
+ *                the prebuilt FCS classes can be loaded by the VM
+ *                (this build does not use a ROM image).
+ *=======================================================================*/
+void
+midpAddBaseClassPath(char* midp_home) {
+    char basePath[1024];
+    char probe[1024 + 32];
+    struct stat st;
+
+    if (midp_home == NULL) {
+        return;
+    }
+    snprintf(basePath, sizeof(basePath), "%s%c%s",
+             midp_home, (int)*getFileSeparator(), "lib");
+    snprintf(probe, sizeof(probe), "%s%c%s", basePath,
+             (int)*getFileSeparator(), "classes");
+    if (stat(probe, &st) != 0 || !(st.st_mode & S_IFDIR)) {
+        return; /* no base classes dir; nothing to add */
+    }
+    if (MidpExtraClassPath == NULL) {
+        MidpExtraClassPath = midpStrdup(probe);
+    } else {
+        char* temp = (char*)midpMalloc(strlen(MidpExtraClassPath) +
+                                       strlen(getPathSeparator()) +
+                                       strlen(probe) + 1);
+        if (temp == NULL) {
+            return;
+        }
+        strcpy(temp, probe);
+        strcat(temp, getPathSeparator());
+        strcat(temp, MidpExtraClassPath);
+        midpFree(MidpExtraClassPath);
+        MidpExtraClassPath = temp;
+    }
+}
+
+/*=========================================================================
  * FUNCTION:      midpSetClassPath
  * OVERVIEW:      Generate a complete classpath in preparation to
  *                 run the MIDlet Suite stored in 'storageName'
@@ -488,6 +607,11 @@ midpSetClassPath(char* storageName, char** userClassPath) {
         newPathLen += strlen(MidpCommandLineClassPath) + 1;
     }
 
+    /* suite/base classes contributed by the jar picker */
+    if (MidpExtraClassPath != NULL) {
+        newPathLen += strlen(MidpExtraClassPath) + 1;
+    }
+
     if (suitePath != NULL) {
         newPathLen += strlen(suitePath) + 1;
     }
@@ -504,6 +628,10 @@ midpSetClassPath(char* storageName, char** userClassPath) {
     }
 
     newPath[0] = 0;
+
+    if (MidpExtraClassPath != NULL) {
+        strcat(newPath,  MidpExtraClassPath);
+    }
 
     if (MidpCommandLineClassPath != NULL) {
         strcat(newPath,  MidpCommandLineClassPath);

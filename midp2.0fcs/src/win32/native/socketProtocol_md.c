@@ -40,7 +40,9 @@
 #include <windows.h>
 #include <process.h>
 #ifdef GCC
-#include <winsock.h>
+#ifndef _WINSOCKAPI_
+#include <winsock2.h>
+#endif
 #else
 #include <winsock2.h>
 #endif

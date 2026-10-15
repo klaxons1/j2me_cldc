@@ -1,3 +1,7 @@
 .tags
 .DS_Store
 .vscode
+# cross-build outputs (keep binaries out of git)
+build/emulator/obj/
+dist/
+__pycache__/

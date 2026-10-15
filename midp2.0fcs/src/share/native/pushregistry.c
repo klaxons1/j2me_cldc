@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include "midpMalloc.h"
 #include "storage.h"
+#include "socketProtocol.h"
 #ifdef UNIX
 #include <poll.h>
 #include <sys/types.h>

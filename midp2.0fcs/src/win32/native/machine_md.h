@@ -37,6 +37,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <math.h>
+#include <setjmp.h>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #undef CONST
@@ -84,6 +85,8 @@ unsigned long *Calendar_md();
 
 /* Use asynchronous native functions on Windows */
 #define ASYNCHRONOUS_NATIVE_FUNCTIONS 1
+
+#define SLEEP_FOR(delta)  Sleep((long)delta)
 
 #define SLEEP_UNTIL(wakeupTime)                            \
     {  long delta = (long)(wakeupTime - CurrentTime_md()); \
@@ -141,7 +144,7 @@ void winDrawMonoBitmap(int x, int y, int width, int height, int rowBytes, char *
 
 #include <io.h>
 #include <fcntl.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include <direct.h>
 
 #ifndef __GNUC__

@@ -130,7 +130,7 @@ int  getpagesize();
 
 #include <io.h>
 #include <fcntl.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include <direct.h>
 
 #ifndef __GNUC__
