@@ -68,5 +68,10 @@ Notes
   top-level window with the emulator's LCD look.
 * If a suite jar contains several MIDlets, the one with the smallest
   MIDlet-N number is selected automatically.
-* The VM heap default is ~1 MB; raise it with -heapsize if a suite needs
-  more (must be divisible by 4, e.g. -heapsize 2000000).
+* The VM heap defaults to 1 MB (MAXIMUMHEAPSIZE). Raise or lower it
+  with -heapsize (must be divisible by 4, e.g. -heapsize 2000000).
+* Debug logging: all console output (C runtime + Java System.out/err)
+  is also written to midp-debug.log in the current working directory,
+  including a startup banner (midp_home, command, MIDlet class, JAD
+  descriptor, classpath, heap) and the VM exit status. If the emulator
+  closes unexpectedly, send that file for diagnosis.

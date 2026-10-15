@@ -71,6 +71,40 @@ midpPickerFileExists(const char *path) {
     return (stat(path, &st) == 0);
 }
 
+/*
+ * Convert a possibly relative path to an absolute one so that the
+ * VM classpath does not depend on the current working directory.
+ * Returns a pointer to a static buffer (valid until the next call).
+ */
+static const char *
+midpPickerMakeAbsolute(const char *path) {
+    static char absBuf[4096];
+#ifdef WIN32
+    DWORD n = GetFullPathNameA(path, (DWORD)sizeof(absBuf),
+                               absBuf, NULL);
+    if (n == 0 || n >= (DWORD)sizeof(absBuf)) {
+        return path;
+    }
+    return absBuf;
+#else
+    if (path[0] == '/') {
+        return path;
+    }
+    {
+        const char *cwd = getenv("PWD");
+        int n;
+        if (cwd == NULL || *cwd == '\0') {
+            return path;
+        }
+        n = snprintf(absBuf, (size_t)sizeof(absBuf), "%s/%s", cwd, path);
+        if (n < 0 || (size_t)n >= sizeof(absBuf)) {
+            return path;
+        }
+        return absBuf;
+    }
+#endif
+}
+
 static void
 midpPickerCopyStr(char *dst, int dstLen, const char *src) {
     int n = 0;
@@ -447,33 +481,36 @@ midpPickerChooseFile(char *pathBuf, int pathLen) {
 
 static char *
 midpPickerTempJadPath(const char *jarPath, char *buf, int bufLen) {
-    char *base = strrchr(jarPath, '/');
+    const char *slash;
+    const char *base;
+    const char *dot;
+    int baseLen;
 #ifdef WIN32
-    char *base2 = strrchr(jarPath, '\\');
-    if (base2 != NULL && (base == NULL || base2 > base)) {
-        base = base2;
-    }
+    char tmpDir[MAX_PATH];
+    (void)GetTempPathA(MAX_PATH, tmpDir);
 #endif
-    if (base == NULL) {
-        base = (char *)jarPath;
-    } else {
-        base++;
-    }
+
+    slash = strrchr(jarPath, '/');
+#ifdef WIN32
     {
-        char *dot = strrchr(base, '.');
-        if (dot != NULL) {
-            *dot = '\0';
+        const char *slash2 = strrchr(jarPath, '\\');
+        if (slash2 != NULL && (slash == NULL || slash2 > slash)) {
+            slash = slash2;
         }
     }
-#ifdef WIN32
-    {
-        char tmpDir[MAX_PATH];
-        DWORD r = GetTempPathA(MAX_PATH, tmpDir);
-        (void)r;
-        snprintf(buf, (size_t)bufLen, "%s%s.midp-jad", tmpDir, base);
+#endif
+    base = (slash != NULL) ? slash + 1 : jarPath;
+    dot = strrchr(base, '.');
+    baseLen = (dot != NULL) ? (int)(dot - base) : (int)strlen(base);
+    if (baseLen <= 0) {
+        static const char *fallbackBase = "suite";
+        base = fallbackBase;
+        baseLen = (int)strlen(base);
     }
+#ifdef WIN32
+    snprintf(buf, (size_t)bufLen, "%s%.*s.midp-jad", tmpDir, baseLen, base);
 #else
-    snprintf(buf, (size_t)bufLen, "/tmp/%s.midp-jad", base);
+    snprintf(buf, (size_t)bufLen, "/tmp/%.*s.midp-jad", baseLen, base);
 #endif
     return buf;
 }
@@ -659,14 +696,19 @@ midpPickerHandleSuiteFile(const char *path,
                           char **descriptorOut,
                           char **classpathEntryOut) {
     static PickerProp props[PICKER_MAX_PROPS];
+    const char *absPath;
     int propCount = 0;
     char *text = NULL;
-    int isJar = midpPickerIStrEndsWith(path, ".jar");
-    int isJad = midpPickerIStrEndsWith(path, ".jad");
+    int isJar;
+    int isJad;
 
     *classNameOut = NULL;
     *descriptorOut = NULL;
     *classpathEntryOut = NULL;
+
+    absPath = midpPickerMakeAbsolute(path);
+    isJar = midpPickerIStrEndsWith(absPath, ".jar");
+    isJad = midpPickerIStrEndsWith(absPath, ".jad");
 
     if (!isJar && !isJad) {
         fprintf(stderr, "midp: \"%s\" is not a .jar or .jad file\n", path);
@@ -679,12 +721,12 @@ midpPickerHandleSuiteFile(const char *path,
         char manifestText[PICKER_MAX_VALUE * 4];
         int rc;
 
-        *classpathEntryOut = (char *)midpStrdup(path);
+        *classpathEntryOut = (char *)midpStrdup(absPath);
         if (*classpathEntryOut == NULL) {
             fprintf(stderr, "midp: out of memory\n");
             return -1;
         }
-        rc = midpZipReadEntry(path, "META-INF/MANIFEST.MF",
+        rc = midpZipReadEntry(absPath, "META-INF/MANIFEST.MF",
                               &manifest, &manifestSize);
         if (rc != 0 || manifest == NULL) {
             fprintf(stderr,
@@ -712,7 +754,7 @@ midpPickerHandleSuiteFile(const char *path,
             if (firstOk) {
                 *classNameOut = (char *)midpStrdup(cls);
                 *descriptorOut =
-                    midpPickerGenerateJad(path, props, propCount, 1);
+                    midpPickerGenerateJad(absPath, props, propCount, 1);
                 if (*descriptorOut == NULL) {
                     /* metadata-only failure: still runnable */
                     *descriptorOut = NULL;
@@ -734,15 +776,15 @@ midpPickerHandleSuiteFile(const char *path,
         }
     } else {
         /* .jad */
-        if (midpPickerReadFile(path, &text) != 0) {
+        if (midpPickerReadFile(absPath, &text) != 0) {
             fprintf(stderr, "midp: cannot read \"%s\"\n", path);
             return -1;
         }
         propCount = midpPickerParseProps(text, props, PICKER_MAX_PROPS);
         midpFree(text);
-        *descriptorOut = (char *)midpStrdup(path);
+        *descriptorOut = (char *)midpStrdup(absPath);
         {
-            char *jarPath = midpPickerFindJarForJad(path, props, propCount);
+            char *jarPath = midpPickerFindJarForJad(absPath, props, propCount);
             if (jarPath != NULL) {
                 *classpathEntryOut = jarPath;
             } else {

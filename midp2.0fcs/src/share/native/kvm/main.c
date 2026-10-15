@@ -22,11 +22,55 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <stdio.h>
+#ifdef WIN32
+#include <io.h>
+#define midp_dup2 _dup2
+#define midp_fileno _fileno
+#else
+#include <unistd.h>
+#define midp_dup2 dup2
+#define midp_fileno fileno
+#endif
 
 #include <kni.h>
 
 #include "midpMalloc.h"
 #include "commandState.h"
+
+extern long RequestedHeapSize;
+
+/*
+ * Debug logging: everything the C code or the Java code writes to
+ * stdout/stderr is mirrored to ./midp-debug.log so that runtime
+ * failures can be diagnosed on machines without a visible console.
+ */
+static void
+midpOpenDebugLog(void) {
+    static FILE* logf = NULL;
+    if (logf != NULL) {
+        return;
+    }
+    logf = fopen("midp-debug.log", "w");
+    if (logf == NULL) {
+        return;
+    }
+    setvbuf(logf, NULL, _IONBF, 0);
+    midp_dup2(midp_fileno(logf), 1);
+    midp_dup2(midp_fileno(logf), 2);
+}
+
+static const char*
+midpCommandName(int cmd) {
+    switch (cmd) {
+    case EXIT:        return "EXIT";
+    case MANAGE:      return "MANAGE";
+    case INSTALL_RUN: return "INSTALL_RUN";
+    case LIST:        return "LIST";
+    case RUN_CLASS:   return "RUN_CLASS";
+    case STORAGE_NAMES: return "STORAGE_NAMES";
+    default:          return "OTHER";
+    }
+}
 
 
 /*=========================================================================
@@ -38,6 +82,9 @@
  * local variables
  *=======================================================================*/
 #define MIDP_MAIN "com.sun.midp.main.Main"
+
+/* midp_home saved for the startup banner (freed earlier) */
+static char midpHomeLog[1024];
 
 
 /*=========================================================================
@@ -100,6 +147,9 @@ main(int argc, char* argv[]) {
     setvbuf(stdout, stdbuff, bufmode, bufsiz);
     setvbuf(stderr, errbuff, bufmode, bufsiz);
 
+    /* mirror all output to ./midp-debug.log from the very start */
+    midpOpenDebugLog();
+
     /*
      * Initialize the configuration property file mechanism first,
      * so command line overrides can be applied on a per
@@ -109,6 +159,14 @@ main(int argc, char* argv[]) {
     initializeConfig(midp_home);
     initializeStorage(midp_home);
     midpAddBaseClassPath(midp_home);
+    {
+        int hl = 0;
+        while (midp_home[hl] != '\0' && hl < (int)sizeof(midpHomeLog) - 1) {
+            midpHomeLog[hl] = midp_home[hl];
+            hl++;
+        }
+        midpHomeLog[hl] = '\0';
+    }
     midpFree(midp_home);
     
     /* 
@@ -117,6 +175,24 @@ main(int argc, char* argv[]) {
      * Java AMS Main routine.
      */ 
     midpParseArgs(argc, argv);
+
+    {
+        printf("\n==== midp debug log ====\n");
+        printf("midp_home: %s\n", midpHomeLog);
+        printf("command: %s (%d)\n",
+               midpCommandName(MidpCommandState.initialCommand),
+               MidpCommandState.initialCommand);
+        printf("midletClassName: %s\n",
+               MidpCommandState.midletClassName != NULL ?
+               MidpCommandState.midletClassName : "(null)");
+        printf("descriptorName: %s\n",
+               MidpCommandState.descriptorName != NULL ?
+               MidpCommandState.descriptorName : "(null)");
+        printf("suiteStorageName: %s\n",
+               MidpCommandState.suiteStorageName != NULL ?
+               MidpCommandState.suiteStorageName : "(null)");
+        printf("heap: %ld bytes\n", (long)RequestedHeapSize);
+    }
 
 #ifdef INCLUDE_I18N
     initLocaleMethod();
@@ -154,6 +230,12 @@ main(int argc, char* argv[]) {
             midpSetClassPath(NULL, &UserClassPath);
         }
 
+        printf("starting VM: classpath=[%s] nextCommand=%s (%d)\n",
+               UserClassPath != NULL ? UserClassPath : "(null)",
+               midpCommandName(MidpCommandState.nextCommand),
+               MidpCommandState.nextCommand);
+        fflush(stdout);
+
         /*
          * When the "power button" on the phone is pressed, the VM is exited
          * abrutly with a status of zero. But our Java Main returns a
@@ -161,6 +243,9 @@ main(int argc, char* argv[]) {
          * the phone pressed.
          */
         vmStatus = StartJVM(1, vmArg);
+
+        printf("VM exited with status %d\n", vmStatus);
+        fflush(stdout);
 
         /* clean up the temp file, ignore any errors */
         storageDeleteFile(&pszError, "./appdb/installer.tmp");
