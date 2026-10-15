@@ -1,0 +1,18 @@
+MIDlet-Name: PhotoAlbum
+MIDlet-Vendor: Sun Microsystems, Inc.
+MIDlet-Version: 2.0
+MIDlet-Description: Photoalbum of images
+MIDlet-1: PhotoAlbum,, example.photoalbum.PhotoAlbum
+MIDlet-Data-Size: 256
+MicroEdition-Configuration: CLDC-1.0
+MicroEdition-Profile: MIDP-1.0
+PhotoImage-1: /example/photoalbum/images/LightHouse-
+PhotoImage-2: /example/photoalbum/images/jc_frame_
+PhotoImage-3: /icons/Duke.png
+PhotoImage-4: http://libpng.sourceforge.net/pngbar.png
+PhotoTitle-1: Flashing LightHouse
+PhotoTitle-2: Java Fly By
+PhotoTitle-3: Duke
+PhotoTitle-4: PNG image
+MIDlet-Jar-URL: http://localhost/photoalbum.jar
+MIDlet-Jar-Size: 228461

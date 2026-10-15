@@ -1,0 +1,9 @@
+MIDlet-Name: FontTestlet
+MIDlet-Version: 2.0
+MIDlet-Vendor: Sun Microsystems, Inc.
+MIDlet-Description: Test for MIDP font display
+MicroEdition-Profile: MIDP-1.0
+MicroEdition-Configuration: CLDC-1.0
+MIDlet-1: FontTestlet, , example.fonts.FontTestlet
+MIDlet-Jar-URL: http://localhost/fonts.jar
+MIDlet-Jar-Size: 2454

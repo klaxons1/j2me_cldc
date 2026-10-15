@@ -1,7 +1,7 @@
 .tags
 .DS_Store
 .vscode
-# cross-build outputs (keep binaries out of git)
+# intermediate build objects only (the dist/ build output is committed)
 build/emulator/obj/
-dist/
 __pycache__/
+dist/j2me-win/*.pdb
